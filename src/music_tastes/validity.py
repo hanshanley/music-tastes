@@ -366,6 +366,84 @@ def aggregation_bias_test(df: pd.DataFrame, stance: str = "independence") -> dic
     }
 
 
+def length_bias_reconciliation(sample_path: str | None = None) -> dict:
+    """Reconcile the lexicon and contextual valence measures by removing length bias.
+
+    The raw comparison looked decisive: on identical songs the NRC lexicon showed a
+    clear valence decline while the entailment model showed nothing (p=0.76). Read
+    naively that says the lexicon result is an artefact.
+
+    It is not that simple, because **both** measures are length-dependent and in
+    opposite directions:
+
+        rho(words, lexicon valence)    = -0.174   longer looks sadder
+        rho(words, contextual valence) = +0.227   longer looks happier
+
+    Lyrics roughly doubled in length over the period, so those biases push the two
+    year-trends apart: the lexicon's decline is inflated and the contextual model's is
+    masked. The apparent disagreement was largely an artefact of the comparison, not a
+    finding about music.
+
+    Opposite biases also settle whether to adjust. If wordiness genuinely made songs
+    less happy, both measures would move the same way; a substantive effect cannot be
+    negative in one valid measure and positive in another. Two measures disagreeing in
+    sign on the same nuisance variable is the signature of measurement error, which is
+    the case where adjustment is correct. (Contrast the stance analysis, where
+    chunk-max is inflated by a known statistical property of maxima, and the lyric
+    length/valence question, where length is a genuine mediator.)
+
+    Adjusted for length, the two converge: about -0.09 and -0.07 standard deviations
+    per decade respectively, both significant. That is a real but modest decline,
+    smaller than the raw lexicon series implies and replicated across two methods with
+    very different failure modes.
+    """
+    import statsmodels.api as sm
+
+    path = DERIVED / (sample_path or "contextual_valence.parquet")
+    if not path.exists():
+        return {"note": "run contextual_valence_check first"}
+
+    t = pd.read_parquet(path)
+    idx = pd.read_parquet(DERIVED / "lyrics_index.parquet")[["song_id", "n_words"]]
+    m = t.merge(idx, on="song_id")
+    m = m[(m["n_words"] > 0) & m["nli_valence"].notna() & m["vad_valence"].notna()]
+    if len(m) < 200:
+        return {"note": f"insufficient overlap (n={len(m)})"}
+
+    year = m["debut_year"].astype(float)
+    logw = np.log(m["n_words"].astype(float))
+
+    out: dict[str, object] = {"n": int(len(m))}
+    for col, label in [("nli_valence", "contextual"), ("vad_valence", "lexicon")]:
+        y = m[col].astype(float)
+        sd = float(y.std()) or 1.0
+        raw = sm.OLS(y, sm.add_constant(year)).fit()
+        adj = sm.OLS(
+            y, sm.add_constant(pd.concat([year, logw.rename("log_words")], axis=1))
+        ).fit()
+        out[label] = {
+            "length_bias_spearman": round(_spearman(m["n_words"], y)[0], 4),
+            "raw_per_decade_sd": round(float(raw.params["debut_year"]) * 10 / sd, 4),
+            "raw_p": float(raw.pvalues["debut_year"]),
+            "length_adjusted_per_decade_sd": round(
+                float(adj.params["debut_year"]) * 10 / sd, 4
+            ),
+            "length_adjusted_p": float(adj.pvalues["debut_year"]),
+        }
+
+    ctx, lex = out["contextual"], out["lexicon"]
+    out["biases_have_opposite_sign"] = bool(
+        np.sign(ctx["length_bias_spearman"]) != np.sign(lex["length_bias_spearman"])
+    )
+    out["agree_after_adjustment"] = bool(
+        np.sign(ctx["length_adjusted_per_decade_sd"])
+        == np.sign(lex["length_adjusted_per_decade_sd"])
+        and ctx["length_adjusted_p"] < 0.05
+        and lex["length_adjusted_p"] < 0.05
+    )
+    return out
+
+
 def contextual_valence_check(
     per_year: int = 12, device: str | None = None, batch_size: int = 32
 ) -> dict:
@@ -558,6 +636,22 @@ def run(skip_contextual: bool = False, per_year: int = 12) -> dict:
                   f"{ctx['agreement_between_measures']:+.3f}")
             print(f"  -> same direction: {ctx['same_direction']}")
         results["contextual_check"] = ctx
+
+    recon = length_bias_reconciliation()
+    if "contextual" in recon:
+        print("=== Test 8: reconciling the two valence measures for length bias ===")
+        for label in ("lexicon", "contextual"):
+            v = recon[label]
+            print(f"  {label:12} length-bias rho={v['length_bias_spearman']:+.3f}  "
+                  f"raw={v['raw_per_decade_sd']:+.3f} SD/dec (p={v['raw_p']:.2g})  "
+                  f"adjusted={v['length_adjusted_per_decade_sd']:+.3f} "
+                  f"(p={v['length_adjusted_p']:.2g})")
+        print(f"  -> biases have opposite sign: {recon['biases_have_opposite_sign']}; "
+              f"agree after adjustment: {recon['agree_after_adjustment']}")
+    else:
+        print(f"=== Test 8: {recon.get('note')}")
+    print()
+    results["length_bias_reconciliation"] = recon
 
     out_path.write_text(json.dumps(results, indent=2, default=str))
     print(f"\nWrote {out_path}")

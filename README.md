@@ -146,13 +146,15 @@ and era controls, and replicates across 4 of 5 reworded hypotheses (the 5th fire
 
 Relationship share itself is flat.
 
-**Not robust — reported with the caveat:** word-average lyric valence and joy. On an
-identical 690 songs, NRC VAD word norms give ρ(year, valence) = −0.221 (p=4.6e-09)
-while a context-aware entailment model gives **−0.012 (p=0.76)**. The entailment
-measure discriminates mood cleanly (top: *Celebration*, *Holly Jolly Christmas*;
-bottom: *Crying*, *Broken-Hearted Melody*) — it simply finds no trend. The lexicon
-decline most likely tracks *vocabulary* change, not *emotional* change. Run
-`music-tastes validity` to reproduce.
+**Moderate — lyrics did get somewhat less positive.** This took two reversals to pin
+down. Raw, a word-norm lexicon shows a clear decline while a context-aware entailment
+model shows nothing (p=0.76), which looks like the lexicon is an artifact. But both
+measures are length-biased *in opposite directions* (lexicon ρ=−0.174, contextual
+ρ=+0.227), and lyrics doubled in length — inflating one trend and masking the other.
+Opposite signs on the same nuisance variable means measurement error, not a real
+effect, so adjustment is warranted. Adjusted, the two converge: **−0.068 and −0.092 SD
+per decade, both significant.** Real, but ~1.5× smaller than the raw lexicon implies.
+Run `music-tastes validity` to reproduce.
 
 **Ruled out as explanations:** non-English songs (ρ moves only −0.303 → −0.281 under
 the strictest English filter), code-switching (English-token share flat at 0.995–0.999

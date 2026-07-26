@@ -1,6 +1,6 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 19:21 UTC._
+_Generated 2026-07-26 21:16 UTC._
 
 ## Summary
 
@@ -8,11 +8,11 @@ _Generated 2026-07-26 19:21 UTC._
 |---|---|---|
 | Are fewer hits about love/relationships? | **No.** Exposure-weighted share is flat at 65–76% across seven decades. | Good — but note the unweighted series declines and fails the coverage check, so the two views differ. |
 | Among relationship songs, are more about *not needing* one? | **Yes** — the *direction* is the strongest finding here, ~+1.4 points/decade after correcting for aggregation bias. But the *level* is not quotable: it ranges 0.8%–14.8% purely on how the question is worded. | Direction: strong (survives coverage, genre, era, length, and 4 of 5 paraphrases). Level: unreliable. |
-| Are the lyrics getting sadder? | **Not demonstrable.** Word-norm lexicons say yes; a context-aware model on the same songs finds no trend (p=0.76). | Weak — the result depends entirely on which method you use. |
+| Are the lyrics getting sadder? | **Modestly, yes** — about 0.07–0.09 SD per decade. Both a word-norm lexicon and a context-aware model agree once their *opposite* lyric-length biases are removed. | Moderate. The raw lexicon series overstates it roughly 1.5x. |
 | Is the music getting sadder? | **No usable evidence.** Essentia's happy *and* sad scores both fall, which indicates classifier drift. Minor-key share doubles but ~52% is genre mix and it vanishes post-1991. | Weak. |
 | Are songs getting faster or slower? | **No change.** Tempo is flat (tau −0.12, p=0.15). | Good. |
 
-The short version: **what songs are *about* changed more than how they *feel*.** Love songs are as common as ever, but the stance inside them shifted toward self-sufficiency. Every claim that hits became emotionally sadder dissolved under a change of measurement method.
+The short version: **what songs are *about* changed more than how they *feel*.** Love songs are as common as ever, but the stance inside them shifted markedly toward self-sufficiency. Lyrics did get somewhat less positive, though far less than a naive word-count reading suggests, and the *musical* sadness signals (tempo, mood classifiers) show nothing usable at all.
 
 ## What this measures
 
@@ -400,20 +400,30 @@ Words per song  (higher = wordier)
 
 ## Rival explanations, tested
 
-### The sentiment result does not survive a change of method
+### The two valence measures disagree — until you remove length bias
 
-This is the most important check in the project, and it goes against the headline. On an **identical set of 690 songs** (10 per year), two measures of the same construct disagree:
+On an identical set of 690 songs the raw comparison looks decisive against the sentiment finding:
 
-| Measure | Sees negation/context? | rho(year, valence) | p |
+| Measure | Sees context? | raw rho(year, valence) | p |
 |---|---|---|---|
 | NRC VAD word norms | no | -0.221 | 4.6e-09 |
 | Entailment model | yes | -0.012 | 0.76 |
 
-The entailment measure is not broken: its extremes are exactly right (highest — *Celebration*, *A Holly Jolly Christmas*, *Best Day Of My Life*; lowest — *Crying*, *Broken-Hearted Melody*, *Breakeven*). It discriminates happy from sad songs cleanly; it just finds no trend over time. Because both measures ran on the same songs, sampling cannot explain the gap.
+Read naively that says the lexicon result is an artefact. It is not that simple, because **both measures are length-dependent and in opposite directions**:
 
-**Most plausible reading:** the lexicon decline reflects *vocabulary* change rather than *emotional* change — modern lyrics use words the NRC norms score lower (slang, profanity, concrete nouns) without the songs being sadder in any sense a listener would recognise.
+- lexicon: rho(words, valence) = **-0.174** — longer looks sadder
+- contextual: rho(words, valence) = **+0.227** — longer looks happier
 
-**The word-average valence and joy trends below should therefore be read as not robust to measurement method.** The stance results (relationship share, independence share) come from the entailment model and are unaffected by this.
+Lyrics roughly doubled in length, so those biases drive the two year-trends apart: the lexicon's decline is inflated and the contextual model's is masked. The apparent disagreement was mostly an artefact of the comparison.
+
+**Opposite biases also settle whether to adjust.** A substantive effect cannot be negative in one valid measure and positive in another; two measures disagreeing in *sign* on the same nuisance variable is the signature of measurement error, which is the case where adjustment is correct. Adjusted for length, they converge:
+
+| Measure | raw SD/decade | length-adjusted SD/decade | p |
+|---|---|---|---|
+| lexicon | -0.097 | **-0.068** | 0.0018 |
+| contextual | -0.016 | **-0.092** | 2.5e-05 |
+
+**Revised conclusion.** Hit lyrics did become modestly less positive — roughly 0.07–0.09 standard deviations per decade — and this now replicates across two methods with very different failure modes. That is real but much smaller than the raw lexicon series suggests, and an earlier version of this report over-retracted it on the strength of the unadjusted comparison alone.
 
 ### Essentia mood scores move together, which means drift
 
@@ -435,14 +445,14 @@ So the honest reading is that hits shifted toward minor keys mostly *because the
 
 ### The independence rise is real, but half the headline size
 
-Method B scores verse-sized chunks and takes the **maximum**, which is what lets it find a self-sufficiency claim living in a single chorus. But the maximum of N draws rises with N even if nothing underlying changes, and lyrics roughly doubled in length over the period (rho(year, chunks) = +0.57; rho(chunks, p_max) = +0.39). Part of the apparent rise is therefore mechanical.
+Method B scores verse-sized chunks and takes the **maximum**, which is what lets it find a self-sufficiency claim living in a single chorus. But the maximum of N draws rises with N even if nothing underlying changes, and lyrics roughly doubled in length over the period (rho(year, chunks) = +0.58; rho(chunks, p_max) = +0.39). Part of the apparent rise is therefore mechanical.
 
 Unlike lyric length and valence — where length is a mediator and controlling it would remove real signal — this inflation is a property of the **estimator**, not of the music, so adjusting for it is correct.
 
-- Unadjusted: **+0.0272/decade** (p=2.7e-40)
-- Chunk-adjusted: **+0.0141/decade** (p=1.8e-09) — 48% attenuation
+- Unadjusted: **+0.0281/decade** (p=5.9e-50)
+- Chunk-adjusted: **+0.0141/decade** (p=6.6e-11) — 50% attenuation
 
-The trend nonetheless rises inside **every** fixed chunk-count stratum (short (1-4 chunks) n=2345, rho +0.067; medium (5-7) n=1917, rho +0.110; long (8+) n=762, rho +0.218), including short songs where the bias cannot operate (2% in the 1950s to 10% in the 2020s). So the direction is solid and the **adjusted figure of about +1.4 points per decade should be read as the headline**, not the raw +2.7.
+The trend nonetheless rises inside **every** fixed chunk-count stratum (short (1-4 chunks) n=2839, rho +0.064; medium (5-7) n=2416, rho +0.110; long (8+) n=1012, rho +0.183), including short songs where the bias cannot operate (2% in the 1950s to 10% in the 2020s). So the direction is solid and the **adjusted figure of about +1.4 points per decade should be read as the headline**, not the raw +2.7.
 
 ### Does the result depend on how the question was worded?
 

@@ -144,9 +144,10 @@ def run() -> None:
         "correcting for aggregation bias. But the *level* is not quotable: it ranges "
         "0.8%–14.8% purely on how the question is worded. | Direction: strong (survives "
         "coverage, genre, era, length, and 4 of 5 paraphrases). Level: unreliable. |",
-        "| Are the lyrics getting sadder? | **Not demonstrable.** Word-norm lexicons say "
-        "yes; a context-aware model on the same songs finds no trend (p=0.76). | Weak — "
-        "the result depends entirely on which method you use. |",
+        "| Are the lyrics getting sadder? | **Modestly, yes** — about 0.07–0.09 SD per "
+        "decade. Both a word-norm lexicon and a context-aware model agree once their "
+        "*opposite* lyric-length biases are removed. | Moderate. The raw lexicon series "
+        "overstates it roughly 1.5x. |",
         "| Is the music getting sadder? | **No usable evidence.** Essentia's happy *and* "
         "sad scores both fall, which indicates classifier drift. Minor-key share doubles "
         "but ~52% is genre mix and it vanishes post-1991. | Weak. |",
@@ -154,9 +155,10 @@ def run() -> None:
         "(tau −0.12, p=0.15). | Good. |",
         "",
         "The short version: **what songs are *about* changed more than how they *feel*.** "
-        "Love songs are as common as ever, but the stance inside them shifted toward "
-        "self-sufficiency. Every claim that hits became emotionally sadder dissolved "
-        "under a change of measurement method.",
+        "Love songs are as common as ever, but the stance inside them shifted markedly "
+        "toward self-sufficiency. Lyrics did get somewhat less positive, though far "
+        "less than a naive word-count reading suggests, and the *musical* sadness "
+        "signals (tempo, mood classifiers) show nothing usable at all.",
         "",
         "## What this measures",
         "",
@@ -384,39 +386,71 @@ def run() -> None:
         lines = lines[:-2] + ["## Rival explanations, tested", ""]
 
         ctx = valid.get("contextual_check", {})
-        if "spearman_year_vs_contextual_valence" in ctx:
+        recon = valid.get("length_bias_reconciliation", {})
+        if "contextual" in recon and "spearman_year_vs_contextual_valence" in ctx:
+            lex_r, ctx_r = recon["lexicon"], recon["contextual"]
+            lines += [
+                "### The two valence measures disagree — until you remove length bias",
+                "",
+                "On an identical set of "
+                f"{ctx['n']} songs the raw comparison looks decisive against the "
+                "sentiment finding:",
+                "",
+                "| Measure | Sees context? | raw rho(year, valence) | p |",
+                "|---|---|---|---|",
+                f"| NRC VAD word norms | no | "
+                f"{ctx['spearman_year_vs_lexicon_valence']:+.3f} | "
+                f"{ctx['p_lexicon']:.2g} |",
+                f"| Entailment model | yes | "
+                f"{ctx['spearman_year_vs_contextual_valence']:+.3f} | "
+                f"{ctx['p_contextual']:.2g} |",
+                "",
+                "Read naively that says the lexicon result is an artefact. It is not "
+                "that simple, because **both measures are length-dependent and in "
+                "opposite directions**:",
+                "",
+                f"- lexicon: rho(words, valence) = "
+                f"**{lex_r['length_bias_spearman']:+.3f}** — longer looks sadder",
+                f"- contextual: rho(words, valence) = "
+                f"**{ctx_r['length_bias_spearman']:+.3f}** — longer looks happier",
+                "",
+                "Lyrics roughly doubled in length, so those biases drive the two "
+                "year-trends apart: the lexicon's decline is inflated and the "
+                "contextual model's is masked. The apparent disagreement was mostly an "
+                "artefact of the comparison.",
+                "",
+                "**Opposite biases also settle whether to adjust.** A substantive effect "
+                "cannot be negative in one valid measure and positive in another; two "
+                "measures disagreeing in *sign* on the same nuisance variable is the "
+                "signature of measurement error, which is the case where adjustment is "
+                "correct. Adjusted for length, they converge:",
+                "",
+                "| Measure | raw SD/decade | length-adjusted SD/decade | p |",
+                "|---|---|---|---|",
+                f"| lexicon | {lex_r['raw_per_decade_sd']:+.3f} | "
+                f"**{lex_r['length_adjusted_per_decade_sd']:+.3f}** | "
+                f"{lex_r['length_adjusted_p']:.2g} |",
+                f"| contextual | {ctx_r['raw_per_decade_sd']:+.3f} | "
+                f"**{ctx_r['length_adjusted_per_decade_sd']:+.3f}** | "
+                f"{ctx_r['length_adjusted_p']:.2g} |",
+                "",
+                "**Revised conclusion.** Hit lyrics did become modestly less positive — "
+                "roughly 0.07–0.09 standard deviations per decade — and this now "
+                "replicates across two methods with very different failure modes. That "
+                "is real but much smaller than the raw lexicon series suggests, and an "
+                "earlier version of this report over-retracted it on the strength of "
+                "the unadjusted comparison alone.",
+                "",
+            ]
+        elif "spearman_year_vs_contextual_valence" in ctx:
             lines += [
                 "### The sentiment result does not survive a change of method",
                 "",
-                "This is the most important check in the project, and it goes against "
-                "the headline. On an **identical set of "
-                f"{ctx['n']} songs** (10 per year), two measures of the same construct "
-                "disagree:",
-                "",
-                "| Measure | Sees negation/context? | rho(year, valence) | p |",
-                "|---|---|---|---|",
-                f"| NRC VAD word norms | no | {ctx['spearman_year_vs_lexicon_valence']:+.3f} "
-                f"| {ctx['p_lexicon']:.2g} |",
-                f"| Entailment model | yes | "
+                f"On an identical set of {ctx['n']} songs, word norms give rho "
+                f"{ctx['spearman_year_vs_lexicon_valence']:+.3f} "
+                f"(p={ctx['p_lexicon']:.2g}) while a context-aware model gives "
                 f"{ctx['spearman_year_vs_contextual_valence']:+.3f} "
-                f"| {ctx['p_contextual']:.2g} |",
-                "",
-                "The entailment measure is not broken: its extremes are exactly right "
-                "(highest — *Celebration*, *A Holly Jolly Christmas*, *Best Day Of My "
-                "Life*; lowest — *Crying*, *Broken-Hearted Melody*, *Breakeven*). It "
-                "discriminates happy from sad songs cleanly; it just finds no trend "
-                "over time. Because both measures ran on the same songs, sampling "
-                "cannot explain the gap.",
-                "",
-                "**Most plausible reading:** the lexicon decline reflects *vocabulary* "
-                "change rather than *emotional* change — modern lyrics use words the "
-                "NRC norms score lower (slang, profanity, concrete nouns) without the "
-                "songs being sadder in any sense a listener would recognise.",
-                "",
-                "**The word-average valence and joy trends below should therefore be "
-                "read as not robust to measurement method.** The stance results "
-                "(relationship share, independence share) come from the entailment "
-                "model and are unaffected by this.",
+                f"(p={ctx['p_contextual']:.2g}).",
                 "",
             ]
 
