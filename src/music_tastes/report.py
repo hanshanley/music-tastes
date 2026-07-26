@@ -374,7 +374,7 @@ def run() -> None:
         if "kendall_tau" in happy and "kendall_tau" in sad:
             same_way = (happy["kendall_tau"] < 0) and (sad["kendall_tau"] < 0)
             lines += [
-                "### Essentia mood scores drift; only key is trustworthy",
+                "### Essentia mood scores move together, which means drift",
                 "",
                 f"Essentia's `mood_happy` falls sharply (tau {happy['kendall_tau']:+.3f}, "
                 f"p={happy['p_value']:.2g}, {happy['mean_first_5_years']:.3f} to "
@@ -538,15 +538,29 @@ def run() -> None:
             ]
         ind = conf.get("independence_share", {}).get("post_1991_soundscan", {})
         if "kendall_tau" in ind:
-            lines += [
-                "### The independence rise is a step, not a slope",
-                "",
-                f"Within the post-1991 era alone it is not significant (tau = "
-                f"{ind['kendall_tau']:+.3f}, p = {ind['p_value']:.2g}), consistent with "
-                "the decade table: a jump around 2000 followed by a plateau, rather "
-                "than a continuing climb.",
-                "",
-            ]
+            if ind["significant_at_05"]:
+                lines += [
+                    "### The independence rise continues inside the modern era",
+                    "",
+                    f"Restricted to 1991 onward — one consistent chart methodology — the "
+                    f"trend is still present and significant (tau = "
+                    f"{ind['kendall_tau']:+.3f}, p = {ind['p_value']:.2g}). An earlier "
+                    "pass on roughly half this much data found it non-significant within "
+                    "that window and read the rise as a single step around 2000; with "
+                    "the fuller sample it looks like a continuing climb rather than a "
+                    "one-off shift.",
+                    "",
+                ]
+            else:
+                lines += [
+                    "### The independence rise may be a step rather than a slope",
+                    "",
+                    f"Within the post-1991 era alone it is not significant (tau = "
+                    f"{ind['kendall_tau']:+.3f}, p = {ind['p_value']:.2g}), which would "
+                    "suggest a jump around 2000 followed by a plateau rather than a "
+                    "continuing climb.",
+                    "",
+                ]
         gs = val.get("genre_strata")
         ga = val.get("genre_adjusted", {})
         if "genre_adjusted_year_coef_per_decade" in ga:

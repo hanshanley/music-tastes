@@ -1,6 +1,6 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 18:25 UTC._
+_Generated 2026-07-26 18:26 UTC._
 
 ## Summary
 
@@ -387,7 +387,7 @@ The entailment measure is not broken: its extremes are exactly right (highest �
 
 **The word-average valence and joy trends below should therefore be read as not robust to measurement method.** The stance results (relationship share, independence share) come from the entailment model and are unaffected by this.
 
-### Essentia mood scores drift; only key is trustworthy
+### Essentia mood scores move together, which means drift
 
 Essentia's `mood_happy` falls sharply (tau -0.664, p=5.1e-15, 0.647 to 0.348). Taken alone that looks like strong evidence the music itself got sadder.
 
@@ -436,9 +436,9 @@ So within the lexicon's own terms the decline is real. That is a separate questi
 
 Restricted to 1991 onward (SoundScan era only, one consistent chart methodology), the lexicon valence decline survives: tau = -0.537, p = 4.1e-06.
 
-### The independence rise is a step, not a slope
+### The independence rise continues inside the modern era
 
-Within the post-1991 era alone it is not significant (tau = +0.273, p = 0.019), consistent with the decade table: a jump around 2000 followed by a plateau, rather than a continuing climb.
+Restricted to 1991 onward — one consistent chart methodology — the trend is still present and significant (tau = +0.273, p = 0.019). An earlier pass on roughly half this much data found it non-significant within that window and read the rise as a single step around 2000; with the fuller sample it looks like a continuing climb rather than a one-off shift.
 
 ### Genre mix — tested, and not the driver
 
