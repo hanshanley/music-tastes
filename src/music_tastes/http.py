@@ -37,8 +37,53 @@ DEFAULT_RATE_LIMIT = 0.25
 
 _last_request: dict[str, float] = {}
 _throttle_lock = threading.Lock()
-_cache_locks: dict[str, threading.Lock] = {}
-_cache_locks_guard = threading.Lock()
+
+# Adaptive per-host penalty applied on top of RATE_LIMITS.
+#
+# Without this, a 429 is handled by each worker independently: every thread retries on
+# its own backoff schedule while the others keep issuing fresh requests, so the server
+# keeps seeing traffic and never lets us out of the penalty box. An overnight run
+# degraded from 2.6 requests/second to zero successful fetches this way. The penalty
+# below is global, so one 429 slows every thread, and it decays only on success.
+_penalty: dict[str, float] = {}
+MAX_PENALTY = 60.0
+
+
+def circuit_open(host: str) -> bool:
+    """True when a host has been rate limited to the point of being unusable.
+
+    Once the adaptive penalty saturates, further requests are near-certain to return
+    429 and merely extend the block. Callers with an alternative route should check
+    this and take it instead of continuing to poll a closed door.
+    """
+    return _penalty.get(host, 0.0) >= MAX_PENALTY
+
+
+def _current_interval(host: str) -> float:
+    base = RATE_LIMITS.get(host, DEFAULT_RATE_LIMIT)
+    return base + _penalty.get(host, 0.0)
+
+
+def note_rate_limited(host: str, retry_after: float | None = None) -> float:
+    """Register a 429 for a host and return how long to sleep before retrying."""
+    with _throttle_lock:
+        current = _penalty.get(host, 0.0)
+        # Multiplicative increase, starting from the base interval.
+        bumped = max(current * 2.0, RATE_LIMITS.get(host, DEFAULT_RATE_LIMIT))
+        _penalty[host] = min(bumped, MAX_PENALTY)
+        penalty = _penalty[host]
+    return max(retry_after or 0.0, penalty)
+
+
+def note_success(host: str) -> None:
+    """Decay a host's penalty after a clean response."""
+    if not _penalty.get(host):
+        return
+    with _throttle_lock:
+        if _penalty.get(host):
+            _penalty[host] *= 0.8
+            if _penalty[host] < 0.01:
+                _penalty.pop(host, None)
 
 
 @dataclass
@@ -68,10 +113,10 @@ def _throttle(host: str) -> None:
     The reservation is made while holding the lock so that concurrent workers queue
     up behind each other instead of all sleeping until the same instant and then
     firing simultaneously. Total request rate to a host is therefore capped no matter
-    how many threads are running.
+    how many threads are running, including any adaptive 429 penalty.
     """
-    interval = RATE_LIMITS.get(host, DEFAULT_RATE_LIMIT)
     with _throttle_lock:
+        interval = RATE_LIMITS.get(host, DEFAULT_RATE_LIMIT) + _penalty.get(host, 0.0)
         now = time.monotonic()
         earliest = _last_request.get(host, 0.0) + interval
         wait = max(0.0, earliest - now)
@@ -125,12 +170,26 @@ def get(
             time.sleep(2**attempt)
             continue
 
-        if r.status_code >= 500 or r.status_code == 429:
-            last_error = RuntimeError(f"HTTP {r.status_code} from {host}")
-            # 429 means we are going too fast; back off harder than for a 5xx.
-            time.sleep((2**attempt) * (4 if r.status_code == 429 else 1))
+        if r.status_code == 429:
+            retry_after = None
+            try:
+                retry_after = float(r.headers.get("Retry-After", ""))
+            except ValueError:
+                retry_after = None
+            delay = note_rate_limited(host, retry_after)
+            last_error = RuntimeError(
+                f"HTTP 429 from {host}; backing off {delay:.1f}s "
+                f"(host penalty now {_penalty.get(host, 0):.1f}s)"
+            )
+            time.sleep(delay)
             continue
 
+        if r.status_code >= 500:
+            last_error = RuntimeError(f"HTTP {r.status_code} from {host}")
+            time.sleep(2**attempt)
+            continue
+
+        note_success(host)
         resp = Response(
             url=full,
             status=r.status_code,

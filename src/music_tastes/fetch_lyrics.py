@@ -34,7 +34,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-from .http import get
+from .http import circuit_open, get
 from .paths import DERIVED, LYRICS_CACHE, env
 from .resolve_songs import normalize_artist, normalize_title, title_variants
 
@@ -112,7 +112,7 @@ def _title_score(want_variants: list[str], hit_title: str) -> float:
     return max((_sim(w, h) for w in want_variants for h in hit_forms), default=0.0)
 
 
-def search_genius(title: str, artist: str, token: str) -> list[dict]:
+def search_genius(title: str, artist: str, token: str, use_api: bool = True) -> list[dict]:
     """Search Genius, trying several query forms and pooling the results.
 
     Genius's search is sensitive to both leading articles and appended subtitles: the
@@ -120,7 +120,13 @@ def search_genius(title: str, artist: str, token: str) -> list[dict]:
     "Sunflower (Spider-Man: Into The Spider-Verse)" fails to surface "Sunflower". We
     therefore query with the normalized artist and the stripped-down title first, and
     widen only if that fails.
+
+    Returns an empty list rather than raising when the API is quota-blocked, so the
+    caller can fall back to the slug route.
     """
+    if not use_api or not token or circuit_open("api.genius.com"):
+        return []
+
     norm_artist = normalize_artist(artist)
     variants = title_variants(title)
     base = variants[-1] if variants else str(title)
@@ -134,13 +140,18 @@ def search_genius(title: str, artist: str, token: str) -> list[dict]:
 
     seen: dict[int, dict] = {}
     for query in dict.fromkeys(q for q in queries if q):
-        resp = get(
-            GENIUS_SEARCH,
-            namespace="genius_search",
-            params={"q": query},
-            headers={"Authorization": f"Bearer {token}"},
-        )
+        try:
+            resp = get(
+                GENIUS_SEARCH,
+                namespace="genius_search",
+                params={"q": query},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+        except RuntimeError:
+            break
         if resp.status != 200:
+            if resp.status == 429:
+                break
             continue
         hits = [h["result"] for h in resp.json().get("response", {}).get("hits", [])]
         for rank, hit in enumerate(hits):
@@ -210,11 +221,17 @@ def pick_match(
     )
 
 
-def scrape_lyrics(url: str) -> str | None:
-    resp = get(url, namespace="genius_page", headers={"Accept": "text/html"})
-    if resp.status != 200:
-        return None
-    soup = BeautifulSoup(resp.text, "lxml")
+def scrape_lyrics(url: str, html: str | None = None) -> str | None:
+    """Extract the lyric body from a Genius song page.
+
+    ``html`` may be supplied to avoid re-fetching a page we already hold.
+    """
+    if html is None:
+        resp = get(url, namespace="genius_page", headers={"Accept": "text/html"})
+        if resp.status != 200:
+            return None
+        html = resp.text
+    soup = BeautifulSoup(html, "lxml")
 
     containers = soup.select("div[data-lyrics-container='true']")
     if not containers:
@@ -237,6 +254,98 @@ def scrape_lyrics(url: str) -> str | None:
     return text or None
 
 
+def _slugify(text: str, capitalize_first: bool) -> str:
+    s = unicodedata.normalize("NFKD", str(text))
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    s = s.replace("&", "and").replace("'", "").replace("\u2019", "")
+    s = re.sub(r"[^A-Za-z0-9 ]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    if not s:
+        return ""
+    parts = s.split(" ")
+    if capitalize_first:
+        return "-".join([parts[0].capitalize()] + [p.lower() for p in parts[1:]])
+    return "-".join(p.lower() for p in parts)
+
+
+def slug_candidates(title: str, artist: str) -> list[str]:
+    """Genius song-page URLs guessed directly from artist and title.
+
+    Genius URLs are deterministic (`/Artist-title-lyrics`), so the page can be
+    reached without the search API. This matters because the API enforces a quota
+    that a full 32k-song run exhausts, after which every search returns 429 while
+    song pages continue to serve normally.
+
+    Guessing is only safe because the result is verified against the page's own
+    <title> before being accepted; see :func:`verify_page`.
+    """
+    primary = normalize_artist(artist)
+    variants = title_variants(title)
+    urls: list[str] = []
+    for t in variants[:3]:
+        for a in {primary, _slugify(str(artist).split("Featuring")[0], False)}:
+            if not a or not t:
+                continue
+            url = f"https://genius.com/{_slugify(a, True)}-{_slugify(t, False)}-lyrics"
+            if url not in urls:
+                urls.append(url)
+    return urls
+
+
+_TITLE_TAG = re.compile(r"<title>([^<]*)</title>", re.IGNORECASE)
+
+
+def verify_page(html: str, title: str, artist: str) -> tuple[float, float, str, str] | None:
+    """Check a guessed page really is the song we wanted.
+
+    The page <title> is formatted "Artist – Title Lyrics | Genius Lyrics", which is
+    enough to apply the same similarity thresholds used for API matches.
+    """
+    m = _TITLE_TAG.search(html)
+    if not m:
+        return None
+    raw = m.group(1)
+    raw = re.sub(r"\s*\|\s*Genius.*$", "", raw)
+    raw = re.sub(r"\s*Lyrics\s*$", "", raw, flags=re.IGNORECASE)
+    parts = re.split(r"\s+[\u2013\u2014-]\s+", raw, maxsplit=1)
+    if len(parts) != 2:
+        return None
+    got_artist, got_title = parts[0].strip(), parts[1].strip()
+
+    ts = _title_score(title_variants(title), got_title)
+    fake_hit = {"primary_artist": {"name": got_artist}, "artist_names": got_artist}
+    as_ = _artist_score(normalize_artist(artist), fake_hit)
+    return ts, as_, got_title, got_artist
+
+
+def match_via_slug(title: str, artist: str) -> dict | None:
+    """API-free fallback: guess the URL, fetch it, and verify before accepting."""
+    for url in slug_candidates(title, artist):
+        resp = get(url, namespace="genius_page", headers={"Accept": "text/html"})
+        if resp.status != 200:
+            continue
+        checked = verify_page(resp.text, title, artist)
+        if not checked:
+            continue
+        ts, as_, got_title, got_artist = checked
+        if ts >= TIER_A["title"] and as_ >= TIER_A["artist"]:
+            tier = "A-slug"
+        elif ts >= TIER_B["title"] and as_ >= TIER_B["artist"]:
+            tier = "B-slug"
+        else:
+            continue
+        return {
+            "url": url,
+            "title": got_title,
+            "artist_names": got_artist,
+            "html": resp.text,
+            "title_similarity": round(ts, 3),
+            "artist_similarity": round(as_, 3),
+            "tier": tier,
+        }
+    return None
+
+
 def looks_instrumental(text: str) -> bool:
     stripped = _SECTION.sub("", text).strip()
     return len(stripped) < 60 or "instrumental" in text.lower()[:200]
@@ -254,13 +363,18 @@ def is_probably_english(text: str) -> bool:
     return (hits / len(words)) > 0.06 and ascii_ratio > 0.85
 
 
-def fetch_one(song, token: str) -> dict:
+def fetch_one(song, token: str, use_api: bool = True) -> dict:
     cached = _cache_file(song.song_id)
     if cached.exists():
         rec = json.loads(cached.read_text())
         return {k: v for k, v in rec.items() if k != "lyrics"}
 
-    hits = search_genius(song.title_display, song.artist_display, token)
+    try:
+        hits = search_genius(song.title_display, song.artist_display, token, use_api)
+    except RuntimeError:
+        # Search quota exhausted or the API is unreachable; the slug route below
+        # does not touch the API at all, so keep going rather than losing the song.
+        hits = []
     match, ts, as_, tier = pick_match(hits, song.title_display, song.artist_display)
 
     rec = {
@@ -283,16 +397,34 @@ def fetch_one(song, token: str) -> dict:
         "retrieved_at": datetime.now(timezone.utc).isoformat(),
     }
 
+    text = None
     if match:
         text = scrape_lyrics(match["url"])
-        if text:
-            rec["has_lyrics"] = True
-            rec["n_chars"] = len(text)
-            rec["n_words"] = len(re.findall(r"[\w']+", _SECTION.sub(" ", text)))
-            rec["is_instrumental"] = looks_instrumental(text)
-            rec["is_english"] = is_probably_english(text)
-            cached.write_text(json.dumps({**rec, "lyrics": text}))
-            return rec
+
+    if text is None:
+        slug = match_via_slug(song.title_display, song.artist_display)
+        if slug:
+            text = scrape_lyrics(slug["url"], html=slug["html"])
+            if text:
+                rec.update(
+                    matched=True,
+                    match_tier=slug["tier"],
+                    genius_url=slug["url"],
+                    genius_title=slug["title"],
+                    genius_artist=slug["artist_names"],
+                    title_similarity=slug["title_similarity"],
+                    artist_similarity=slug["artist_similarity"],
+                    source="genius-slug",
+                )
+
+    if text:
+        rec["has_lyrics"] = True
+        rec["n_chars"] = len(text)
+        rec["n_words"] = len(re.findall(r"[\w']+", _SECTION.sub(" ", text)))
+        rec["is_instrumental"] = looks_instrumental(text)
+        rec["is_english"] = is_probably_english(text)
+        cached.write_text(json.dumps({**rec, "lyrics": text}))
+        return rec
 
     cached.write_text(json.dumps({**rec, "lyrics": None}))
     return rec
@@ -330,8 +462,15 @@ def rebuild_index_from_cache() -> pd.DataFrame:
     return df
 
 
-def run(limit: int | None = None, sample: str = "top", workers: int = 4) -> pd.DataFrame:
-    token = env("GENIUS_ACCESS_TOKEN", required=True)
+def run(
+    limit: int | None = None,
+    sample: str = "top",
+    workers: int = 4,
+    use_api: bool = True,
+) -> pd.DataFrame:
+    token = env("GENIUS_ACCESS_TOKEN", required=True) if use_api else ""
+    if not use_api:
+        print("API search disabled; using verified slug URLs only.")
     songs = pd.read_parquet(DERIVED / "songs_weighted.parquet")
 
     if limit:
@@ -349,7 +488,7 @@ def run(limit: int | None = None, sample: str = "top", workers: int = 4) -> pd.D
 
     def work(song):
         try:
-            return fetch_one(song, token)
+            return fetch_one(song, token, use_api)
         except Exception as exc:  # noqa: BLE001 - one bad song must not kill a long run
             return {
                 "song_id": song.song_id,
@@ -394,5 +533,9 @@ if __name__ == "__main__":
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--sample", choices=["top", "stratified"], default="top")
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--no-api", action="store_true",
+                    help="Skip the search API entirely and use verified slug URLs. "
+                         "Use when the API quota is exhausted (HTTP 429).")
     args = ap.parse_args()
-    run(limit=args.limit, sample=args.sample, workers=args.workers)
+    run(limit=args.limit, sample=args.sample, workers=args.workers,
+        use_api=not args.no_api)
