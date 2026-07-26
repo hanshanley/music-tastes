@@ -1,13 +1,13 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 18:40 UTC._
+_Generated 2026-07-26 19:13 UTC._
 
 ## Summary
 
 | Question | Answer | Confidence |
 |---|---|---|
 | Are fewer hits about love/relationships? | **No.** Exposure-weighted share is flat at 65–76% across seven decades. | Good — but note the unweighted series declines and fails the coverage check, so the two views differ. |
-| Among relationship songs, are more about *not needing* one? | **Yes**, rising roughly +1.4 points per decade after correcting for aggregation bias (raw +2.7 was inflated). | **Strongest finding.** Survives coverage, genre, era and lyric-length checks; rises within every lyric-length stratum. |
+| Among relationship songs, are more about *not needing* one? | **Yes** — the *direction* is the strongest finding here, ~+1.4 points/decade after correcting for aggregation bias. But the *level* is not quotable: it ranges 0.8%–14.8% purely on how the question is worded. | Direction: strong (survives coverage, genre, era, length, and 4 of 5 paraphrases). Level: unreliable. |
 | Are the lyrics getting sadder? | **Not demonstrable.** Word-norm lexicons say yes; a context-aware model on the same songs finds no trend (p=0.76). | Weak — the result depends entirely on which method you use. |
 | Is the music getting sadder? | **No usable evidence.** Essentia's happy *and* sad scores both fall, which indicates classifier drift. Minor-key share doubles but ~52% is genre mix and it vanishes post-1991. | Weak. |
 | Are songs getting faster or slower? | **No change.** Tempo is flat (tau −0.12, p=0.15). | Good. |
@@ -443,6 +443,22 @@ Unlike lyric length and valence — where length is a mediator and controlling i
 - Chunk-adjusted: **+0.0141/decade** (p=1.8e-09) — 48% attenuation
 
 The trend nonetheless rises inside **every** fixed chunk-count stratum (short (1-4 chunks) n=2345, rho +0.067; medium (5-7) n=1917, rho +0.110; long (8+) n=762, rho +0.218), including short songs where the bias cannot operate (2% in the 1950s to 10% in the 2020s). So the direction is solid and the **adjusted figure of about +1.4 points per decade should be read as the headline**, not the raw +2.7.
+
+### Does the result depend on how the question was worded?
+
+The independence finding rests on one sentence handed to a zero-shot model — *"The singer does not need this person and will be fine without them."* Zero-shot classifiers are phrasing-sensitive, so four paraphrases were scored on the same 1,380-song year-balanced sample.
+
+| Phrasing | Mean share | Kendall tau | p |
+|---|---|---|---|
+| `original` | 12.3% | +0.457 | 2e-07 |
+| `better_alone` | 0.8% | +0.035 | 0.72 |
+| `self_sufficient` | 6.7% | +0.316 | 0.00052 |
+| `rejecting` | 14.8% | +0.475 | 4.5e-08 |
+| `no_need_love` | 4.0% | +0.365 | 8.6e-05 |
+
+**Direction is robust: all five paraphrases give a positive trend and 4 of 5 are significant.** The exception, `better_alone`, fires on only 0.8% of songs — too strict a claim to have any statistical power — so it is degenerate rather than contradictory. Per-song scores correlate 0.31–0.76 across phrasings.
+
+**But the absolute level is not robust.** Mean share ranges from 0.8% to 14.8% depending purely on wording. So *"the share of love songs about not needing a partner rose"* is supported; *"19% of love songs are about not needing a partner"* is **not** a fact about music, it is a fact about one sentence. Quote the trend, not the level.
 
 ### Non-English songs — ruled out
 

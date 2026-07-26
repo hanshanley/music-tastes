@@ -133,11 +133,17 @@ sources that were evaluated and rejected.
 
 ## Status
 
-**Robust, with a corrected magnitude:** the "I don't need you" stance among
-relationship songs rises in every decade and inside every lyric-length stratum. But
-Method B's chunk-**max** aggregation is inflated by lyric length (lyrics doubled;
-ρ(year, chunks)=+0.57), and that is an estimator artifact rather than a property of
-the music. Adjusting for it halves the slope: **+1.4 points per decade, not +2.7**.
+**Robust in direction, not in level.** The "I don't need you" stance among
+relationship songs rises inside every lyric-length stratum, survives coverage, genre
+and era controls, and replicates across 4 of 5 reworded hypotheses (the 5th fires on
+0.8% of songs and has no power). Two caveats matter:
+
+- Method B's chunk-**max** aggregation is inflated by lyric length (lyrics doubled;
+  ρ(year, chunks)=+0.57) — an estimator artifact, not music. Adjusting halves the
+  slope: **+1.4 points per decade, not +2.7**.
+- The *absolute share* ranges 0.8%–14.8% depending purely on how the hypothesis is
+  worded. **Quote the trend, never the level.**
+
 Relationship share itself is flat.
 
 **Not robust — reported with the caveat:** word-average lyric valence and joy. On an

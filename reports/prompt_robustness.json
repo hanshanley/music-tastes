@@ -1,0 +1,136 @@
+{
+  "threshold": 0.5,
+  "n_songs": 1380,
+  "per_variant": {
+    "original": {
+      "n": 1380,
+      "kendall_tau": 0.4569,
+      "p_value": 2.0499532704403686e-07,
+      "significant": true,
+      "positive": true
+    },
+    "better_alone": {
+      "n": 1380,
+      "kendall_tau": 0.0352,
+      "p_value": 0.722086939799093,
+      "significant": false,
+      "positive": true
+    },
+    "self_sufficient": {
+      "n": 1380,
+      "kendall_tau": 0.316,
+      "p_value": 0.0005186279485887813,
+      "significant": true,
+      "positive": true
+    },
+    "rejecting": {
+      "n": 1380,
+      "kendall_tau": 0.4755,
+      "p_value": 4.5287750946071965e-08,
+      "significant": true,
+      "positive": true
+    },
+    "no_need_love": {
+      "n": 1380,
+      "kendall_tau": 0.3655,
+      "p_value": 8.584911310579799e-05,
+      "significant": true,
+      "positive": true
+    }
+  },
+  "by_decade": {
+    "original": {
+      "1950": 0.075,
+      "1960": 0.055,
+      "1970": 0.065,
+      "1980": 0.085,
+      "1990": 0.105,
+      "2000": 0.22,
+      "2010": 0.21,
+      "2020": 0.1714
+    },
+    "better_alone": {
+      "1950": 0.0,
+      "1960": 0.015,
+      "1970": 0.005,
+      "1980": 0.01,
+      "1990": 0.005,
+      "2000": 0.015,
+      "2010": 0.01,
+      "2020": 0.0071
+    },
+    "self_sufficient": {
+      "1950": 0.05,
+      "1960": 0.035,
+      "1970": 0.025,
+      "1980": 0.07,
+      "1990": 0.04,
+      "2000": 0.12,
+      "2010": 0.125,
+      "2020": 0.0714
+    },
+    "rejecting": {
+      "1950": 0.0,
+      "1960": 0.08,
+      "1970": 0.075,
+      "1980": 0.15,
+      "1990": 0.16,
+      "2000": 0.28,
+      "2010": 0.23,
+      "2020": 0.2071
+    },
+    "no_need_love": {
+      "1950": 0.0,
+      "1960": 0.01,
+      "1970": 0.02,
+      "1980": 0.04,
+      "1990": 0.035,
+      "2000": 0.065,
+      "2010": 0.085,
+      "2020": 0.0643
+    }
+  },
+  "inter_variant_spearman": {
+    "original": {
+      "original": 1.0,
+      "better_alone": 0.42,
+      "self_sufficient": 0.761,
+      "rejecting": 0.639,
+      "no_need_love": 0.75
+    },
+    "better_alone": {
+      "original": 0.42,
+      "better_alone": 1.0,
+      "self_sufficient": 0.308,
+      "rejecting": 0.701,
+      "no_need_love": 0.553
+    },
+    "self_sufficient": {
+      "original": 0.761,
+      "better_alone": 0.308,
+      "self_sufficient": 1.0,
+      "rejecting": 0.477,
+      "no_need_love": 0.678
+    },
+    "rejecting": {
+      "original": 0.639,
+      "better_alone": 0.701,
+      "self_sufficient": 0.477,
+      "rejecting": 1.0,
+      "no_need_love": 0.688
+    },
+    "no_need_love": {
+      "original": 0.75,
+      "better_alone": 0.553,
+      "self_sufficient": 0.678,
+      "rejecting": 0.688,
+      "no_need_love": 1.0
+    }
+  },
+  "all_positive": true,
+  "all_significant": false,
+  "tau_range": [
+    0.0352,
+    0.4755
+  ]
+}

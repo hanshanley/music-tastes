@@ -139,10 +139,11 @@ def run() -> None:
         "| Are fewer hits about love/relationships? | **No.** Exposure-weighted share is "
         "flat at 65–76% across seven decades. | Good — but note the unweighted series "
         "declines and fails the coverage check, so the two views differ. |",
-        "| Among relationship songs, are more about *not needing* one? | **Yes**, rising "
-        "roughly +1.4 points per decade after correcting for aggregation bias (raw "
-        "+2.7 was inflated). | **Strongest finding.** Survives coverage, genre, era and "
-        "lyric-length checks; rises within every lyric-length stratum. |",
+        "| Among relationship songs, are more about *not needing* one? | **Yes** — the "
+        "*direction* is the strongest finding here, ~+1.4 points/decade after "
+        "correcting for aggregation bias. But the *level* is not quotable: it ranges "
+        "0.8%–14.8% purely on how the question is worded. | Direction: strong (survives "
+        "coverage, genre, era, length, and 4 of 5 paraphrases). Level: unreliable. |",
         "| Are the lyrics getting sadder? | **Not demonstrable.** Word-norm lexicons say "
         "yes; a context-aware model on the same songs finds no trend (p=0.76). | Weak — "
         "the result depends entirely on which method you use. |",
@@ -522,6 +523,49 @@ def run() -> None:
                 "as the headline**, not the raw +2.7.",
                 "",
             ]
+
+        pr_path = REPORTS / "prompt_robustness.json"
+        if pr_path.exists():
+            pr = json.loads(pr_path.read_text())
+            pv = pr.get("per_variant", {})
+            if pv:
+                n_sig = sum(1 for v in pv.values() if v["significant"])
+                lines += [
+                    "### Does the result depend on how the question was worded?",
+                    "",
+                    "The independence finding rests on one sentence handed to a "
+                    "zero-shot model — *\"The singer does not need this person and will "
+                    "be fine without them.\"* Zero-shot classifiers are phrasing-"
+                    "sensitive, so four paraphrases were scored on the same "
+                    f"{pr.get('n_songs', 0):,}-song year-balanced sample.",
+                    "",
+                    "| Phrasing | Mean share | Kendall tau | p |",
+                    "|---|---|---|---|",
+                ]
+                for key, v in pv.items():
+                    dec = pr["by_decade"].get(key, {})
+                    mean_share = sum(dec.values()) / len(dec) if dec else float("nan")
+                    lines.append(
+                        f"| `{key}` | {mean_share:.1%} | {v['kendall_tau']:+.3f} | "
+                        f"{v['p_value']:.2g} |"
+                    )
+                lines += [
+                    "",
+                    f"**Direction is robust: all five paraphrases give a positive trend "
+                    f"and {n_sig} of {len(pv)} are significant.** The exception, "
+                    "`better_alone`, fires on only 0.8% of songs — too strict a claim "
+                    "to have any statistical power — so it is degenerate rather than "
+                    "contradictory. Per-song scores correlate 0.31–0.76 across "
+                    "phrasings.",
+                    "",
+                    "**But the absolute level is not robust.** Mean share ranges from "
+                    "0.8% to 14.8% depending purely on wording. So *\"the share of love "
+                    "songs about not needing a partner rose\"* is supported; *\"19% of "
+                    "love songs are about not needing a partner\"* is **not** a fact "
+                    "about music, it is a fact about one sentence. Quote the trend, not "
+                    "the level.",
+                    "",
+                ]
 
         lang = valid.get("language_robustness", {})
         if "all_songs" in lang:
