@@ -1,6 +1,6 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 17:06 UTC._
+_Generated 2026-07-26 17:08 UTC._
 
 ## What this measures
 
@@ -55,14 +55,14 @@ Lyric valence (NRC VAD, 0=negative 1=positive)  (higher = happier)
 
 | Decade | n | Exposure-weighted mean | 95% CI |
 |---|---|---|---|
-| 1950s | 110 | 64.6% | 62.7% – 66.7% |
-| 1960s | 959 | 63.1% | 62.5% – 63.8% |
+| 1950s | 110 | 64.6% | 62.7% – 66.9% |
+| 1960s | 959 | 63.1% | 62.4% – 63.9% |
 | 1970s | 808 | 63.4% | 62.8% – 64.1% |
-| 1980s | 639 | 62.1% | 61.3% – 62.7% |
+| 1980s | 639 | 62.1% | 61.3% – 62.8% |
 | 1990s | 628 | 62.8% | 62.1% – 63.5% |
 | 2000s | 678 | 60.3% | 59.6% – 61.0% |
-| 2010s | 950 | 59.7% | 59.1% – 60.5% |
-| 2020s | 892 | 58.7% | 57.8% – 59.4% |
+| 2010s | 950 | 59.7% | 59.0% – 60.4% |
+| 2020s | 892 | 58.7% | 57.8% – 59.5% |
 
 ![lyric_valence](figures/lyric_valence_decade.png)
 
@@ -82,10 +82,10 @@ Share of words with a sadness association (NRC EmoLex)  (higher = sadder)
 | 1950s | 108 | 1.7% | 1.1% – 2.4% |
 | 1960s | 959 | 2.2% | 2.0% – 2.5% |
 | 1970s | 807 | 1.9% | 1.7% – 2.1% |
-| 1980s | 639 | 2.1% | 1.9% – 2.4% |
+| 1980s | 639 | 2.1% | 1.9% – 2.5% |
 | 1990s | 628 | 1.6% | 1.4% – 1.8% |
 | 2000s | 678 | 1.9% | 1.6% – 2.2% |
-| 2010s | 949 | 1.9% | 1.7% – 2.1% |
+| 2010s | 949 | 1.9% | 1.7% – 2.2% |
 | 2020s | 892 | 2.2% | 2.0% – 2.5% |
 
 ![lyric_sadness](figures/lyric_sadness_decade.png)
@@ -103,11 +103,11 @@ Share of words with a joy association (NRC EmoLex)  (higher = happier)
 
 | Decade | n | Exposure-weighted mean | 95% CI |
 |---|---|---|---|
-| 1950s | 108 | 4.7% | 3.7% – 5.9% |
+| 1950s | 108 | 4.7% | 3.8% – 5.9% |
 | 1960s | 959 | 5.3% | 5.0% – 5.7% |
-| 1970s | 807 | 5.0% | 4.6% – 5.4% |
+| 1970s | 807 | 5.0% | 4.5% – 5.4% |
 | 1980s | 639 | 4.0% | 3.7% – 4.4% |
-| 1990s | 628 | 4.2% | 3.8% – 4.6% |
+| 1990s | 628 | 4.2% | 3.8% – 4.5% |
 | 2000s | 678 | 3.0% | 2.7% – 3.4% |
 | 2010s | 949 | 3.0% | 2.8% – 3.4% |
 | 2020s | 892 | 2.5% | 2.2% – 2.8% |
@@ -127,14 +127,14 @@ Lyric valence (VADER)  (higher = happier)
 
 | Decade | n | Exposure-weighted mean | 95% CI |
 |---|---|---|---|
-| 1950s | 110 | 117.3% | 96.1% – 139.3% |
-| 1960s | 957 | 90.5% | 82.4% – 98.8% |
-| 1970s | 805 | 84.1% | 75.7% – 92.6% |
-| 1980s | 639 | 73.5% | 64.4% – 82.6% |
-| 1990s | 628 | 72.7% | 64.1% – 81.2% |
-| 2000s | 678 | 47.0% | 38.3% – 55.5% |
-| 2010s | 949 | 39.0% | 29.8% – 47.9% |
-| 2020s | 892 | 23.8% | 14.0% – 34.1% |
+| 1950s | 110 | 117.3% | 95.6% – 137.2% |
+| 1960s | 957 | 90.5% | 82.5% – 98.5% |
+| 1970s | 805 | 84.1% | 74.9% – 92.0% |
+| 1980s | 639 | 73.5% | 64.5% – 82.3% |
+| 1990s | 628 | 72.7% | 63.5% – 81.1% |
+| 2000s | 678 | 47.0% | 38.6% – 56.0% |
+| 2010s | 949 | 39.0% | 30.2% – 48.3% |
+| 2020s | 892 | 23.8% | 14.5% – 34.7% |
 
 ![vader_valence](figures/vader_valence_decade.png)
 
@@ -144,21 +144,21 @@ Lyric valence (VADER)  (higher = happier)
 
 Share of hits that are about a relationship  (higher = more love songs)
 
-- Direction: **rising, not significant** (Kendall tau = +0.027, p = 0.74)
-- Change per decade: +0.0027
-- First 5 years 0.689 -> last 5 years 0.705
+- Direction: **rising, not significant** (Kendall tau = +0.141, p = 0.087)
+- Change per decade: +0.0063
+- First 5 years 0.703 -> last 5 years 0.765
 - Survives complete-case check: yes
 
 | Decade | n | Exposure-weighted mean | 95% CI |
 |---|---|---|---|
-| 1950s | 70 | 62.3% | 45.3% – 80.8% |
-| 1960s | 590 | 68.9% | 63.1% – 74.3% |
-| 1970s | 469 | 61.9% | 56.2% – 68.0% |
-| 1980s | 395 | 74.3% | 68.9% – 79.9% |
-| 1990s | 392 | 76.5% | 71.2% – 81.2% |
-| 2000s | 426 | 70.2% | 63.5% – 76.4% |
-| 2010s | 623 | 69.2% | 62.2% – 75.2% |
-| 2020s | 545 | 67.6% | 58.6% – 75.7% |
+| 1950s | 158 | 69.6% | 57.7% – 80.6% |
+| 1960s | 1279 | 67.5% | 63.7% – 71.1% |
+| 1970s | 1136 | 64.6% | 60.9% – 68.5% |
+| 1980s | 962 | 76.1% | 72.6% – 79.2% |
+| 1990s | 882 | 73.5% | 69.1% – 77.1% |
+| 2000s | 936 | 69.8% | 65.8% – 73.8% |
+| 2010s | 1301 | 70.5% | 66.1% – 74.4% |
+| 2020s | 1183 | 73.3% | 68.1% – 78.7% |
 
 ![relationship_share](figures/relationship_share_decade.png)
 
@@ -168,21 +168,21 @@ Share of hits that are about a relationship  (higher = more love songs)
 
 Share of relationship songs taking an 'I don't need you' stance  (higher = more independence)
 
-- Direction: **rising, significant** (Kendall tau = +0.403, p = 1e-06)
-- Change per decade: +0.0211
-- First 5 years 0.020 -> last 5 years 0.125
+- Direction: **rising, significant** (Kendall tau = +0.508, p = 6.7e-10)
+- Change per decade: +0.0218
+- First 5 years 0.026 -> last 5 years 0.139
 - Survives complete-case check: yes
 
 | Decade | n | Exposure-weighted mean | 95% CI |
 |---|---|---|---|
-| 1950s | 50 | 0.0% | 0.0% – 0.0% |
-| 1960s | 415 | 4.9% | 2.3% – 7.9% |
-| 1970s | 268 | 3.7% | 1.4% – 6.8% |
-| 1980s | 287 | 8.7% | 4.9% – 13.4% |
-| 1990s | 269 | 7.9% | 3.9% – 12.5% |
-| 2000s | 273 | 17.6% | 11.3% – 24.7% |
-| 2010s | 373 | 17.8% | 12.4% – 23.7% |
-| 2020s | 293 | 16.6% | 9.5% – 25.2% |
+| 1950s | 114 | 2.2% | 0.0% – 7.2% |
+| 1960s | 875 | 4.3% | 2.7% – 6.1% |
+| 1970s | 690 | 4.7% | 2.8% – 6.8% |
+| 1980s | 705 | 6.5% | 4.2% – 8.9% |
+| 1990s | 599 | 8.0% | 5.3% – 10.9% |
+| 2000s | 593 | 14.4% | 10.6% – 18.0% |
+| 2010s | 781 | 19.3% | 15.2% – 24.0% |
+| 2020s | 667 | 15.1% | 10.5% – 20.2% |
 
 ![independence_share](figures/independence_share_decade.png)
 
@@ -192,21 +192,21 @@ Share of relationship songs taking an 'I don't need you' stance  (higher = more 
 
 Share of relationship songs about heartbreak/wanting an ex back  (higher = more heartbreak)
 
-- Direction: **rising, not significant** (Kendall tau = +0.052, p = 0.53)
-- Change per decade: +0.0057
-- First 5 years 0.323 -> last 5 years 0.377
+- Direction: **rising, not significant** (Kendall tau = +0.098, p = 0.23)
+- Change per decade: +0.0061
+- First 5 years 0.312 -> last 5 years 0.408
 - Survives complete-case check: yes
 
 | Decade | n | Exposure-weighted mean | 95% CI |
 |---|---|---|---|
-| 1950s | 50 | 19.9% | 7.7% – 34.5% |
-| 1960s | 415 | 37.6% | 32.2% – 43.9% |
-| 1970s | 268 | 27.0% | 20.6% – 34.2% |
-| 1980s | 287 | 35.4% | 27.6% – 42.7% |
-| 1990s | 269 | 35.9% | 28.6% – 44.2% |
-| 2000s | 273 | 35.0% | 26.9% – 43.5% |
-| 2010s | 373 | 27.5% | 19.6% – 35.9% |
-| 2020s | 293 | 39.3% | 27.4% – 51.2% |
+| 1950s | 114 | 24.1% | 14.8% – 34.6% |
+| 1960s | 875 | 36.6% | 32.5% – 40.8% |
+| 1970s | 690 | 28.5% | 24.0% – 32.9% |
+| 1980s | 705 | 34.9% | 30.3% – 39.3% |
+| 1990s | 599 | 37.3% | 31.6% – 43.0% |
+| 2000s | 593 | 38.0% | 32.5% – 43.4% |
+| 2010s | 781 | 29.5% | 24.3% – 35.0% |
+| 2020s | 667 | 41.2% | 33.7% – 48.8% |
 
 ![heartbreak_share](figures/heartbreak_share_decade.png)
 
@@ -216,45 +216,141 @@ Share of relationship songs about heartbreak/wanting an ex back  (higher = more 
 
 Share of relationship songs about devotion/commitment  (higher = more devotion)
 
-- Direction: **falling, not significant** (Kendall tau = -0.105, p = 0.2)
-- Change per decade: -0.0092
-- First 5 years 0.165 -> last 5 years 0.158
+- Direction: **falling, significant** (Kendall tau = -0.213, p = 0.0096)
+- Change per decade: -0.0123
+- First 5 years 0.202 -> last 5 years 0.124
 - Survives complete-case check: yes
 
 | Decade | n | Exposure-weighted mean | 95% CI |
 |---|---|---|---|
-| 1950s | 50 | 23.0% | 10.3% – 37.7% |
-| 1960s | 415 | 22.2% | 17.3% – 27.6% |
-| 1970s | 268 | 10.1% | 6.0% – 14.6% |
-| 1980s | 287 | 16.8% | 11.3% – 22.5% |
-| 1990s | 269 | 32.7% | 24.8% – 40.5% |
-| 2000s | 273 | 15.8% | 10.2% – 22.0% |
-| 2010s | 373 | 15.3% | 8.8% – 22.6% |
-| 2020s | 293 | 14.2% | 5.1% – 23.8% |
+| 1950s | 114 | 26.1% | 15.3% – 36.5% |
+| 1960s | 875 | 21.4% | 18.3% – 25.0% |
+| 1970s | 690 | 15.6% | 12.2% – 19.1% |
+| 1980s | 705 | 20.9% | 17.4% – 24.5% |
+| 1990s | 599 | 27.8% | 23.0% – 32.9% |
+| 2000s | 593 | 17.2% | 13.4% – 21.5% |
+| 2010s | 781 | 14.3% | 10.1% – 18.5% |
+| 2020s | 667 | 11.7% | 6.7% – 17.1% |
 
 ![devotion_share](figures/devotion_share_decade.png)
 
 ![devotion_share yearly](figures/devotion_share.png)
 
-### lyric_length
+### bpm
 
-Words per song (drives a third of the valence trend)  (higher = wordier)
+Tempo in beats per minute (Essentia via AcousticBrainz)  (higher = faster)
 
-- Direction: **rising, significant** (Kendall tau = +0.673, p = 3e-16)
-- Change per decade: +49.9126
-- First 5 years 181.615 -> last 5 years 387.130
+- Direction: **falling, not significant** (Kendall tau = -0.115, p = 0.17)
+- Change per decade: -0.5305
+- First 5 years 116.694 -> last 5 years 119.539
 - Survives complete-case check: yes
 
 | Decade | n | Exposure-weighted mean | 95% CI |
 |---|---|---|---|
-| 1950s | 184 | 18706.4% | 16758.8% – 20994.4% |
-| 1960s | 1505 | 19895.9% | 19055.9% – 20703.8% |
-| 1970s | 1230 | 25793.3% | 24780.2% – 26862.2% |
-| 1980s | 933 | 30021.7% | 29045.5% – 31031.7% |
-| 1990s | 844 | 41792.8% | 39775.4% – 43916.2% |
-| 2000s | 875 | 47255.8% | 45057.8% – 49269.8% |
-| 2010s | 1272 | 45697.8% | 43991.1% – 47498.9% |
-| 2020s | 1216 | 40356.4% | 38643.4% – 42074.0% |
+| 1950s | 46 | 11724.4% | 10929.6% – 12521.9% |
+| 1960s | 225 | 12170.8% | 11872.0% – 12464.6% |
+| 1970s | 284 | 12217.9% | 11944.3% – 12485.0% |
+| 1980s | 287 | 12105.6% | 11850.5% – 12333.6% |
+| 1990s | 311 | 11633.6% | 11373.6% – 11911.6% |
+| 2000s | 314 | 11813.2% | 11520.3% – 12105.5% |
+| 2010s | 303 | 12051.7% | 11775.9% – 12332.4% |
+| 2020s | 74 | 12331.1% | 11673.9% – 12988.2% |
+
+![bpm](figures/bpm_decade.png)
+
+![bpm yearly](figures/bpm.png)
+
+### minor_key_share
+
+Share of songs in a minor key (Essentia)  (higher = more minor-key)
+
+- Direction: **rising, significant** (Kendall tau = +0.394, p = 3.4e-06)
+- Change per decade: +0.0339
+- First 5 years 0.117 -> last 5 years 0.319
+- Survives complete-case check: yes
+
+| Decade | n | Exposure-weighted mean | 95% CI |
+|---|---|---|---|
+| 1950s | 46 | 11.4% | 3.6% – 21.1% |
+| 1960s | 225 | 19.5% | 14.3% – 24.8% |
+| 1970s | 284 | 22.4% | 17.5% – 27.3% |
+| 1980s | 287 | 23.6% | 18.6% – 28.6% |
+| 1990s | 311 | 33.0% | 27.6% – 38.6% |
+| 2000s | 314 | 41.1% | 35.5% – 47.0% |
+| 2010s | 302 | 28.9% | 23.8% – 33.9% |
+| 2020s | 74 | 35.0% | 23.8% – 46.7% |
+
+![minor_key_share](figures/minor_key_share_decade.png)
+
+![minor_key_share yearly](figures/minor_key_share.png)
+
+### acoustic_mood_happy
+
+Essentia 'happy' mood probability  (higher = happier)
+
+- Direction: **falling, significant** (Kendall tau = -0.613, p = 5.1e-13)
+- Change per decade: -0.0443
+- First 5 years 0.643 -> last 5 years 0.344
+- Survives complete-case check: yes
+
+| Decade | n | Exposure-weighted mean | 95% CI |
+|---|---|---|---|
+| 1950s | 46 | 62.3% | 53.4% – 71.2% |
+| 1960s | 225 | 63.2% | 59.1% – 67.2% |
+| 1970s | 283 | 49.9% | 46.9% – 52.9% |
+| 1980s | 286 | 50.3% | 47.1% – 53.5% |
+| 1990s | 311 | 43.0% | 40.0% – 46.1% |
+| 2000s | 312 | 41.4% | 38.5% – 44.8% |
+| 2010s | 301 | 37.6% | 34.7% – 40.5% |
+| 2020s | 74 | 35.4% | 29.7% – 41.5% |
+
+![acoustic_mood_happy](figures/acoustic_mood_happy_decade.png)
+
+![acoustic_mood_happy yearly](figures/acoustic_mood_happy.png)
+
+### acoustic_mood_sad
+
+Essentia 'sad' mood probability  (higher = sadder)
+
+- Direction: **falling, significant** (Kendall tau = -0.328, p = 0.00011)
+- Change per decade: -0.0183
+- First 5 years 0.520 -> last 5 years 0.408
+- Survives complete-case check: yes
+
+| Decade | n | Exposure-weighted mean | 95% CI |
+|---|---|---|---|
+| 1950s | 46 | 52.0% | 44.1% – 60.6% |
+| 1960s | 225 | 44.3% | 41.2% – 47.6% |
+| 1970s | 283 | 43.4% | 40.8% – 46.0% |
+| 1980s | 286 | 35.9% | 33.8% – 38.3% |
+| 1990s | 311 | 38.7% | 36.5% – 41.2% |
+| 2000s | 312 | 32.5% | 30.3% – 35.0% |
+| 2010s | 301 | 35.5% | 33.0% – 37.9% |
+| 2020s | 74 | 41.9% | 36.5% – 47.3% |
+
+![acoustic_mood_sad](figures/acoustic_mood_sad_decade.png)
+
+![acoustic_mood_sad yearly](figures/acoustic_mood_sad.png)
+
+### lyric_length
+
+Words per song (drives a third of the valence trend)  (higher = wordier)
+
+- Direction: **rising, significant** (Kendall tau = +0.744, p = 1.5e-19)
+- Change per decade: +52.2368
+- First 5 years 134.458 -> last 5 years 366.481
+- Survives complete-case check: yes
+
+| Decade | n | Exposure-weighted mean | 95% CI |
+|---|---|---|---|
+| 1950s | 925 | 13047.9% | 12014.3% – 14115.8% |
+| 1960s | 6849 | 15469.5% | 15039.1% – 15863.0% |
+| 1970s | 5296 | 21090.8% | 20531.7% – 21664.7% |
+| 1980s | 4113 | 25580.5% | 24997.4% – 26170.4% |
+| 1990s | 3422 | 34974.8% | 33857.4% – 36097.2% |
+| 2000s | 3418 | 42511.4% | 41363.1% – 43745.2% |
+| 2010s | 4430 | 41404.9% | 40250.2% – 42464.5% |
+| 2020s | 4149 | 38149.4% | 36962.1% – 39270.1% |
 
 ![lyric_length](figures/lyric_length_decade.png)
 
