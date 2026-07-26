@@ -52,9 +52,9 @@ SOURCE_LYRICS = (
 def _missed_median_peak() -> int:
     """Median chart peak of songs we could not get lyrics for.
 
-    Computed rather than quoted: it moved from #66 to #59 as coverage grew, and a
-    stale figure in a claim about representativeness is exactly the kind of error
-    that erodes trust in the rest.
+    Computed rather than quoted. This figure shifted as lyric coverage grew, and a
+    stale number inside a claim about representativeness is exactly the kind of
+    error that erodes trust in everything around it.
     """
     idx = pd.read_parquet(DERIVED / "lyrics_index.parquet")[["song_id", "has_lyrics"]]
     songs = pd.read_parquet(DERIVED / "songs_weighted.parquet")[["song_id", "peak_rank"]]
@@ -122,13 +122,26 @@ class _Unit:
             return f"{value:.1%}"
         if self.kind == "count":
             return f"{value:,.0f}"
+        if self.kind == "decimal3":
+            return f"{value:.3f}"
         return f"{value:.1f}"
 
 
 _PERCENT = _Unit("", "percent")
+# Only genuine shares belong on a percent scale. VADER emits a signed compound-style
+# score rather than a proportion, so rendering it as a percentage produced "117.3%"
+# for a value of 1.17.
 _UNITS = {
     "bpm": _Unit(" (BPM)", "decimal"),
     "lyric_length": _Unit(" (words)", "count"),
+    "vader_valence": _Unit(" (VADER score)", "decimal"),
+    "lyric_valence": _Unit(" (0–1 valence)", "decimal3"),
+    # Essentia mood outputs are class probabilities, so a percent scale is valid,
+    # but the header has to say so or the reader cannot tell it from a share of songs.
+    "acoustic_mood_happy": _Unit(" (P(happy))", "percent"),
+    "acoustic_mood_sad": _Unit(" (P(sad))", "percent"),
+    "lyric_sadness": _Unit(" (share of words)", "percent"),
+    "lyric_joy": _Unit(" (share of words)", "percent"),
 }
 
 

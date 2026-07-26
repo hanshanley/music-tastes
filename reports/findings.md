@@ -1,6 +1,6 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 22:55 UTC._
+_Generated 2026-07-26 23:02 UTC._
 
 ## Summary
 
@@ -95,16 +95,16 @@ Lyric valence (NRC VAD, 0=negative 1=positive)  (higher = happier)
 - First 5 years 0.629 -> last 5 years 0.591
 - Survives complete-case check: yes
 
-| Decade | n | Exposure-weighted mean | 95% CI |
+| Decade | n | Exposure-weighted mean (0–1 valence) | 95% CI |
 |---|---|---|---|
-| 1950s | 110 | 64.6% | 62.8% – 66.9% |
-| 1960s | 959 | 63.1% | 62.5% – 63.8% |
-| 1970s | 808 | 63.4% | 62.8% – 64.1% |
-| 1980s | 639 | 62.1% | 61.3% – 62.8% |
-| 1990s | 628 | 62.8% | 62.1% – 63.4% |
-| 2000s | 678 | 60.3% | 59.6% – 60.9% |
-| 2010s | 950 | 59.7% | 59.0% – 60.4% |
-| 2020s | 892 | 58.7% | 57.9% – 59.5% |
+| 1950s | 110 | 0.646 | 0.628 – 0.669 |
+| 1960s | 959 | 0.631 | 0.625 – 0.638 |
+| 1970s | 808 | 0.634 | 0.628 – 0.641 |
+| 1980s | 639 | 0.621 | 0.613 – 0.628 |
+| 1990s | 628 | 0.628 | 0.621 – 0.634 |
+| 2000s | 678 | 0.603 | 0.596 – 0.609 |
+| 2010s | 950 | 0.597 | 0.590 – 0.604 |
+| 2020s | 892 | 0.587 | 0.579 – 0.595 |
 
 ![lyric_valence](figures/lyric_valence_decade.png)
 
@@ -119,7 +119,7 @@ Share of words with a sadness association (NRC EmoLex)  (higher = sadder)
 - First 5 years 0.022 -> last 5 years 0.021
 - Survives complete-case check: yes
 
-| Decade | n | Exposure-weighted mean | 95% CI |
+| Decade | n | Exposure-weighted mean (share of words) | 95% CI |
 |---|---|---|---|
 | 1950s | 108 | 1.7% | 1.1% – 2.4% |
 | 1960s | 959 | 2.2% | 2.0% – 2.5% |
@@ -143,7 +143,7 @@ Share of words with a joy association (NRC EmoLex)  (higher = happier)
 - First 5 years 0.048 -> last 5 years 0.027
 - Survives complete-case check: yes
 
-| Decade | n | Exposure-weighted mean | 95% CI |
+| Decade | n | Exposure-weighted mean (share of words) | 95% CI |
 |---|---|---|---|
 | 1950s | 108 | 4.7% | 3.7% – 5.9% |
 | 1960s | 959 | 5.3% | 5.0% – 5.7% |
@@ -167,16 +167,16 @@ Lyric valence (VADER)  (higher = happier)
 - First 5 years 0.987 -> last 5 years 0.251
 - Survives complete-case check: yes
 
-| Decade | n | Exposure-weighted mean | 95% CI |
+| Decade | n | Exposure-weighted mean (VADER score) | 95% CI |
 |---|---|---|---|
-| 1950s | 110 | 117.3% | 96.1% – 138.2% |
-| 1960s | 957 | 90.5% | 83.1% – 98.2% |
-| 1970s | 805 | 84.1% | 75.2% – 92.4% |
-| 1980s | 639 | 73.5% | 64.4% – 82.8% |
-| 1990s | 628 | 72.7% | 63.9% – 81.4% |
-| 2000s | 678 | 47.0% | 38.6% – 55.6% |
-| 2010s | 949 | 39.0% | 29.8% – 48.3% |
-| 2020s | 892 | 23.8% | 13.8% – 34.5% |
+| 1950s | 110 | 1.2 | 1.0 – 1.4 |
+| 1960s | 957 | 0.9 | 0.8 – 1.0 |
+| 1970s | 805 | 0.8 | 0.8 – 0.9 |
+| 1980s | 639 | 0.7 | 0.6 – 0.8 |
+| 1990s | 628 | 0.7 | 0.6 – 0.8 |
+| 2000s | 678 | 0.5 | 0.4 – 0.6 |
+| 2010s | 949 | 0.4 | 0.3 – 0.5 |
+| 2020s | 892 | 0.2 | 0.1 – 0.3 |
 
 ![vader_valence](figures/vader_valence_decade.png)
 
@@ -335,7 +335,7 @@ Essentia 'happy' mood probability  (higher = happier)
 - First 5 years 0.636 -> last 5 years 0.330
 - Survives complete-case check: yes
 
-| Decade | n | Exposure-weighted mean | 95% CI |
+| Decade | n | Exposure-weighted mean (P(happy)) | 95% CI |
 |---|---|---|---|
 | 1950s | 216 | 62.6% | 58.4% – 66.7% |
 | 1960s | 1027 | 62.4% | 60.4% – 64.3% |
@@ -359,7 +359,7 @@ Essentia 'sad' mood probability  (higher = sadder)
 - First 5 years 0.514 -> last 5 years 0.427
 - Survives complete-case check: yes
 
-| Decade | n | Exposure-weighted mean | 95% CI |
+| Decade | n | Exposure-weighted mean (P(sad)) | 95% CI |
 |---|---|---|---|
 | 1950s | 216 | 50.8% | 46.8% – 54.5% |
 | 1960s | 1027 | 43.9% | 42.4% – 45.6% |
