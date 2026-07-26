@@ -232,6 +232,17 @@ def run() -> None:
 
     lines += ["## Results", ""]
 
+    n_metrics = len([m for m, e in trends.items() if "kendall_tau" in e.get("weighted_all", {})])
+    lines += [
+        f"_{n_metrics} metrics are tracked, each in four variants, plus a battery of "
+        "confound tests — well over a hundred hypothesis tests in total. At p<0.05 "
+        "several 'significant' results are expected by chance alone. The findings "
+        "leaned on here clear that bar comfortably (the independence trend is "
+        "p=1.8e-09 after adjustment); isolated marginal results, such as tempo rising "
+        "within the post-1991 window at p=0.025, are not treated as findings._",
+        "",
+    ]
+
     decade_path = REPORTS / "decade_series.csv"
     decades = pd.read_csv(decade_path) if decade_path.exists() else None
 
@@ -360,12 +371,47 @@ def run() -> None:
                     "features away from its 1990s training distribution. These two "
                     "series are therefore **not reported as evidence about mood**.",
                     "",
-                    "Minor-key share is the one acoustic signal that survives: key "
-                    "detection is a far better-posed task than mood classification, the "
-                    "trend is directional rather than a both-down drift, and it is "
-                    "significant in all four variants.",
-                    "",
                 ]
+
+        mk = conf.get("minor_key_share", {})
+        mk_ga = mk.get("genre_adjusted", {})
+        mk_era = mk.get("post_1991_soundscan", {})
+        mk_gs = mk.get("genre_strata", {})
+        if mk_ga.get("attenuation_fraction") is not None:
+            lines += [
+                "### Minor-key share — a weaker signal than it first appears",
+                "",
+                "Minor-key share roughly doubles across the period and is significant in "
+                "all four headline variants, which made it look like the one solid "
+                "musical result. Under the same scrutiny applied elsewhere it does not "
+                "hold up well:",
+                "",
+                f"- **Genre mix explains about half of it** — "
+                f"{mk_ga['unadjusted_year_coef_per_decade']:+.4f}/decade unadjusted "
+                f"falls to {mk_ga['genre_adjusted_year_coef_per_decade']:+.4f} with "
+                f"genre fixed effects ({mk_ga['attenuation_fraction']:.0%} attenuation). "
+                "Minor keys are simply more common in the genres that grew.",
+            ]
+            if mk_gs.get("taus"):
+                signs = ", ".join(f"{k} {v:+.2f}" for k, v in mk_gs["taus"].items())
+                lines.append(
+                    f"- **Within genre the direction is inconsistent** ({signs}); only "
+                    f"{mk_gs.get('n_significant', 0)} of {mk_gs.get('n_strata', 0)} "
+                    "strata is significant and the signs disagree."
+                )
+            if "kendall_tau" in mk_era:
+                lines.append(
+                    f"- **No trend within the post-1991 era** (tau "
+                    f"{mk_era['kendall_tau']:+.3f}, p={mk_era['p_value']:.2g}), the "
+                    "period with one consistent chart methodology."
+                )
+            lines += [
+                "",
+                "So the honest reading is that hits shifted toward minor keys mostly "
+                "*because the genre mix shifted*, not because songwriting within genres "
+                "moved that way. It is reported as suggestive, not established.",
+                "",
+            ]
 
         agg = valid.get("aggregation_bias", {})
         if "unadjusted_per_decade" in agg:

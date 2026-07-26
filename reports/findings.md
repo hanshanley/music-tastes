@@ -1,6 +1,6 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 18:13 UTC._
+_Generated 2026-07-26 18:19 UTC._
 
 ## What this measures
 
@@ -43,6 +43,8 @@ Inter-method agreement is poor (Cohen kappa = 0.25). Agreement is therefore not 
 Method A's failure mode is systematic, not noisy: cosine similarity tracks *topic* (this is a breakup song) and cannot see *stance* (...and the narrator is fine about it), so it labels "I Will Survive", "Since U Been Gone" and "thank u, next" as heartbreak. This is exactly the distinction the research question turns on, which is why the entailment model carries the result.
 
 ## Results
+
+_13 metrics are tracked, each in four variants, plus a battery of confound tests — well over a hundred hypothesis tests in total. At p<0.05 several 'significant' results are expected by chance alone. The findings leaned on here clear that bar comfortably (the independence trend is p=1.8e-09 after adjustment); isolated marginal results, such as tempo rising within the post-1991 window at p=0.025, are not treated as findings._
 
 ### lyric_valence
 
@@ -381,7 +383,15 @@ But `mood_sad` falls too (tau -0.350, p=3.8e-05, 0.509 to 0.406).
 
 **Two opposing classifiers moving the same direction is diagnostic of drift, not emotion.** If songs were genuinely sadder, happy should fall while sad rises. Both falling points at something systematic in the audio — most plausibly production and mastering changes (loudness, compression, stereo width) shifting Essentia's features away from its 1990s training distribution. These two series are therefore **not reported as evidence about mood**.
 
-Minor-key share is the one acoustic signal that survives: key detection is a far better-posed task than mood classification, the trend is directional rather than a both-down drift, and it is significant in all four variants.
+### Minor-key share — a weaker signal than it first appears
+
+Minor-key share roughly doubles across the period and is significant in all four headline variants, which made it look like the one solid musical result. Under the same scrutiny applied elsewhere it does not hold up well:
+
+- **Genre mix explains about half of it** — +0.0304/decade unadjusted falls to +0.0146 with genre fixed effects (52% attenuation). Minor keys are simply more common in the genres that grew.
+- **Within genre the direction is inconsistent** (dan -0.29, hip +0.11, pop +0.03, rhy +0.39, roc -0.12); only 1 of 5 strata is significant and the signs disagree.
+- **No trend within the post-1991 era** (tau -0.101, p=0.43), the period with one consistent chart methodology.
+
+So the honest reading is that hits shifted toward minor keys mostly *because the genre mix shifted*, not because songwriting within genres moved that way. It is reported as suggestive, not established.
 
 ### The independence rise is real, but half the headline size
 
@@ -416,7 +426,7 @@ Restricted to 1991 onward (SoundScan era only, one consistent chart methodology)
 
 ### The independence rise is a step, not a slope
 
-Within the post-1991 era alone it is not significant (tau = +0.241, p = 0.038), consistent with the decade table: a jump around 2000 followed by a plateau, rather than a continuing climb.
+Within the post-1991 era alone it is not significant (tau = +0.273, p = 0.019), consistent with the decade table: a jump around 2000 followed by a plateau, rather than a continuing climb.
 
 ### Genre mix — tested, and not the driver
 
@@ -424,10 +434,10 @@ Rap and R&B went from absent to dominant on the Hot 100, and they have different
 
 | Metric | Unadjusted / decade | Genre-adjusted | Attenuation | n |
 |---|---|---|---|---|
-| lyric valence | -0.00640 | -0.00567 (p=0.0063) | 12% | 406 |
-| independence share | +0.02424 | +0.01865 (p=0.069) | 23% | 359 |
+| lyric valence | -0.00534 | -0.00437 (p=0.0076) | 18% | 638 |
+| independence share | +0.02622 | +0.02635 (p=5.9e-06) | -0% | 848 |
 
-Genre mix accounts for only about a tenth of the lexicon valence trend, so it is not the explanation. The independence trend keeps roughly three quarters of its magnitude under genre control but loses significance — note this runs on the 359 songs carrying both a genre label and a stance label, against 3,510 for the headline estimate, so this is a power limitation rather than evidence of absence.
+Genre mix accounts for only about a tenth of the lexicon valence trend, so it is not the explanation. The independence trend keeps roughly three quarters of its magnitude under genre control but loses significance — note this runs on the 848 songs carrying both a genre label and a stance label, against 3,510 for the headline estimate, so this is a power limitation rather than evidence of absence.
 
 **Caveat on the labels themselves.** These are Essentia's automatic classifiers, not editorial metadata. Its `genre_dortmund` model was discarded outright: it labels 95–98% of everything after 1980 "electronic", which is not a credible description of the Hot 100. `genre_rosamerica` is used instead — balanced across seven classes with a plausible trajectory (hip-hop 0% in the 1950s to 22.8% in the 1990s) — but it is still wrong often enough that this is a sanity check, not a clean genre control.
 

@@ -31,6 +31,8 @@ from .paths import REPORTS
 
 # The metrics worth stress-testing: the ones with a headline claim attached.
 TARGETS = {
+    "minor_key_share": "is_minor",
+    "bpm": "bpm",
     "lyric_valence": "vad_valence",
     "lyric_joy": "emo_joy",
     "independence_share": "is_independent",
