@@ -1,0 +1,14 @@
+title,gold_independence,b_p_independence,b_pred,a_stance,a_pred
+I Will Survive,1,0.9744834303855896,1,heartbreak_loss,0
+Survivor,1,0.9740179777145386,1,independence_self_sufficiency,1
+Independent Women Part I,1,0.9237300157546997,1,conflict_resentment,0
+Since U Been Gone,1,0.848093569278717,1,heartbreak_loss,0
+Irreplaceable,1,0.9756929874420166,1,independence_self_sufficiency,1
+"Thank U, Next",1,0.6472967267036438,1,heartbreak_loss,0
+Truth Hurts,1,0.8083699941635132,1,heartbreak_loss,0
+Stronger (What Doesn't Kill You),1,0.9052385687828064,1,heartbreak_loss,0
+Nothing Compares 2 U,0,0.0045120371505618095,0,heartbreak_loss,0
+Un-Break My Heart,0,0.012336100451648235,0,heartbreak_loss,0
+I Want It That Way,0,0.08166611194610596,0,longing_pursuit,0
+Endless Love,0,0.008429287001490593,0,devotion_commitment,0
+Baby,0,0.42556044459342957,0,devotion_commitment,0
