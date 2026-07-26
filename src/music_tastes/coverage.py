@@ -42,11 +42,18 @@ def load_joined() -> pd.DataFrame:
     for path, tag in [
         (DERIVED / "lyric_features_method_a.parquet", "a"),
         (DERIVED / "lyric_features_method_b.parquet", "b"),
+        (DERIVED / "acoustic_features.parquet", "ac"),
     ]:
         if path.exists():
             feats = pd.read_parquet(path)
             if not feats.empty:
                 songs = songs.merge(feats, on="song_id", how="left", suffixes=("", f"_{tag}"))
+
+    if "scale" in songs.columns:
+        # Minor-key share is a standard proxy for musical (as opposed to lyrical)
+        # sadness, and is a different construct from either lyric valence or
+        # Essentia's mood classifier, so it is tracked separately.
+        songs["is_minor"] = songs["scale"].map({"minor": 1.0, "major": 0.0})
 
     songs["has_lyrics"] = songs.get("has_lyrics", pd.Series(False, index=songs.index)).fillna(False)
     songs["scored_b"] = (

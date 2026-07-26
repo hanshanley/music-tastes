@@ -43,6 +43,10 @@ METRICS = {
     "independence_share": ("is_independent", "Share of relationship songs taking an 'I don't need you' stance", "more independence"),
     "heartbreak_share": ("is_heartbreak", "Share of relationship songs about heartbreak/wanting an ex back", "more heartbreak"),
     "devotion_share": ("is_devotion", "Share of relationship songs about devotion/commitment", "more devotion"),
+    "bpm": ("bpm", "Tempo in beats per minute (Essentia via AcousticBrainz)", "faster"),
+    "minor_key_share": ("is_minor", "Share of songs in a minor key (Essentia)", "more minor-key"),
+    "acoustic_mood_happy": ("ab_mood_happy", "Essentia 'happy' mood probability", "happier"),
+    "acoustic_mood_sad": ("ab_mood_sad", "Essentia 'sad' mood probability", "sadder"),
 }
 
 # Probability thresholds for turning Method B's continuous scores into labels.
