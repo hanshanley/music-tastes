@@ -284,6 +284,147 @@ def run() -> None:
     lines += [
         "## Limitations",
         "",
+    ]
+
+    conf_path = REPORTS / "confounds.json"
+    val_path = REPORTS / "validity.json"
+    if conf_path.exists() or val_path.exists():
+        conf = json.loads(conf_path.read_text()) if conf_path.exists() else {}
+        valid = json.loads(val_path.read_text()) if val_path.exists() else {}
+        lines = lines[:-2] + ["## Rival explanations, tested", ""]
+
+        ctx = valid.get("contextual_check", {})
+        if "spearman_year_vs_contextual_valence" in ctx:
+            lines += [
+                "### The sentiment result does not survive a change of method",
+                "",
+                "This is the most important check in the project, and it goes against "
+                "the headline. On an **identical set of "
+                f"{ctx['n']} songs** (10 per year), two measures of the same construct "
+                "disagree:",
+                "",
+                "| Measure | Sees negation/context? | rho(year, valence) | p |",
+                "|---|---|---|---|",
+                f"| NRC VAD word norms | no | {ctx['spearman_year_vs_lexicon_valence']:+.3f} "
+                f"| {ctx['p_lexicon']:.2g} |",
+                f"| Entailment model | yes | "
+                f"{ctx['spearman_year_vs_contextual_valence']:+.3f} "
+                f"| {ctx['p_contextual']:.2g} |",
+                "",
+                "The entailment measure is not broken: its extremes are exactly right "
+                "(highest — *Celebration*, *A Holly Jolly Christmas*, *Best Day Of My "
+                "Life*; lowest — *Crying*, *Broken-Hearted Melody*, *Breakeven*). It "
+                "discriminates happy from sad songs cleanly; it just finds no trend "
+                "over time. Because both measures ran on the same songs, sampling "
+                "cannot explain the gap.",
+                "",
+                "**Most plausible reading:** the lexicon decline reflects *vocabulary* "
+                "change rather than *emotional* change — modern lyrics use words the "
+                "NRC norms score lower (slang, profanity, concrete nouns) without the "
+                "songs being sadder in any sense a listener would recognise.",
+                "",
+                "**The word-average valence and joy trends below should therefore be "
+                "read as not robust to measurement method.** The stance results "
+                "(relationship share, independence share) come from the entailment "
+                "model and are unaffected by this.",
+                "",
+            ]
+
+        lang = valid.get("language_robustness", {})
+        if "all_songs" in lang:
+            lines += [
+                "### Non-English songs — ruled out",
+                "",
+                "All lexicons are English-only, and the non-English share of charting "
+                "songs rises from about 1% before 2010 to 7.2% in the 2020s. "
+                "Restricting to confidently-English, effectively monolingual songs "
+                f"moves the coefficient only from "
+                f"{lang['all_songs']['spearman']:+.3f} to "
+                f"{lang['english_monolingual']['spearman']:+.3f}, so language does not "
+                "drive the trend.",
+                "",
+            ]
+
+        strata = valid.get("length_strata")
+        tvt = valid.get("type_vs_token", {})
+        if strata:
+            rhos = [s["spearman_year_vs_valence"] for s in strata]
+            lines += [
+                "### Lyric length — a mediator, not an artefact (correction)",
+                "",
+                "An earlier version of this report claimed *\"roughly a third of the "
+                "effect is length, not mood\"*, based on a partial correlation "
+                "controlling for word count. **That was wrong.** Length is a mediator "
+                "(year → songs get wordier → word-average valence falls), and "
+                "controlling for a variable on the causal path subtracts real signal.",
+                "",
+                "Two tests settle it:",
+                "",
+                f"- Within every length quintile the decline persists "
+                f"(rho {min(rhos):+.2f} to {max(rhos):+.2f}, all significant), "
+                "including the shortest songs.",
+                "",
+            ]
+            if "spearman_types" in tvt:
+                lines.append(
+                    f"- Computing valence over unique word *types*, which removes "
+                    f"repetition entirely, makes the decline **stronger** "
+                    f"(rho {tvt['spearman_types']:+.3f} vs "
+                    f"{tvt['spearman_tokens']:+.3f}), so it is not old songs repeating "
+                    "happy hooks."
+                )
+            lines += [
+                "",
+                "So within the lexicon's own terms the decline is real. That is a "
+                "separate question from whether the lexicon measures mood, which the "
+                "contextual check above puts in doubt.",
+                "",
+            ]
+
+        val = conf.get("lyric_valence", {})
+        era = val.get("post_1991_soundscan", {})
+        if "kendall_tau" in era:
+            verdict = "survives" if era["significant_at_05"] else "does not survive"
+            lines += [
+                "### Measurement regime",
+                "",
+                f"Restricted to 1991 onward (SoundScan era only, one consistent chart "
+                f"methodology), the lexicon valence decline {verdict}: tau = "
+                f"{era['kendall_tau']:+.3f}, p = {era['p_value']:.2g}.",
+                "",
+            ]
+        ind = conf.get("independence_share", {}).get("post_1991_soundscan", {})
+        if "kendall_tau" in ind:
+            lines += [
+                "### The independence rise is a step, not a slope",
+                "",
+                f"Within the post-1991 era alone it is not significant (tau = "
+                f"{ind['kendall_tau']:+.3f}, p = {ind['p_value']:.2g}), consistent with "
+                "the decade table: a jump around 2000 followed by a plateau, rather "
+                "than a continuing climb.",
+                "",
+            ]
+        gs = val.get("genre_strata")
+        if gs:
+            lines += [
+                f"### Genre mix",
+                "",
+                f"Re-running within Essentia genre strata: {gs['n_strata']} strata, "
+                f"{gs['n_significant']} significant, all same sign: "
+                f"{gs['all_same_sign']}.",
+                "",
+            ]
+        else:
+            lines += [
+                "### Genre mix — still untested",
+                "",
+                "The acoustic stage is still populating genre labels. This remains an "
+                "untested rival explanation.",
+                "",
+            ]
+        lines += ["## Limitations", ""]
+
+    lines += [
         "1. **The chart is not listening.** Hot 100 methodology changed in 1991",
         "   (SoundScan/BDS), 1998, 2005 (digital), 2007 and 2013 (streaming/video).",
         "   Comparisons spanning those dates cross measurement regimes.",

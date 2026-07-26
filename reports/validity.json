@@ -1,0 +1,183 @@
+{
+  "length_strata": [
+    {
+      "length_quintile": 1,
+      "n": 1139,
+      "words_min": 31,
+      "words_max": 200,
+      "spearman_year_vs_valence": -0.1414,
+      "p_value": 1.649353573263159e-06
+    },
+    {
+      "length_quintile": 2,
+      "n": 1137,
+      "words_min": 201,
+      "words_max": 272,
+      "spearman_year_vs_valence": -0.1809,
+      "p_value": 8.136502611335887e-10
+    },
+    {
+      "length_quintile": 3,
+      "n": 1123,
+      "words_min": 273,
+      "words_max": 354,
+      "spearman_year_vs_valence": -0.1783,
+      "p_value": 1.7898455718832745e-09
+    },
+    {
+      "length_quintile": 4,
+      "n": 1138,
+      "words_min": 355,
+      "words_max": 508,
+      "spearman_year_vs_valence": -0.2911,
+      "p_value": 1.1383986382856719e-23
+    },
+    {
+      "length_quintile": 5,
+      "n": 1127,
+      "words_min": 509,
+      "words_max": 1499,
+      "spearman_year_vs_valence": -0.2951,
+      "p_value": 4.491595152257848e-24
+    }
+  ],
+  "coverage_drift": {
+    "spearman_year_vs_coverage": -0.1973,
+    "p_value": 8.49087429298904e-51,
+    "by_decade": [
+      {
+        "decade": 1950,
+        "n": 110,
+        "vad_coverage": 0.3499
+      },
+      {
+        "decade": 1960,
+        "n": 959,
+        "vad_coverage": 0.3526
+      },
+      {
+        "decade": 1970,
+        "n": 808,
+        "vad_coverage": 0.3598
+      },
+      {
+        "decade": 1980,
+        "n": 639,
+        "vad_coverage": 0.3462
+      },
+      {
+        "decade": 1990,
+        "n": 628,
+        "vad_coverage": 0.3383
+      },
+      {
+        "decade": 2000,
+        "n": 678,
+        "vad_coverage": 0.3275
+      },
+      {
+        "decade": 2010,
+        "n": 950,
+        "vad_coverage": 0.3288
+      },
+      {
+        "decade": 2020,
+        "n": 892,
+        "vad_coverage": 0.3176
+      }
+    ]
+  },
+  "type_vs_token": {
+    "n": 5630,
+    "spearman_tokens": -0.3018,
+    "p_tokens": 7.34005159773155e-119,
+    "spearman_types": -0.3464,
+    "p_types": 1.6705449505347497e-158,
+    "repetition_explains_trend": false
+  },
+  "uncovered_vocabulary_written": "/Users/hanshanley/Documents/github_projects/music-tastes/reports/validity_uncovered_vocabulary.csv",
+  "contextual_check": {
+    "n": 690,
+    "spearman_year_vs_lexicon_valence": -0.2208,
+    "p_lexicon": 4.558780423604448e-09,
+    "spearman_year_vs_contextual_valence": -0.0118,
+    "p_contextual": 0.7573158479827465,
+    "agreement_between_measures": 0.2816,
+    "p_agreement": 4.813054314676489e-14,
+    "same_direction": true,
+    "by_decade": [
+      {
+        "decade": 1950,
+        "n": 20,
+        "lexicon": 0.6428,
+        "contextual": 0.0108
+      },
+      {
+        "decade": 1960,
+        "n": 100,
+        "lexicon": 0.6313,
+        "contextual": -0.1869
+      },
+      {
+        "decade": 1970,
+        "n": 100,
+        "lexicon": 0.6398,
+        "contextual": -0.1639
+      },
+      {
+        "decade": 1980,
+        "n": 100,
+        "lexicon": 0.6148,
+        "contextual": -0.281
+      },
+      {
+        "decade": 1990,
+        "n": 100,
+        "lexicon": 0.6342,
+        "contextual": -0.2374
+      },
+      {
+        "decade": 2000,
+        "n": 100,
+        "lexicon": 0.5995,
+        "contextual": -0.2758
+      },
+      {
+        "decade": 2010,
+        "n": 100,
+        "lexicon": 0.6054,
+        "contextual": -0.0821
+      },
+      {
+        "decade": 2020,
+        "n": 70,
+        "lexicon": 0.5952,
+        "contextual": -0.2823
+      }
+    ]
+  },
+  "language_robustness": {
+    "all_songs": {
+      "n": 5664,
+      "spearman": -0.3029,
+      "p_value": 1.770502292119947e-120
+    },
+    "detected_english": {
+      "n": 5602,
+      "spearman": -0.2978,
+      "p_value": 4.297817636523914e-115
+    },
+    "english_confident": {
+      "n": 5517,
+      "spearman": -0.2979,
+      "p_value": 1.896736973459883e-113
+    },
+    "english_monolingual": {
+      "n": 5229,
+      "spearman": -0.2814,
+      "p_value": 9.454726029063314e-96
+    },
+    "max_absolute_shift": 0.0215,
+    "language_explains_trend": false
+  }
+}

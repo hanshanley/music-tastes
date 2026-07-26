@@ -202,6 +202,22 @@ def fetch_acousticbrainz(mbids: list[str]) -> dict[str, dict]:
             positive = "danceable" if field == "danceability" else field.replace("mood_", "")
             if probs:
                 rec[f"ab_{field}"] = probs.get(positive)
+
+        # Genre, used only as a stratification variable for the confound check.
+        # These are Essentia's automatic classifiers, not editorial genre tags: they
+        # are noisy and their label sets are coarse and dated. That is tolerable for
+        # asking "does the valence trend survive within genre" but they should not be
+        # reported as ground-truth genre.
+        for field in ("genre_dortmund", "genre_rosamerica"):
+            block = hl.get(field) or {}
+            if block.get("value"):
+                rec[f"ab_{field}"] = block["value"]
+                rec[f"ab_{field}_prob"] = block.get("probability")
+
+        voice = hl.get("voice_instrumental") or {}
+        if voice.get("value"):
+            rec["ab_voice_instrumental"] = voice["value"]
+
         if len(rec) > 1:
             out[mbid] = rec
     return out

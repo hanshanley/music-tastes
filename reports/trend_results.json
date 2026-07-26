@@ -574,5 +574,77 @@
       "mean_last_5_years": 0.14189648033126295,
       "absolute_change": -0.035949274210820836
     }
+  },
+  "lyric_length": {
+    "description": "Words per song (drives a third of the valence trend)",
+    "higher_means": "wordier",
+    "weighted_all": {
+      "n_years": 69,
+      "year_min": 1958,
+      "year_max": 2026,
+      "kendall_tau": 0.6726342710997443,
+      "p_value": 3.00123218259556e-16,
+      "significant_at_05": true,
+      "theil_sen_slope_per_year": 4.991259223475327,
+      "theil_sen_slope_ci": [
+        4.3193419206846855,
+        5.754308308405051
+      ],
+      "change_per_decade": 49.91259223475326,
+      "mean_first_5_years": 181.615020393874,
+      "mean_last_5_years": 387.1295374590623,
+      "absolute_change": 205.5145170651883
+    },
+    "unweighted_all": {
+      "n_years": 69,
+      "year_min": 1958,
+      "year_max": 2026,
+      "kendall_tau": 0.7519181585677749,
+      "p_value": 6.440652395942916e-20,
+      "significant_at_05": true,
+      "theil_sen_slope_per_year": 5.358963728597137,
+      "theil_sen_slope_ci": [
+        4.998557546310356,
+        5.721285298072613
+      ],
+      "change_per_decade": 53.58963728597138,
+      "mean_first_5_years": 152.80428322417364,
+      "mean_last_5_years": 421.8478583510267,
+      "absolute_change": 269.04357512685306
+    },
+    "weighted_complete_case": {
+      "n_years": 69,
+      "year_min": 1958,
+      "year_max": 2026,
+      "kendall_tau": 0.6419437340153452,
+      "p_value": 6.1734706813250224e-15,
+      "significant_at_05": true,
+      "theil_sen_slope_per_year": 4.605275917416574,
+      "theil_sen_slope_ci": [
+        3.855418618315459,
+        5.357901700054634
+      ],
+      "change_per_decade": 46.052759174165736,
+      "mean_first_5_years": 207.73365761126487,
+      "mean_last_5_years": 384.09942448824813,
+      "absolute_change": 176.36576687698326
+    },
+    "unweighted_complete_case": {
+      "n_years": 69,
+      "year_min": 1958,
+      "year_max": 2026,
+      "kendall_tau": 0.7135549872122762,
+      "p_value": 4.301859783681895e-18,
+      "significant_at_05": true,
+      "theil_sen_slope_per_year": 4.711601307189543,
+      "theil_sen_slope_ci": [
+        4.125,
+        5.070261437908496
+      ],
+      "change_per_decade": 47.11601307189543,
+      "mean_first_5_years": 201.4705882352941,
+      "mean_last_5_years": 404.0676470588235,
+      "absolute_change": 202.59705882352944
+    }
   }
 }

@@ -47,6 +47,7 @@ METRICS = {
     "minor_key_share": ("is_minor", "Share of songs in a minor key (Essentia)", "more minor-key"),
     "acoustic_mood_happy": ("ab_mood_happy", "Essentia 'happy' mood probability", "happier"),
     "acoustic_mood_sad": ("ab_mood_sad", "Essentia 'sad' mood probability", "sadder"),
+    "lyric_length": ("n_words", "Words per song (drives a third of the valence trend)", "wordier"),
 }
 
 # Probability thresholds for turning Method B's continuous scores into labels.
