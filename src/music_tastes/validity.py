@@ -283,6 +283,86 @@ def language_robustness_test(df: pd.DataFrame) -> dict:
     return out
 
 
+def aggregation_bias_test(df: pd.DataFrame, stance: str = "independence") -> dict:
+    """Correct the stance trend for a bias in the chunk-max estimator.
+
+    Method B scores verse-sized chunks and takes the **maximum** across them, which is
+    what lets it find a self-sufficiency claim that lives in one chorus. But the
+    maximum of N draws rises with N even when the underlying distribution is
+    unchanged, and lyrics roughly doubled in length over the period
+    (rho(year, n_chunks) = +0.55). Part of the apparent rise in the "I don't need you"
+    share is therefore mechanical.
+
+    This is a different situation from lyric length and valence. There, length is a
+    *mediator* -- songs really did get wordier and that is part of how music changed --
+    so controlling for it would remove real signal. Here the inflation is a property
+    of the estimator, not of the music, so controlling for it is the correct thing to
+    do.
+
+    Both the raw and adjusted coefficients are reported, along with the trend inside
+    fixed chunk-count strata, which is the assumption-free version of the same check.
+    """
+    import statsmodels.api as sm
+
+    col = f"is_{stance}"
+    if col not in df.columns or "n_chunks" not in df.columns:
+        return {"note": f"missing {col} or n_chunks"}
+
+    d = df[df[col].notna() & df["n_chunks"].notna()].copy()
+    if len(d) < 300:
+        return {"note": f"insufficient data (n={len(d)})"}
+
+    y = d[col].astype(float)
+    year = d["debut_year"].astype(float)
+    chunks = d["n_chunks"].astype(float)
+
+    m0 = sm.OLS(y, sm.add_constant(year)).fit()
+    m1 = sm.OLS(y, sm.add_constant(pd.concat([year, chunks], axis=1))).fit()
+    b0 = float(m0.params["debut_year"])
+    b1 = float(m1.params["debut_year"])
+
+    strata = []
+    for lo, hi, label in [(1, 4, "short (1-4 chunks)"), (5, 7, "medium (5-7)"),
+                          (8, 99, "long (8+)")]:
+        g = d[(d["n_chunks"] >= lo) & (d["n_chunks"] <= hi)]
+        if len(g) < 200:
+            continue
+        r, p = _spearman(g["debut_year"], g[col])
+        by_decade = (
+            g.assign(decade=(g["debut_year"] // 10 * 10).astype(int))
+            .groupby("decade")[col]
+            .agg(["size", "mean"])
+        )
+        by_decade = by_decade[by_decade["size"] >= 25]
+        strata.append(
+            {
+                "stratum": label,
+                "n": int(len(g)),
+                "spearman_year": round(r, 4),
+                "p_value": p,
+                "by_decade": {int(i): round(float(r_["mean"]), 4)
+                              for i, r_ in by_decade.iterrows()},
+            }
+        )
+
+    return {
+        "stance": stance,
+        "n": int(len(d)),
+        "spearman_chunks_vs_max": round(
+            _spearman(d["n_chunks"], d[f"p_{stance}_max"])[0], 4
+        ) if f"p_{stance}_max" in d.columns else None,
+        "spearman_year_vs_chunks": round(_spearman(d["debut_year"], d["n_chunks"])[0], 4),
+        "unadjusted_per_decade": round(b0 * 10, 5),
+        "unadjusted_p": float(m0.pvalues["debut_year"]),
+        "chunk_adjusted_per_decade": round(b1 * 10, 5),
+        "chunk_adjusted_p": float(m1.pvalues["debut_year"]),
+        "attenuation_fraction": round(1 - b1 / b0, 3) if b0 else None,
+        "survives_adjustment": bool(m1.pvalues["debut_year"] < 0.05 and np.sign(b1) == np.sign(b0)),
+        "within_chunk_strata": strata,
+        "all_strata_positive": bool(strata) and all(s["spearman_year"] > 0 for s in strata),
+    }
+
+
 def contextual_valence_check(
     per_year: int = 12, device: str | None = None, batch_size: int = 32
 ) -> dict:
@@ -440,8 +520,29 @@ def run(skip_contextual: bool = False, per_year: int = 12) -> dict:
         print(f"  {langtest.get('note')}\n")
     results["language_robustness"] = langtest
 
+    print("=== Test 6: is the stance trend inflated by chunk-max aggregation? ===")
+    from .analysis_trends import derive_labels
+
+    agg = aggregation_bias_test(derive_labels(df))
+    if "unadjusted_per_decade" in agg:
+        print(f"  rho(year, n_chunks) = {agg['spearman_year_vs_chunks']:+.3f}; "
+              f"rho(n_chunks, p_max) = {agg['spearman_chunks_vs_max']:+.3f}")
+        print(f"  unadjusted      {agg['unadjusted_per_decade']:+.4f}/decade "
+              f"(p={agg['unadjusted_p']:.2g})")
+        print(f"  chunk-adjusted  {agg['chunk_adjusted_per_decade']:+.4f}/decade "
+              f"(p={agg['chunk_adjusted_p']:.2g})")
+        print(f"  -> attenuation {agg['attenuation_fraction']:.0%}; "
+              f"survives: {agg['survives_adjustment']}")
+        for s in agg["within_chunk_strata"]:
+            trail = " ".join(f"{k}s:{v:.0%}" for k, v in s["by_decade"].items())
+            print(f"    {s['stratum']:20} n={s['n']:5} rho={s['spearman_year']:+.3f}  {trail}")
+    else:
+        print(f"  {agg.get('note')}")
+    print()
+    results["aggregation_bias"] = agg
+
     if not skip_contextual:
-        print("=== Test 6: context-aware cross-check (entailment model) ===")
+        print("=== Test 7: context-aware cross-check (entailment model) ===")
         ctx = contextual_valence_check(per_year=per_year)
         if "spearman_year_vs_contextual_valence" in ctx:
             print(f"  lexicon    rho(year, valence) = "
