@@ -3,6 +3,14 @@
   "top_by_decade": [
     {
       "decade": 1950,
+      "debut_year": 1959,
+      "title_display": "Makin' Love",
+      "artist_display": "Floyd Robinson",
+      "p": 0.845815122127533,
+      "points": 1113
+    },
+    {
+      "decade": 1950,
       "debut_year": 1958,
       "title_display": "Down In Virginia",
       "artist_display": "Jimmy Reed",
@@ -26,12 +34,12 @@
       "points": 1445
     },
     {
-      "decade": 1950,
-      "debut_year": 1959,
-      "title_display": "A Big Hunk O' Love",
-      "artist_display": "Elvis Presley With The Jordanaires",
-      "p": 0.41041654348373413,
-      "points": 1083
+      "decade": 1960,
+      "debut_year": 1966,
+      "title_display": "Red Rubber Ball",
+      "artist_display": "The Cyrkle",
+      "p": 0.9978760480880737,
+      "points": 1000
     },
     {
       "decade": 1960,
@@ -56,14 +64,6 @@
       "artist_display": "Bobby Bland",
       "p": 0.9859092235565186,
       "points": 248
-    },
-    {
-      "decade": 1960,
-      "debut_year": 1965,
-      "title_display": "A World Of Our Own",
-      "artist_display": "The Seekers",
-      "p": 0.984471321105957,
-      "points": 589
     },
     {
       "decade": 1970,
@@ -99,6 +99,14 @@
     },
     {
       "decade": 1980,
+      "debut_year": 1984,
+      "title_display": "The Glamorous Life",
+      "artist_display": "Sheila E.",
+      "p": 0.9802241921424866,
+      "points": 1606
+    },
+    {
+      "decade": 1980,
       "debut_year": 1982,
       "title_display": "Dreamin'",
       "artist_display": "John Schneider",
@@ -107,27 +115,19 @@
     },
     {
       "decade": 1980,
+      "debut_year": 1989,
+      "title_display": "Free Fallin'",
+      "artist_display": "Tom Petty",
+      "p": 0.9621075987815857,
+      "points": 1312
+    },
+    {
+      "decade": 1980,
       "debut_year": 1986,
       "title_display": "Another Night",
       "artist_display": "Aretha Franklin",
       "p": 0.9602867364883423,
       "points": 790
-    },
-    {
-      "decade": 1980,
-      "debut_year": 1981,
-      "title_display": "Angel Of The Morning",
-      "artist_display": "Juice Newton",
-      "p": 0.9561454057693481,
-      "points": 1581
-    },
-    {
-      "decade": 1980,
-      "debut_year": 1983,
-      "title_display": "Baby Jane",
-      "artist_display": "Rod Stewart",
-      "p": 0.9542653560638428,
-      "points": 935
     },
     {
       "decade": 1990,
@@ -163,6 +163,14 @@
     },
     {
       "decade": 2000,
+      "debut_year": 2003,
+      "title_display": "Me, Myself And I",
+      "artist_display": "Beyonce",
+      "p": 0.9941573739051819,
+      "points": 1878
+    },
+    {
+      "decade": 2000,
       "debut_year": 2005,
       "title_display": "Don't Bother",
       "artist_display": "Shakira",
@@ -171,27 +179,19 @@
     },
     {
       "decade": 2000,
+      "debut_year": 2007,
+      "title_display": "U + Ur Hand",
+      "artist_display": "P!nk",
+      "p": 0.985772967338562,
+      "points": 1934
+    },
+    {
+      "decade": 2000,
       "debut_year": 2000,
       "title_display": "Another Dumb Blonde",
       "artist_display": "Hoku",
       "p": 0.9842910766601562,
       "points": 722
-    },
-    {
-      "decade": 2000,
-      "debut_year": 2005,
-      "title_display": "DOA",
-      "artist_display": "Foo Fighters",
-      "p": 0.983628511428833,
-      "points": 259
-    },
-    {
-      "decade": 2000,
-      "debut_year": 2002,
-      "title_display": "All I Have",
-      "artist_display": "Jennifer Lopez Featuring LL Cool J",
-      "p": 0.9808942675590515,
-      "points": 1876
     },
     {
       "decade": 2010,
@@ -337,6 +337,20 @@
       "points": 2853
     },
     {
+      "debut_year": 2011,
+      "title_display": "Pumped Up Kicks",
+      "artist_display": "Foster The People",
+      "p": 0.45091089606285095,
+      "points": 2797
+    },
+    {
+      "debut_year": 2023,
+      "title_display": "Fukumean",
+      "artist_display": "Gunna",
+      "p": 0.5400294661521912,
+      "points": 2657
+    },
+    {
       "debut_year": 2004,
       "title_display": "Drop It Like It's Hot",
       "artist_display": "Snoop Dogg Featuring Pharrell",
@@ -349,20 +363,6 @@
       "artist_display": "Kate Bush",
       "p": 0.49128052592277527,
       "points": 2624
-    },
-    {
-      "debut_year": 2020,
-      "title_display": "Blueberry Faygo",
-      "artist_display": "Lil Mosey",
-      "p": 0.5302060842514038,
-      "points": 2465
-    },
-    {
-      "debut_year": 2007,
-      "title_display": "Don't Stop The Music",
-      "artist_display": "Rihanna",
-      "p": 0.45224061608314514,
-      "points": 2297
     }
   ],
   "gate_leakage": [
@@ -430,25 +430,25 @@
       "p_relationship_doc": 0.05000489205121994
     },
     {
-      "debut_year": 2000,
-      "title_display": "Jumpin', Jumpin'",
-      "artist_display": "Destiny's Child",
-      "p_stance": 0.944943904876709,
-      "p_relationship_doc": 0.4285622239112854
+      "debut_year": 2019,
+      "title_display": "Suge",
+      "artist_display": "DaBaby",
+      "p_stance": 0.9299510717391968,
+      "p_relationship_doc": 0.0037507887464016676
     },
     {
-      "debut_year": 2003,
-      "title_display": "Damn!",
-      "artist_display": "YoungBloodZ Featuring Lil Jon",
-      "p_stance": 0.9287972450256348,
-      "p_relationship_doc": 0.00016156058700289577
+      "debut_year": 2008,
+      "title_display": "So What",
+      "artist_display": "P!nk",
+      "p_stance": 0.9987886548042297,
+      "p_relationship_doc": 0.2135411500930786
     },
     {
-      "debut_year": 1980,
-      "title_display": "Another One Bites The Dust",
-      "artist_display": "Queen",
-      "p_stance": 0.9441254138946533,
-      "p_relationship_doc": 0.003311519045382738
+      "debut_year": 2013,
+      "title_display": "Let It Go",
+      "artist_display": "Idina Menzel",
+      "p_stance": 0.9628831148147583,
+      "p_relationship_doc": 0.06483088433742523
     }
   ]
 }

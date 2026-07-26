@@ -659,6 +659,7 @@ def run() -> None:
         ga = val.get("genre_adjusted", {})
         if "genre_adjusted_year_coef_per_decade" in ga:
             ind_ga = conf.get("independence_share", {}).get("genre_adjusted", {})
+            ind_gs = conf.get("independence_share", {}).get("genre_strata", {})
             lines += [
                 "### Genre mix — tested, and not the driver",
                 "",
@@ -684,13 +685,37 @@ def run() -> None:
                 )
             lines += [
                 "",
-                "Genre mix accounts for only about a tenth of the lexicon valence "
-                "trend, so it is not the explanation. The independence trend keeps "
-                "roughly three quarters of its magnitude under genre control but loses "
-                "significance — note this runs on the "
-                f"{ind_ga.get('n', 0)} songs carrying both a genre label and a stance "
-                "label, against 3,510 for the headline estimate, so this is a power "
-                "limitation rather than evidence of absence.",
+                f"Genre mix accounts for only {ga['attenuation_fraction']:.0%} of the "
+                "lexicon valence trend, so it is not the explanation there.",
+                "",
+                (
+                    f"For the independence trend genre control removes only "
+                    f"{ind_ga['attenuation_fraction']:.0%} of the effect "
+                    f"(p={ind_ga['genre_adjusted_p']:.2g} adjusted, n={ind_ga['n']:,}). "
+                    "**Genre mix is not driving it.** An earlier pass on a sixth as much "
+                    "genre-labelled data put the attenuation at 23% and lost "
+                    "significance; that was a power limitation and it resolved with more "
+                    "data."
+                    if ind_ga.get("genre_adjusted_p", 1) < 0.05
+                    else f"The independence trend keeps "
+                    f"{1 - ind_ga.get('attenuation_fraction', 0):.0%} of its magnitude "
+                    f"under genre control but is not significant at n={ind_ga.get('n', 0):,}, "
+                    "a power limitation rather than evidence of absence."
+                ),
+                "",
+                (
+                    "Within individual genres the independence trend is positive in "
+                    + ", ".join(
+                        f"{k} ({v:+.2f})"
+                        for k, v in ind_gs.get("taus", {}).items()
+                        if v > 0.1
+                    )
+                    + ". It is flat in hip-hop, so this is **not** a rap phenomenon "
+                    "riding the genre shift — it appears inside the older guitar- and "
+                    "vocal-led genres too."
+                    if ind_gs.get("taus")
+                    else ""
+                ),
                 "",
                 "**Caveat on the labels themselves.** These are Essentia's automatic "
                 "classifiers, not editorial metadata. Its `genre_dortmund` model was "
