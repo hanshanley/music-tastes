@@ -176,6 +176,29 @@ def score_batch(clf, texts: dict[str, str], batch_size: int) -> dict[str, dict]:
     return out
 
 
+def rebuild_from_cache() -> pd.DataFrame:
+    """Reconstruct the Method B feature table from the per-song NLI cache.
+
+    A full pass takes hours and writes its parquet only at the end. Because the
+    run order is year-balanced, any partial cache is already a usable
+    year-stratified sample, so this makes interim analysis possible and doubles as
+    crash recovery.
+    """
+    records = []
+    for path in NLI_CACHE.rglob("*.json"):
+        try:
+            records.append(json.loads(path.read_text()))
+        except json.JSONDecodeError:
+            continue
+    df = pd.DataFrame(records)
+    if df.empty:
+        return df
+    out = DERIVED / "lyric_features_method_b.parquet"
+    df.to_parquet(out, index=False)
+    print(f"Rebuilt Method B features for {len(df):,} songs -> {out}")
+    return df
+
+
 def _priority_order(song_ids: list[str], songs: pd.DataFrame) -> list[str]:
     """Order songs so that any prefix is roughly balanced across debut years.
 

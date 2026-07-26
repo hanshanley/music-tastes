@@ -151,6 +151,45 @@ def run_metric(df: pd.DataFrame, name: str, column: str, weight_col: str | None)
     return {"series": series, "trend": trend_test(series)}
 
 
+def decade_series(
+    df: pd.DataFrame, column: str, weight_col: str | None, min_n: int = 30
+) -> pd.DataFrame:
+    """Per-decade mean with a bootstrap CI.
+
+    Yearly estimates of a rare binary outcome are dominated by binomial noise: with
+    roughly 34 relationship songs in a year and a true rate near 0.1, the standard
+    error is about 5 percentage points, which is why the yearly independence series
+    swings between 0 and 0.8. Pooling to decades multiplies the sample by ten and
+    makes the level -- not just the direction -- readable.
+    """
+    rows = []
+    df = df.copy()
+    df["decade"] = (df["debut_year"] // 10 * 10).astype(int)
+    for decade, g in df.groupby("decade"):
+        sub = g[[column] + ([weight_col] if weight_col else [])].dropna()
+        n = len(sub)
+        if n < min_n:
+            continue
+        values = sub[column].to_numpy(dtype=float)
+        weights = (
+            sub[weight_col].to_numpy(dtype=float) if weight_col else np.ones(n, dtype=float)
+        )
+        point = _weighted_mean(values, weights)
+        idx = RNG.integers(0, n, size=(N_BOOT, n))
+        boots = np.array([_weighted_mean(values[i], weights[i]) for i in idx])
+        lo, hi = np.nanpercentile(boots, [2.5, 97.5])
+        rows.append(
+            {
+                "decade": decade,
+                "n": n,
+                "mean": point,
+                "ci_lo": float(lo),
+                "ci_hi": float(hi),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def run(threshold: float = P_THRESHOLD) -> dict:
     df = derive_labels(load_joined(), threshold)
     subset = derive_labels(complete_case_subset(load_joined()), threshold)
@@ -181,6 +220,26 @@ def run(threshold: float = P_THRESHOLD) -> dict:
         combined = pd.concat(all_series, ignore_index=True)
         combined.to_parquet(DERIVED / "yearly_series.parquet", index=False)
         combined.to_csv(REPORTS / "yearly_series.csv", index=False)
+
+    # Decade view: the readable version for sparse binary outcomes.
+    decade_rows = []
+    for metric, (column, _desc, _dir) in METRICS.items():
+        if column not in df.columns:
+            continue
+        for label, data, weight in [
+            ("weighted_all", df, "points"),
+            ("unweighted_all", df, None),
+        ]:
+            d = decade_series(data, column, weight)
+            if d.empty:
+                continue
+            d["metric"] = metric
+            d["variant"] = label
+            decade_rows.append(d)
+    if decade_rows:
+        decades = pd.concat(decade_rows, ignore_index=True)
+        decades.to_csv(REPORTS / "decade_series.csv", index=False)
+        decades.to_parquet(DERIVED / "decade_series.parquet", index=False)
 
     (REPORTS / "trend_results.json").write_text(json.dumps(results, indent=2, default=str))
 

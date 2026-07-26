@@ -70,6 +70,30 @@ def _plot_metric(series: pd.DataFrame, metric: str, description: str, path):
     return True
 
 
+def _plot_decades(decades: pd.DataFrame, metric: str, description: str, path):
+    sub = decades[
+        (decades["metric"] == metric) & (decades["variant"] == "weighted_all")
+    ].sort_values("decade")
+    if sub.empty:
+        return False
+    fig, ax = plt.subplots(figsize=(7.2, 3.4))
+    x = [f"{int(d)}s" for d in sub["decade"]]
+    yerr = [
+        (sub["mean"] - sub["ci_lo"]).clip(lower=0).to_numpy(),
+        (sub["ci_hi"] - sub["mean"]).clip(lower=0).to_numpy(),
+    ]
+    ax.bar(x, sub["mean"] * 100, yerr=[e * 100 for e in yerr], color="#4c72b0",
+           capsize=3, alpha=0.85)
+    ax.set_ylabel("%")
+    ax.set_title(f"{description}\n(by decade, exposure-weighted, 95% CI)", fontsize=9)
+    for xi, (m, n) in enumerate(zip(sub["mean"], sub["n"])):
+        ax.text(xi, 0.4, f"n={n}", ha="center", va="bottom", fontsize=6, color="white")
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+    return True
+
+
 def _plot_coverage(path):
     cov = pd.read_csv(REPORTS / "coverage_by_year.csv")
     fig, ax = plt.subplots(figsize=(7.2, 3.0))
@@ -91,11 +115,16 @@ def run() -> None:
     trends = json.loads((REPORTS / "trend_results.json").read_text())
     coverage = json.loads((REPORTS / "coverage_audit.json").read_text())
 
+    decade_path = REPORTS / "decade_series.csv"
+    decades_df = pd.read_csv(decade_path) if decade_path.exists() else None
+
     made = []
     for metric, (_col, description, _dir) in METRICS.items():
         path = FIGURES / f"{metric}.png"
         if _plot_metric(series, metric, description, path):
             made.append((metric, path))
+        if decades_df is not None:
+            _plot_decades(decades_df, metric, description, FIGURES / f"{metric}_decade.png")
     _plot_coverage(FIGURES / "coverage_by_year.png")
 
     lines = [
@@ -199,6 +228,10 @@ def run() -> None:
         lines += ["_Validation has not been run yet._", ""]
 
     lines += ["## Results", ""]
+
+    decade_path = REPORTS / "decade_series.csv"
+    decades = pd.read_csv(decade_path) if decade_path.exists() else None
+
     for metric, entry in trends.items():
         full = entry.get("weighted_all", {})
         cc = entry.get("weighted_complete_case", {})
@@ -225,9 +258,28 @@ def run() -> None:
             f"last 5 years {full['mean_last_5_years']:.3f}",
             f"- Survives complete-case check: {agree}",
             "",
-            f"![{metric}](figures/{metric}.png)",
-            "",
         ]
+
+        # Decade table: yearly estimates of a rare binary outcome are dominated by
+        # binomial noise, so the decade view is the one to read for levels.
+        if decades is not None:
+            sub = decades[
+                (decades["metric"] == metric) & (decades["variant"] == "weighted_all")
+            ].sort_values("decade")
+            if not sub.empty:
+                lines += [
+                    "| Decade | n | Exposure-weighted mean | 95% CI |",
+                    "|---|---|---|---|",
+                ]
+                for r in sub.itertuples():
+                    lines.append(
+                        f"| {int(r.decade)}s | {r.n} | {r.mean:.1%} | "
+                        f"{r.ci_lo:.1%} – {r.ci_hi:.1%} |"
+                    )
+                lines.append("")
+
+        lines += [f"![{metric}](figures/{metric}_decade.png)", ""]
+        lines += [f"![{metric} yearly](figures/{metric}.png)", ""]
 
     lines += [
         "## Limitations",
