@@ -70,6 +70,9 @@ HYPOTHESES = {
 DOC_LEVEL = {"relationship"}
 
 
+_SONG_ID_RE = re.compile(r"^s[0-9a-f]{16}$")
+
+
 def chunk_lyrics(text: str, size: int = CHUNK_WORDS) -> list[str]:
     """Split into verse-sized chunks, dropping duplicates (repeated choruses)."""
     words = text.split()
@@ -91,6 +94,8 @@ def chunk_lyrics(text: str, size: int = CHUNK_WORDS) -> list[str]:
 
 
 def _cache_path(song_id: str):
+    if not _SONG_ID_RE.match(str(song_id)):
+        raise ValueError(f"refusing to use malformed song id as a path: {song_id!r}")
     d = NLI_CACHE / song_id[1:3]
     d.mkdir(parents=True, exist_ok=True)
     return d / f"{song_id}.json"

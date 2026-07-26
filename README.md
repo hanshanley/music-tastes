@@ -12,19 +12,33 @@ public lexicons.
 
 ```bash
 uv venv --python 3.12
-uv pip install -e .
-cp .env.example .env      # then add your Genius token
+uv pip install -e ".[all]"      # add ",test" to run the test suite
+cp .env.example .env            # then add your Genius token
 
-music-tastes ingest-charts
-music-tastes resolve-songs
-music-tastes exposure
-music-tastes lexicons
-music-tastes fetch-lyrics      # long; resumable
-music-tastes features-a
-music-tastes stance-b          # long; resumable, uses local GPU if present
-music-tastes coverage
-music-tastes trends
-music-tastes report
+music-tastes all                # runs every stage in order
+```
+
+Or stage by stage, which is what you want the first time since two stages are slow:
+
+```bash
+music-tastes ingest-charts      # Hot 100, 1958-present, with an independent cross-check
+music-tastes resolve-songs      # collapse chart rows into unique songs
+music-tastes exposure           # chart-points weights + methodology era table
+music-tastes lexicons           # NRC VAD / EmoLex / VADER
+music-tastes fetch-lyrics       # slow; resumable. --no-api if the Genius quota is spent
+music-tastes enrich-acoustic    # slow; MusicBrainz -> AcousticBrainz (BPM, key, mood)
+music-tastes features-a         # Method A: lexicon + embedding anchors
+music-tastes stance-b           # Method B: local zero-shot NLI stance classifier
+music-tastes language           # language ID and code-switching measurement
+music-tastes gold-set           # validate both classifiers against hand labels
+music-tastes coverage           # coverage audit (gates every trend claim)
+music-tastes trends             # yearly + decade series with bootstrap CIs
+music-tastes confounds          # genre, era and length rival explanations
+music-tastes validity           # construct-validity checks on the sentiment measures
+music-tastes prompt-robustness  # does the stance result survive rewording?
+music-tastes stance-composition # full stance mix within relationship songs
+music-tastes exhibit            # face-validity exhibit: the songs driving the result
+music-tastes report             # figures and findings.md
 ```
 
 Every stage is resumable — network responses and model outputs are cached on disk, so
@@ -93,7 +107,7 @@ is re-run on it, and any result whose direction flips is reported as unresolved.
 ## Tests
 
 ```bash
-uv pip install -e ".[test]"
+uv pip install -e ".[all,test]"
 .venv/bin/python -m pytest tests/ -q
 ```
 

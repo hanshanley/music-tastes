@@ -28,10 +28,22 @@ import pandas as pd
 from scipy import stats
 
 from .coverage import complete_case_subset, load_joined
-from .paths import DERIVED, REPORTS
+from .paths import DERIVED, REPORTS, require
 
-RNG = np.random.default_rng(20260725)
+BOOTSTRAP_SEED = 20260725
+RNG = np.random.default_rng(BOOTSTRAP_SEED)
 N_BOOT = 1000
+
+
+def _reset_rng() -> None:
+    """Re-seed the bootstrap RNG so a run is reproducible in-process too.
+
+    Without this, the generator carries state between calls: a second
+    ``run()`` in the same interpreter draws different resamples and reports
+    slightly different confidence intervals for identical data.
+    """
+    global RNG
+    RNG = np.random.default_rng(BOOTSTRAP_SEED)
 
 # metric -> (column, human description, higher_means)
 METRICS = {
@@ -196,6 +208,7 @@ def decade_series(
 
 
 def run(threshold: float = P_THRESHOLD) -> dict:
+    _reset_rng()
     df = derive_labels(load_joined(), threshold)
     subset = derive_labels(complete_case_subset(load_joined()), threshold)
 

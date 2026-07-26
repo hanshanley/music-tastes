@@ -18,7 +18,7 @@ import pandas as pd
 
 from music_tastes.analysis_trends import P_THRESHOLD, derive_labels
 from music_tastes.coverage import load_joined
-from music_tastes.paths import REPORTS
+from music_tastes.paths import REPORTS, require
 
 STANCE_COLS = {
     "independence": "p_independence_max",

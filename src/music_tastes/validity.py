@@ -81,7 +81,7 @@ from tqdm import tqdm
 from .coverage import load_joined
 from .fetch_lyrics import load_lyrics
 from .lyrics_features import clean_lyrics, tokenize
-from .paths import DERIVED, RAW, REPORTS
+from .paths import DERIVED, RAW, REPORTS, require
 
 LEX_PATH = RAW / "lexicons" / "nrc_vad.parquet"
 

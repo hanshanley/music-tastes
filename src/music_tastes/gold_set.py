@@ -27,7 +27,7 @@ import json
 import pandas as pd
 from sklearn.metrics import cohen_kappa_score, confusion_matrix
 
-from .paths import DERIVED, REPORTS
+from .paths import DERIVED, REPORTS, require
 
 GOLD_DIR = REPORTS / "gold"
 
@@ -110,7 +110,7 @@ def _metrics(y_true: list[int], y_pred: list[int]) -> dict:
 
 
 def evaluate_random(threshold: float = 0.5) -> dict:
-    feats = pd.read_parquet(DERIVED / "lyric_features_method_b.parquet")
+    feats = pd.read_parquet(require(DERIVED / "lyric_features_method_b.parquet"))
     feats = feats.set_index("song_id")
     a_path = DERIVED / "lyric_features_method_a.parquet"
     feats_a = pd.read_parquet(a_path).set_index("song_id") if a_path.exists() else None

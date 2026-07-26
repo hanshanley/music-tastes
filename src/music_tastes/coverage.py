@@ -21,12 +21,12 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-from .paths import DERIVED, REPORTS
+from .paths import DERIVED, REPORTS, require
 
 
 def load_joined() -> pd.DataFrame:
     """Join songs, exposure weights, and whichever feature tables exist."""
-    songs = pd.read_parquet(DERIVED / "songs_weighted.parquet")
+    songs = pd.read_parquet(require(DERIVED / "songs_weighted.parquet"))
 
     index_path = DERIVED / "lyrics_index.parquet"
     if index_path.exists():

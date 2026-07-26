@@ -49,6 +49,19 @@ SOURCE_LYRICS = (
 )
 
 
+def _generated_stamp() -> str:
+    """Generation timestamp, suppressible so the report can be diffed.
+
+    The numbers are reproducible, but an embedded clock makes every regeneration
+    look like a change. Set MUSIC_TASTES_STABLE_REPORT=1 to omit it.
+    """
+    import os
+
+    if os.environ.get("MUSIC_TASTES_STABLE_REPORT"):
+        return "_Generated from the committed pipeline outputs._"
+    return f"_Generated {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}._"
+
+
 def _missed_median_peak() -> int:
     """Median chart peak of songs we could not get lyrics for.
 
@@ -338,7 +351,7 @@ def run() -> None:
     lines = [
         "# Are US hit songs getting sadder, and are fewer of them about love?",
         "",
-        f"_Generated {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}._",
+        _generated_stamp(),
         "",
         "## Summary",
         "",

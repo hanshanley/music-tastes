@@ -39,7 +39,7 @@ from tqdm import tqdm
 
 from .fetch_lyrics import load_lyrics
 from .lyrics_features import clean_lyrics, tokenize
-from .paths import DERIVED, REPORTS
+from .paths import DERIVED, REPORTS, require
 
 # A token counts as English if the English frequency list knows it at all. The
 # threshold is deliberately permissive: we are separating "is this an English word"
@@ -86,7 +86,7 @@ def english_token_share(tokens: list[str]) -> float:
 
 def analyse(limit: int | None = None) -> pd.DataFrame:
     """Language-profile every song that has lyrics."""
-    index = pd.read_parquet(DERIVED / "lyrics_index.parquet")
+    index = pd.read_parquet(require(DERIVED / "lyrics_index.parquet"))
     songs = pd.read_parquet(DERIVED / "songs_weighted.parquet")[
         ["song_id", "debut_year", "title_display", "artist_display", "points"]
     ]

@@ -32,7 +32,7 @@ import pandas as pd  # noqa: E402
 
 from .analysis_trends import P_THRESHOLD, derive_labels  # noqa: E402
 from .coverage import load_joined  # noqa: E402
-from .paths import FIGURES, REPORTS  # noqa: E402
+from .paths import FIGURES, REPORTS, require  # noqa: E402
 from .vizstyle import (  # noqa: E402
     MUTED,
     STANCE_COLOURS,

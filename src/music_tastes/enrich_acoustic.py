@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 
@@ -51,7 +52,12 @@ MIN_TITLE_SIM = 0.85
 MIN_ARTIST_SIM = 0.70
 
 
+_SONG_ID_RE = re.compile(r"^s[0-9a-f]{16}$")
+
+
 def _mbid_path(song_id: str):
+    if not _SONG_ID_RE.match(str(song_id)):
+        raise ValueError(f"refusing to use malformed song id as a path: {song_id!r}")
     d = MBID_CACHE / song_id[1:3]
     d.mkdir(parents=True, exist_ok=True)
     return d / f"{song_id}.json"
@@ -163,7 +169,18 @@ def lookup_mbid(song) -> dict:
 AB_CACHE = CACHE / "acousticbrainz"
 
 
+_MBID_RE = re.compile(r"^[0-9a-fA-F-]{36}$")
+
+
 def _ab_path(mbid: str):
+    """Cache path for a recording, refusing anything that is not a UUID.
+
+    The identifier comes from a network response and is used as a path component,
+    so it is validated rather than trusted: a malformed value containing separators
+    could otherwise write outside the cache directory.
+    """
+    if not _MBID_RE.match(str(mbid)):
+        raise ValueError(f"refusing to use non-UUID MusicBrainz id as a path: {mbid!r}")
     d = AB_CACHE / mbid[:2]
     d.mkdir(parents=True, exist_ok=True)
     return d / f"{mbid}.json"
