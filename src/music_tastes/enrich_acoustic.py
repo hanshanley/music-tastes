@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -206,7 +207,7 @@ def fetch_acousticbrainz(mbids: list[str]) -> dict[str, dict]:
     return out
 
 
-def run(limit: int | None = None) -> pd.DataFrame:
+def run(limit: int | None = None, workers: int = 6) -> pd.DataFrame:
     from .stance_nli import _priority_order
 
     songs = pd.read_parquet(DERIVED / "songs_weighted.parquet")
@@ -219,14 +220,24 @@ def run(limit: int | None = None) -> pd.DataFrame:
     rank = {sid: i for i, sid in enumerate(order)}
     targets.sort(key=lambda s: rank[s.song_id])
 
-    mb_records = []
-    for song in tqdm(targets, desc="musicbrainz", unit="song"):
+    # MusicBrainz throttles by delaying responses rather than rejecting them: under
+    # load a single query can take 11 seconds while the next takes 0.4. A serial
+    # loop therefore runs far *below* the permitted 1 request/second, because it
+    # spends most of its time waiting. Issuing concurrently while the shared
+    # per-host throttle in music_tastes.http caps issuance at 1/s keeps us inside
+    # their published limit and restores throughput.
+    def work(song):
         try:
-            mb_records.append(lookup_mbid(song))
+            return lookup_mbid(song)
         except Exception as exc:  # noqa: BLE001
-            mb_records.append(
-                {"song_id": song.song_id, "mbid": None, "error": str(exc)[:200]}
-            )
+            return {"song_id": song.song_id, "mbid": None, "error": str(exc)[:200]}
+
+    mb_records = []
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = [pool.submit(work, s) for s in targets]
+        for fut in tqdm(as_completed(futures), total=len(futures),
+                        desc="musicbrainz", unit="song"):
+            mb_records.append(fut.result())
 
     mb = pd.DataFrame(mb_records)
     matched = mb[mb["mbid"].notna()]
@@ -272,5 +283,6 @@ def run(limit: int | None = None) -> pd.DataFrame:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--workers", type=int, default=6)
     args = ap.parse_args()
-    run(limit=args.limit)
+    run(limit=args.limit, workers=args.workers)
