@@ -100,23 +100,28 @@ sources that were evaluated and rejected.
 
 ## Status
 
-**Reported:** lyric valence and emotion trends; relationship-share and stance shares
-(independence, heartbreak, devotion); coverage audit; chart ingestion; song
-resolution; classifier validation.
+**Robust:** relationship share and stance shares (independence, heartbreak, devotion).
+These come from the gold-validated entailment model.
 
-**In progress:** lyric fetching and stance scoring are still extending coverage; the
-acoustic stage (BPM, key, Essentia mood) is running. Results refresh by re-running
-`coverage`, `trends` and `report`.
+**Not robust — reported with the caveat:** word-average lyric valence and joy. On an
+identical 690 songs, NRC VAD word norms give ρ(year, valence) = −0.221 (p=4.6e-09)
+while a context-aware entailment model gives **−0.012 (p=0.76)**. The entailment
+measure discriminates mood cleanly (top: *Celebration*, *Holly Jolly Christmas*;
+bottom: *Crying*, *Broken-Hearted Melody*) — it simply finds no trend. The lexicon
+decline most likely tracks *vocabulary* change, not *emotional* change. Run
+`music-tastes validity` to reproduce.
 
-**Known limitations carried into the writeup:**
+**Ruled out as explanations:** non-English songs (ρ moves only −0.303 → −0.281 under
+the strictest English filter), code-switching (English-token share flat at 0.995–0.999
+across decades), lyric length (decline persists within every length quintile, and
+strengthens when repetition is removed), and chart-methodology era.
 
-- Spotify's audio-features endpoint was deprecated for new applications in November
-  2024, so BPM comes from AcousticBrainz. Its features are community-submitted, and
-  Essentia BPM estimates suffer octave errors — "Hey Jude" is reported at 128 BPM
-  against a true tempo near 74.
-- Genre mix is uncontrolled. A shift toward genres with different lyrical conventions
-  is a live rival explanation for the valence decline.
-- The Genius search API enforces a quota that a full 32k run exhausts. The fetcher
-  falls back to verified slug URLs (`--no-api`), which resolve 82.9% of songs at tier
-  A versus 93.8% for the API.
+**Still untested:** genre mix — the acoustic stage is still populating genre labels.
+
+**Other limitations:** Spotify's audio-features endpoint was deprecated for new apps in
+November 2024, so BPM comes from AcousticBrainz, whose Essentia estimates suffer octave
+errors ("Hey Jude" reads 128 BPM against a true tempo near 74). The Genius search API
+enforces a quota a full 32k run exhausts; the fetcher falls back to verified slug URLs
+(`--no-api`), resolving 82.9% of songs at tier A versus 93.8% for the API.
+
 
