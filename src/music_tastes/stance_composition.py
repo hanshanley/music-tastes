@@ -33,6 +33,20 @@ import pandas as pd  # noqa: E402
 from .analysis_trends import P_THRESHOLD, derive_labels  # noqa: E402
 from .coverage import load_joined  # noqa: E402
 from .paths import FIGURES, REPORTS  # noqa: E402
+from .vizstyle import (  # noqa: E402
+    MUTED,
+    STANCE_COLOURS,
+    house_style,
+    save_fig,
+    source_note,
+)
+
+house_style()
+
+SOURCE_NOTE = (
+    "Data: Billboard Hot 100 (Billboard/Luminate); lyrics via Genius. "
+    "Stances from a local zero-shot NLI model (deberta-v3-large-zeroshot-v2.0)."
+)
 
 STANCES = {
     "independence": "Doesn't need them / better off alone",
@@ -43,14 +57,7 @@ STANCES = {
     "conflict": "Angry at a partner",
 }
 
-PALETTE = {
-    "independence": "#d62728",
-    "heartbreak": "#1f77b4",
-    "devotion": "#2ca02c",
-    "longing": "#9467bd",
-    "casual": "#ff7f0e",
-    "conflict": "#8c564b",
-}
+PALETTE = STANCE_COLOURS
 
 
 def _relationship_songs(df: pd.DataFrame) -> pd.DataFrame:
@@ -107,23 +114,23 @@ def _plot_composition(comp: pd.DataFrame, path) -> bool:
     stances = [s for s in STANCES if s in comp.columns]
     if not stances or comp.empty:
         return False
-    fig, ax = plt.subplots(figsize=(7.6, 4.0))
+    fig, ax = plt.subplots(figsize=(11, 6))
     x = [f"{int(d)}s" for d in comp["decade"]]
     bottom = np.zeros(len(comp))
     for stance in stances:
         vals = comp[stance].to_numpy(dtype=float) * 100
         ax.bar(x, vals, bottom=bottom, label=STANCES[stance],
-               color=PALETTE.get(stance), width=0.72)
+               color=PALETTE.get(stance), width=0.68, zorder=3)
         bottom += vals
+    ax.grid(True, axis="y")
+    ax.set_axisbelow(True)
     ax.set_ylabel("% of relationship songs")
     ax.set_title("What relationship songs are about, by decade\n"
-                 "(dominant stance, exposure-weighted)", fontsize=9.5)
-    ax.legend(fontsize=6.5, frameon=False, ncol=2, loc="upper left",
-              bbox_to_anchor=(0, -0.12))
+                 "Dominant stance, exposure-weighted")
+    ax.legend(loc="upper left", bbox_to_anchor=(0, -0.10), ncol=3)
     ax.set_ylim(0, 100)
-    fig.tight_layout()
-    fig.savefig(path, bbox_inches="tight")
-    plt.close(fig)
+    source_note(fig, SOURCE_NOTE)
+    save_fig(fig, path, bottom=0.24)
     return True
 
 
@@ -131,19 +138,20 @@ def _plot_independent(shares: pd.DataFrame, path) -> bool:
     stances = [s for s in STANCES if s in shares.columns]
     if not stances or shares.empty:
         return False
-    fig, ax = plt.subplots(figsize=(7.6, 3.8))
+    fig, ax = plt.subplots(figsize=(11, 6))
     x = [int(d) for d in shares["decade"]]
     for stance in stances:
-        ax.plot(x, shares[stance] * 100, marker="o", ms=3.5, lw=1.7,
-                color=PALETTE.get(stance), label=STANCES[stance])
+        ax.plot(x, shares[stance] * 100, marker="o", ms=5, lw=2.2,
+                color=PALETTE.get(stance), label=STANCES[stance], zorder=3)
+    ax.grid(True, axis="y")
+    ax.set_axisbelow(True)
     ax.set_ylabel("% of relationship songs above threshold")
     ax.set_xlabel("Decade")
-    ax.set_title("Stances within relationship songs (independent, may overlap)",
-                 fontsize=9.5)
-    ax.legend(fontsize=6.5, frameon=False, ncol=2)
-    fig.tight_layout()
-    fig.savefig(path)
-    plt.close(fig)
+    ax.set_title("Stances within relationship songs\n"
+                 "Scored independently, so a song can hold more than one")
+    ax.legend(loc="upper left", ncol=2)
+    source_note(fig, SOURCE_NOTE)
+    save_fig(fig, path)
     return True
 
 

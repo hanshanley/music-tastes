@@ -18,92 +18,135 @@ import pandas as pd  # noqa: E402
 
 from .analysis_trends import METRICS  # noqa: E402
 from .paths import DERIVED, FIGURES, REPORTS  # noqa: E402
-
-plt.rcParams.update(
-    {
-        "figure.dpi": 130,
-        "font.size": 9,
-        "axes.spines.top": False,
-        "axes.spines.right": False,
-        "axes.grid": True,
-        "grid.alpha": 0.25,
-    }
+from .vizstyle import (  # noqa: E402
+    ACCENT,
+    BLUE,
+    GRID,
+    MUTED,
+    end_label,
+    house_style,
+    save_fig,
+    source_note,
 )
 
+house_style()
+
+# Chart-methodology breaks, annotated on every time series so a reader can see
+# which comparisons cross a change in what the Hot 100 measures.
 ERA_MARKS = [
     (1991, "SoundScan"),
     (2005, "digital sales"),
     (2013, "streaming/video"),
 ]
 
+SOURCE_BILLBOARD = (
+    "Data: Billboard Hot 100 (Billboard/Luminate) via the mhollingshead archive; "
+    "lyrics via Genius; acoustic features via AcousticBrainz (MetaBrainz)."
+)
+SOURCE_LYRICS = (
+    "Data: Billboard Hot 100 (Billboard/Luminate); lyrics via Genius. "
+    "Sentiment from NRC VAD/EmoLex (Mohammad, NRC Canada) and a local NLI model."
+)
+
+
+def _era_marks(ax) -> None:
+    """Annotate the chart-methodology breaks without dominating the plot."""
+    top = ax.get_ylim()[1]
+    for year, name in ERA_MARKS:
+        ax.axvline(year, color=GRID, ls=":", lw=1.0, zorder=0)
+        ax.text(year + 0.5, top, name, fontsize=7.5, color=MUTED,
+                va="top", rotation=90, style="italic")
+
 
 def _plot_metric(series: pd.DataFrame, metric: str, description: str, path):
+    """Yearly series with bootstrap band, drawn for two coverage variants.
+
+    Terracotta is the headline series; blue is the coverage-controlled subset. If
+    the two diverge, the trend depends on which songs happen to have lyrics.
+    """
     variants = [
-        ("weighted_all", "All covered songs (exposure-weighted)", "#1f77b4"),
-        ("weighted_complete_case", "Complete-case subset (exposure-weighted)", "#d62728"),
+        ("weighted_all", "All covered songs", ACCENT),
+        ("weighted_complete_case", "Complete-case subset", BLUE),
     ]
-    fig, ax = plt.subplots(figsize=(7.2, 3.6))
+    fig, ax = plt.subplots(figsize=(11, 6))
     plotted = False
+    last = None
     for variant, label, color in variants:
         sub = series[(series["metric"] == metric) & (series["variant"] == variant)]
         if sub.empty:
             continue
         sub = sub.sort_values("year")
-        ax.plot(sub["year"], sub["mean"], color=color, lw=1.6, label=label)
-        ax.fill_between(sub["year"], sub["ci_lo"], sub["ci_hi"], color=color, alpha=0.15)
+        ax.plot(sub["year"], sub["mean"], color=color, lw=2.4, label=label, zorder=3)
+        ax.fill_between(sub["year"], sub["ci_lo"], sub["ci_hi"], color=color,
+                        alpha=0.14, linewidth=0, zorder=2)
         plotted = True
+        last = (sub, label, color)
     if not plotted:
         plt.close(fig)
         return False
 
-    for year, name in ERA_MARKS:
-        ax.axvline(year, color="grey", ls=":", lw=0.8)
-        ax.text(year + 0.4, ax.get_ylim()[1], name, fontsize=6.5, color="grey",
-                va="top", rotation=90)
+    ax.grid(True, axis="y")
+    ax.set_axisbelow(True)
+    _era_marks(ax)
 
-    ax.set_title(description, fontsize=9.5)
+    ax.set_title(description)
     ax.set_xlabel("Year song first charted")
-    ax.legend(fontsize=7, frameon=False)
-    fig.tight_layout()
-    fig.savefig(path)
-    plt.close(fig)
+    ax.legend(loc="best")
+    source_note(fig, SOURCE_LYRICS)
+    save_fig(fig, path)
     return True
 
 
 def _plot_decades(decades: pd.DataFrame, metric: str, description: str, path):
+    """Decade means: the readable view for sparse binary outcomes."""
     sub = decades[
         (decades["metric"] == metric) & (decades["variant"] == "weighted_all")
     ].sort_values("decade")
     if sub.empty:
         return False
-    fig, ax = plt.subplots(figsize=(7.2, 3.4))
+
+    fig, ax = plt.subplots(figsize=(11, 6))
     x = [f"{int(d)}s" for d in sub["decade"]]
     yerr = [
-        (sub["mean"] - sub["ci_lo"]).clip(lower=0).to_numpy(),
-        (sub["ci_hi"] - sub["mean"]).clip(lower=0).to_numpy(),
+        (sub["mean"] - sub["ci_lo"]).clip(lower=0).to_numpy() * 100,
+        (sub["ci_hi"] - sub["mean"]).clip(lower=0).to_numpy() * 100,
     ]
-    ax.bar(x, sub["mean"] * 100, yerr=[e * 100 for e in yerr], color="#4c72b0",
-           capsize=3, alpha=0.85)
-    ax.set_ylabel("%")
-    ax.set_title(f"{description}\n(by decade, exposure-weighted, 95% CI)", fontsize=9)
-    for xi, (m, n) in enumerate(zip(sub["mean"], sub["n"])):
-        ax.text(xi, 0.4, f"n={n}", ha="center", va="bottom", fontsize=6, color="white")
-    fig.tight_layout()
-    fig.savefig(path)
-    plt.close(fig)
+    ax.bar(x, sub["mean"] * 100, yerr=yerr, color=ACCENT, capsize=4, width=0.68,
+           error_kw={"ecolor": MUTED, "elinewidth": 1.2, "capthick": 1.2}, zorder=3)
+    ax.grid(True, axis="y")
+    ax.set_axisbelow(True)
+    ax.set_ylabel("% of songs")
+    ax.set_title(f"{description}\nBy decade, exposure-weighted, with 95% bootstrap CI")
+    for xi, n in enumerate(sub["n"]):
+        ax.text(xi, 0.6, f"n={int(n):,}", ha="center", va="bottom", fontsize=8.5,
+                color=MUTED)
+    source_note(fig, SOURCE_LYRICS)
+    save_fig(fig, path)
     return True
 
 
 def _plot_coverage(path):
+    """Coverage by year, reported before any trend because it gates them all."""
     cov = pd.read_csv(REPORTS / "coverage_by_year.csv")
-    fig, ax = plt.subplots(figsize=(7.2, 3.0))
-    ax.plot(cov["debut_year"], cov["coverage_lyrics"] * 100, color="#2ca02c", lw=1.6)
-    ax.set_title("Lyric coverage by year (the main threat to every trend above)")
-    ax.set_ylabel("% of charting songs with lyrics")
+    fig, ax = plt.subplots(figsize=(11, 6))
+    ax.plot(cov["debut_year"], cov["coverage_lyrics"] * 100, color=ACCENT, lw=2.4,
+            label="Share of charting songs", zorder=3)
+    if "coverage_exposure" in cov.columns:
+        ax.plot(cov["debut_year"], cov["coverage_exposure"] * 100, color=BLUE,
+                lw=2.0, ls="--", label="Share of chart exposure", zorder=3)
+        last = cov.dropna(subset=["coverage_exposure"]).iloc[-1]
+        end_label(ax, last["debut_year"], last["coverage_exposure"] * 100,
+                  "exposure", BLUE)
+    ax.grid(True, axis="y")
+    ax.set_axisbelow(True)
+    _era_marks(ax)
+    ax.set_ylim(0, 100)
+    ax.set_title("Lyric coverage by year\nThe main threat to every trend that follows")
+    ax.set_ylabel("% covered")
     ax.set_xlabel("Year song first charted")
-    fig.tight_layout()
-    fig.savefig(path)
-    plt.close(fig)
+    ax.legend(loc="lower right")
+    source_note(fig, SOURCE_LYRICS)
+    save_fig(fig, path)
 
 
 def run() -> None:
