@@ -123,8 +123,10 @@ Both run locally; no lyric text is sent to any third-party service.
 
 **Coverage and caveats.** AcousticBrainz features are keyed to a specific *recording*,
 and a hit song usually has several recording MBIDs of which only some carry a
-submission. Querying only the best-matching MBID yielded BPM for 10% of songs;
-querying every acceptable candidate yielded 68%. Coverage remains uneven and is
+submission. Querying only the best-matching MBID yielded BPM for about a tenth of attempted
+songs; querying every acceptable candidate raised that severalfold. Current coverage
+is recorded in `data/derived/acoustic_features.parquet` and summarised by
+`music-tastes coverage`. Coverage remains uneven and is
 subject to the same year-dependence check as lyrics. Essentia BPM estimates are also
 prone to octave errors (reporting double or half the true tempo), so BPM results are
 reported with that caveat rather than as exact tempi.

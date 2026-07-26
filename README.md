@@ -45,9 +45,9 @@ for MusicBrainz's User-Agent policy).
 | Genius lyrics | free API tier + public pages | free |
 
 **On model size.** 435M parameters is small — roughly 1/300th of a frontier LLM — and
-it runs comfortably on a laptop. It is not chosen for grandeur: the smaller
-`deberta-v3-base` was measured on the validation set first and scored **5/13** against
-large's **13/13** on stance, which is the distinction the whole project turns on. The
+it runs comfortably on a laptop. It is not chosen for grandeur: the smaller `deberta-v3-base` was measured on the
+same validation set first and was clearly worse on stance, which is the distinction
+the whole project turns on. The
 real cost here is wall-clock time (~3 s/song), not money.
 
 If you want it faster, `music-tastes stance-b --limit N` scores a year-balanced prefix,
@@ -67,8 +67,9 @@ always reported alongside.
   entailment of explicit claims such as *"The singer does not need this person and
   will be fine without them."*
 
-On a 13-song set with uncontroversial stances, **Method A scored 6/13 and Method B
-scored 13/13**. Method A reliably finds devotion, longing and heartbreak but
+On a 13-song set with uncontroversial stances, **Method A scores 7/13 and Method B
+13/13** (reproduce with `music-tastes` → `gold_set`; figures live in
+`reports/gold/validation.json`). Method A reliably finds devotion, longing and heartbreak but
 systematically labels independence songs ("I Will Survive", "Since U Been Gone",
 "thank u, next") as heartbreak: cosine similarity measures *topic* — this is a breakup
 song — while entailment can capture *stance*. Method A is retained as a baseline with
@@ -77,9 +78,9 @@ that weakness measured, not hidden.
 Two design choices carry Method B's accuracy, both validated:
 
 - **Chunk-level maximum.** The self-sufficiency claim usually lives in the chorus and
-  is diluted across a whole lyric. Scoring verse-sized chunks and taking the max
-  lifted "I Will Survive" from 0.33 to 0.97 and "Since U Been Gone" from 0.05 to 0.85
-  while producing no false positive (controls stayed between 0.004 and 0.082).
+  is diluted across a whole lyric, so chunks are scored and the maximum taken. This
+  is what makes the classifier work, and it also introduces a length bias that
+  `music-tastes validity` measures and corrects (see Status).
 - **No relationship gate.** Stance is scored for every song, because "Survivor" scores
   only 0.26 on "is a relationship song" and a hard gate would discard it.
 
@@ -173,9 +174,9 @@ as evidence about mood.
 **Genre mix:** tested — accounts for only ~12% of the lexicon valence trend.
 
 **Other limitations:** Spotify's audio-features endpoint was deprecated for new apps in
-November 2024, so BPM comes from AcousticBrainz, whose Essentia estimates suffer octave
-errors ("Hey Jude" reads 128 BPM against a true tempo near 74). The Genius search API
-enforces a quota a full 32k run exhausts; the fetcher falls back to verified slug URLs
-(`--no-api`), resolving 82.9% of songs at tier A versus 93.8% for the API.
+November 2024, so BPM comes from AcousticBrainz, whose Essentia estimates suffer octave errors (it reports "Hey Jude" at 128 BPM, roughly
+double the commonly cited tempo). The Genius search API enforces a quota that a full 32k run exhausts; the fetcher
+falls back to verified slug URLs (`--no-api`). Final match tiers are recorded per
+song in `data/derived/lyrics_index.parquet`.
 
 

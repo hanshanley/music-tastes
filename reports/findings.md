@@ -1,12 +1,12 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 22:47 UTC._
+_Generated 2026-07-26 22:55 UTC._
 
 ## Summary
 
 | Question | Answer | Confidence |
 |---|---|---|
-| Are fewer hits about love/relationships? | **No.** Exposure-weighted share is flat at 65–76% across seven decades. | Good — but the unweighted series declines and fails the coverage check, so the two views differ. |
+| Are fewer hits about love/relationships? | **No.** Exposure-weighted share is flat at 65%–77% across 8 decades. | Good — but the unweighted series declines and fails the coverage check, so the two views differ. |
 | Among relationship songs, are more about *not needing* one? | **Yes** — the *direction* is the strongest finding here, ~+1.4 points/decade after correcting for aggregation bias. But the *level* is not quotable: it ranges 0.8%–14.8% purely on how the question is worded. | Direction: strong (survives coverage, genre, era, length, and 4 of 5 paraphrases). Level: unreliable. |
 | Are the lyrics getting sadder? | **Modestly, yes** — about 0.08–0.10 SD per decade. A word-norm lexicon and a context-aware model agree once their *opposite* lyric-length biases are removed. | Moderate — the raw lexicon series overstates it. |
 | Is the music getting sadder? | **No usable evidence.** Essentia's happy *and* sad scores both fall, which indicates classifier drift. Minor-key share doubles but ~60% is genre mix and it vanishes post-1991. | Weak. |
@@ -23,7 +23,7 @@ actually listened to. It is a proxy, not a census: see Limitations.
 
 ## Coverage, and why it is reported first
 
-- Overall lyric coverage: **77.4%** of charting songs, and **83.5% of total chart exposure** — the misses are disproportionately low-exposure deep cuts (median peak position #66), so weighted results are better covered than the song count suggests
+- Overall lyric coverage: **77.4%** of charting songs, and **83.5% of total chart exposure** — the misses are disproportionately low-exposure deep cuts (median peak position #59), so weighted results are better covered than the song count suggests
 - Coverage ranges from 51.8% (1959) to 92.3% (2017)
 - Spearman(year, coverage) = **+0.954** (p = 1.3e-36)
 
@@ -84,7 +84,7 @@ Aggregate accuracy figures are easy to publish and hard to trust. These are the 
 
 The separation is clean (stance >0.9 against relationship <0.08), which is why the headline share is computed *within* relationship songs rather than over the whole chart.
 
-_13 metrics are tracked, each in four variants, plus a battery of confound tests — well over a hundred hypothesis tests in total. At p<0.05 several 'significant' results are expected by chance alone. The findings leaned on here clear that bar comfortably (the independence trend is p=1.8e-09 after adjustment); isolated marginal results, such as tempo rising within the post-1991 window at p=0.025, are not treated as findings._
+_13 metrics are tracked, each in four variants, plus a battery of confound tests — well over a hundred hypothesis tests in total. At p<0.05 several 'significant' results are expected by chance alone. The findings leaned on here clear that bar comfortably (the independence trend is p=6.6e-11 after adjustment); isolated marginal results are not treated as findings._
 
 ### lyric_valence
 
@@ -287,16 +287,16 @@ Tempo in beats per minute (Essentia via AcousticBrainz)  (higher = faster)
 - First 5 years 117.512 -> last 5 years 122.313
 - Survives complete-case check: yes
 
-| Decade | n | Exposure-weighted mean | 95% CI |
+| Decade | n | Exposure-weighted mean (BPM) | 95% CI |
 |---|---|---|---|
-| 1950s | 216 | 11698.5% | 11322.2% – 12111.7% |
-| 1960s | 1030 | 12075.3% | 11930.1% – 12221.8% |
-| 1970s | 1116 | 12313.4% | 12182.3% – 12459.2% |
-| 1980s | 1141 | 12095.8% | 11979.3% – 12220.4% |
-| 1990s | 1176 | 11540.0% | 11393.7% – 11698.5% |
-| 2000s | 1230 | 11792.2% | 11633.6% – 11953.6% |
-| 2010s | 1152 | 12142.7% | 11978.9% – 12313.4% |
-| 2020s | 279 | 12143.1% | 11735.7% – 12561.4% |
+| 1950s | 216 | 117.0 | 113.2 – 121.1 |
+| 1960s | 1030 | 120.8 | 119.3 – 122.2 |
+| 1970s | 1116 | 123.1 | 121.8 – 124.6 |
+| 1980s | 1141 | 121.0 | 119.8 – 122.2 |
+| 1990s | 1176 | 115.4 | 113.9 – 117.0 |
+| 2000s | 1230 | 117.9 | 116.3 – 119.5 |
+| 2010s | 1152 | 121.4 | 119.8 – 123.1 |
+| 2020s | 279 | 121.4 | 117.4 – 125.6 |
 
 ![bpm](figures/bpm_decade.png)
 
@@ -383,16 +383,16 @@ Words per song  (higher = wordier)
 - First 5 years 134.458 -> last 5 years 366.786
 - Survives complete-case check: yes
 
-| Decade | n | Exposure-weighted mean | 95% CI |
+| Decade | n | Exposure-weighted mean (words) | 95% CI |
 |---|---|---|---|
-| 1950s | 925 | 13047.9% | 12004.2% – 14146.0% |
-| 1960s | 6849 | 15476.0% | 15093.6% – 15861.6% |
-| 1970s | 5296 | 21096.9% | 20527.6% – 21680.9% |
-| 1980s | 4113 | 25580.5% | 24990.3% – 26221.4% |
-| 1990s | 3422 | 34974.8% | 33892.5% – 36079.0% |
-| 2000s | 3418 | 42511.4% | 41240.4% – 43704.4% |
-| 2010s | 4430 | 41439.1% | 40462.0% – 42491.9% |
-| 2020s | 4149 | 38164.7% | 36883.5% – 39453.4% |
+| 1950s | 925 | 130 | 120 – 141 |
+| 1960s | 6849 | 155 | 151 – 159 |
+| 1970s | 5296 | 211 | 205 – 217 |
+| 1980s | 4113 | 256 | 250 – 262 |
+| 1990s | 3422 | 350 | 339 – 361 |
+| 2000s | 3418 | 425 | 412 – 437 |
+| 2010s | 4430 | 414 | 405 – 425 |
+| 2020s | 4149 | 382 | 369 – 395 |
 
 ![lyric_length](figures/lyric_length_decade.png)
 
@@ -452,7 +452,7 @@ Unlike lyric length and valence — where length is a mediator and controlling i
 - Unadjusted: **+0.0281/decade** (p=5.9e-50)
 - Chunk-adjusted: **+0.0141/decade** (p=6.6e-11) — 50% attenuation
 
-The trend nonetheless rises inside **every** fixed chunk-count stratum (short (1-4 chunks) n=2839, rho +0.064; medium (5-7) n=2416, rho +0.110; long (8+) n=1012, rho +0.183), including short songs where the bias cannot operate (2% in the 1950s to 10% in the 2020s). So the direction is solid and the **adjusted figure of about +1.4 points per decade should be read as the headline**, not the raw +2.7.
+The trend nonetheless rises inside **every** fixed chunk-count stratum (short (1-4 chunks) n=2839, rho +0.064; medium (5-7) n=2416, rho +0.110; long (8+) n=1012, rho +0.183), including short songs where the bias cannot operate (2.1% in the 1950s to 11.0% in the 2020s). So the direction is solid and the **adjusted figure of about +1.4 points per decade should be read as the headline**, not the raw +2.8.
 
 ### Does the result depend on how the question was worded?
 

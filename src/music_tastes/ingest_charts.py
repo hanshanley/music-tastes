@@ -95,6 +95,21 @@ def _fetch_secondary() -> pd.DataFrame | None:
         print(f"  secondary archive returned HTTP {resp.status}; skipping cross-check")
         return None
 
+    # Record the cross-check source with the same rigour as the primary archive, so
+    # a disagreement between them can be traced to two dated retrievals.
+    (RAW / "billboard_hot100_secondary.provenance.json").write_text(
+        json.dumps(
+            {
+                "url": SECONDARY_URL,
+                "retrieved_at": resp.retrieved_at,
+                "source": "utdata/rwd-billboard-data (UT Austin, GitHub)",
+                "upstream": "Billboard Hot 100, compiled by Billboard from Luminate data",
+                "role": "independent cross-check of the primary archive",
+            },
+            indent=2,
+        )
+    )
+
     df = pd.read_csv(io.StringIO(resp.text), quoting=csv.QUOTE_MINIMAL)
     rename = {
         "chart_week": "chart_week",

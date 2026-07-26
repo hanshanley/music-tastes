@@ -208,8 +208,16 @@ def fetch_acousticbrainz(mbids: list[str], cached_only: bool = False) -> dict[st
     low_data = low.json() if low.status == 200 else {}
     high_data = high.json() if high.status == 200 else {}
 
+    fetched_at = datetime.now(timezone.utc).isoformat()
     for mbid in missing:
-        rec: dict[str, float | str | None] = {"mbid": mbid}
+        # Every cached observation records where it came from and when, so a value
+        # in a published table can always be traced back to a request.
+        rec: dict[str, float | str | None] = {
+            "mbid": mbid,
+            "source": "acousticbrainz",
+            "source_url": f"{AB_LOW}?recording_ids={mbid}",
+            "retrieved_at": fetched_at,
+        }
         entry = (low_data.get(mbid) or {}).get("0") or {}
         ll = entry.get("lowlevel") or {}
         rhythm = entry.get("rhythm") or {}
@@ -252,8 +260,12 @@ def fetch_acousticbrainz(mbids: list[str], cached_only: bool = False) -> dict[st
 
         # Write even an empty result, so a recording with no submission is not
         # re-requested on every run.
-        _ab_path(mbid).write_text(json.dumps(rec if len(rec) > 1 else {}))
-        if len(rec) > 1:
+        # A record holding only provenance keys means the recording exists in
+        # MusicBrainz but has no AcousticBrainz submission. Cache the empty result
+        # so it is not re-requested, but do not return it as data.
+        has_features = len(rec) > 4
+        _ab_path(mbid).write_text(json.dumps(rec if has_features else {}))
+        if has_features:
             out[mbid] = rec
     return out
 
@@ -313,6 +325,12 @@ def _attach(mb: pd.DataFrame, features: dict[str, dict]) -> pd.DataFrame:
             if cand in features:
                 feat = dict(features[cand])
                 row["feature_mbid"] = feat.pop("mbid", None)
+                # Provenance travels with the cached record but is renamed on the way
+                # into the table, so it cannot collide with the chart/lyric columns
+                # that already carry `source` and `retrieved_at`.
+                row["acoustic_source"] = feat.pop("source", None)
+                row["acoustic_source_url"] = feat.pop("source_url", None)
+                row["acoustic_retrieved_at"] = feat.pop("retrieved_at", None)
                 row.update(feat)
                 break
         rows.append(row)

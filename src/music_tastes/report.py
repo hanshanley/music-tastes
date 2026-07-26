@@ -49,6 +49,94 @@ SOURCE_LYRICS = (
 )
 
 
+def _missed_median_peak() -> int:
+    """Median chart peak of songs we could not get lyrics for.
+
+    Computed rather than quoted: it moved from #66 to #59 as coverage grew, and a
+    stale figure in a claim about representativeness is exactly the kind of error
+    that erodes trust in the rest.
+    """
+    idx = pd.read_parquet(DERIVED / "lyrics_index.parquet")[["song_id", "has_lyrics"]]
+    songs = pd.read_parquet(DERIVED / "songs_weighted.parquet")[["song_id", "peak_rank"]]
+    m = songs.merge(idx, on="song_id", how="left")
+    m["has_lyrics"] = m["has_lyrics"].fillna(False)
+    missed = m.loc[~m["has_lyrics"], "peak_rank"].dropna()
+    return int(missed.median()) if len(missed) else 0
+
+
+def _share_range_text() -> str:
+    """Observed range and decade count for the relationship share."""
+    path = REPORTS / "decade_series.csv"
+    if not path.exists():
+        return "roughly two thirds to three quarters"
+    d = pd.read_csv(path)
+    sub = d[(d["metric"] == "relationship_share") & (d["variant"] == "weighted_all")]
+    if sub.empty:
+        return "roughly two thirds to three quarters"
+    return (
+        f"{sub['mean'].min():.0%}–{sub['mean'].max():.0%} across "
+        f"{len(sub)} decades"
+    )
+
+
+def _headline_p_text() -> str:
+    """Quote the actual adjusted p-value for the headline finding."""
+    path = REPORTS / "validity.json"
+    if not path.exists():
+        return "the independence trend is significant well beyond p<0.05"
+    agg = json.loads(path.read_text()).get("aggregation_bias", {})
+    p_adj = agg.get("chunk_adjusted_p")
+    if p_adj is None:
+        return "the independence trend is significant well beyond p<0.05"
+    return f"the independence trend is p={p_adj:.2g} after adjustment"
+
+
+def _short_stratum_text(agg: dict) -> str:
+    """First-to-last decade share within the shortest-lyric stratum."""
+    strata = agg.get("within_chunk_strata", [])
+    short = next((s for s in strata if s["stratum"].startswith("short")), None)
+    if not short or not short.get("by_decade"):
+        return "the shortest songs included"
+    by_dec = {int(k): v for k, v in short["by_decade"].items()}
+    lo, hi = min(by_dec), max(by_dec)
+    return f"{by_dec[lo]:.1%} in the {lo}s to {by_dec[hi]:.1%} in the {hi}s"
+
+
+class _Unit:
+    """How to render a metric's values in a table.
+
+    Shares are fractions in [0, 1] and read naturally as percentages. Tempo and word
+    counts are not: formatting 116.99 BPM with ".1%" produced "11698.5%" in an
+    earlier version of this report. Units are therefore chosen per metric rather
+    than assumed.
+    """
+
+    def __init__(self, header: str, kind: str) -> None:
+        self.header = header
+        self.kind = kind
+
+    def fmt(self, value) -> str:
+        if value is None or (isinstance(value, float) and value != value):
+            return "—"
+        if self.kind == "percent":
+            return f"{value:.1%}"
+        if self.kind == "count":
+            return f"{value:,.0f}"
+        return f"{value:.1f}"
+
+
+_PERCENT = _Unit("", "percent")
+_UNITS = {
+    "bpm": _Unit(" (BPM)", "decimal"),
+    "lyric_length": _Unit(" (words)", "count"),
+}
+
+
+def _metric_unit(metric: str) -> _Unit:
+    """Percent is right for shares and lexicon rates; anything else is declared."""
+    return _UNITS.get(metric, _PERCENT)
+
+
 def _era_marks(ax) -> None:
     """Annotate the chart-methodology breaks without dominating the plot."""
     top = ax.get_ylim()[1]
@@ -243,9 +331,9 @@ def run() -> None:
         "",
         "| Question | Answer | Confidence |",
         "|---|---|---|",
-        "| Are fewer hits about love/relationships? | **No.** Exposure-weighted share is "
-        "flat at 65–76% across seven decades. | Good — but the unweighted series "
-        "declines and fails the coverage check, so the two views differ. |",
+        f"| Are fewer hits about love/relationships? | **No.** Exposure-weighted share is "
+        f"flat at {_share_range_text()}. | Good — but the unweighted series "
+        f"declines and fails the coverage check, so the two views differ. |",
         f"| Among relationship songs, are more about *not needing* one? | "
         f"{_fmt_independence()} | Direction: strong (survives coverage, genre, era, "
         "length, and 4 of 5 paraphrases). Level: unreliable. |",
@@ -272,8 +360,8 @@ def run() -> None:
         f"- Overall lyric coverage: **{coverage['coverage_lyrics_overall']:.1%}** of "
         f"charting songs, and **{coverage.get('coverage_exposure_overall', 0):.1%} of "
         f"total chart exposure** — the misses are disproportionately low-exposure "
-        f"deep cuts (median peak position #66), so weighted results are better "
-        f"covered than the song count suggests",
+        f"deep cuts (median peak position #{_missed_median_peak()}), so weighted "
+        f"results are better covered than the song count suggests",
         f"- Coverage ranges from {coverage['coverage_min']:.1%} "
         f"({coverage['coverage_min_year']}) to {coverage['coverage_max']:.1%} "
         f"({coverage['coverage_max_year']})",
@@ -415,9 +503,8 @@ def run() -> None:
         f"_{n_metrics} metrics are tracked, each in four variants, plus a battery of "
         "confound tests — well over a hundred hypothesis tests in total. At p<0.05 "
         "several 'significant' results are expected by chance alone. The findings "
-        "leaned on here clear that bar comfortably (the independence trend is "
-        "p=1.8e-09 after adjustment); isolated marginal results, such as tempo rising "
-        "within the post-1991 window at p=0.025, are not treated as findings._",
+        f"leaned on here clear that bar comfortably ({_headline_p_text()}); isolated "
+        "marginal results are not treated as findings._",
         "",
     ]
 
@@ -459,14 +546,15 @@ def run() -> None:
                 (decades["metric"] == metric) & (decades["variant"] == "weighted_all")
             ].sort_values("decade")
             if not sub.empty:
+                unit = _metric_unit(metric)
                 lines += [
-                    "| Decade | n | Exposure-weighted mean | 95% CI |",
+                    f"| Decade | n | Exposure-weighted mean{unit.header} | 95% CI |",
                     "|---|---|---|---|",
                 ]
                 for r in sub.itertuples():
                     lines.append(
-                        f"| {int(r.decade)}s | {r.n} | {r.mean:.1%} | "
-                        f"{r.ci_lo:.1%} – {r.ci_hi:.1%} |"
+                        f"| {int(r.decade)}s | {r.n} | {unit.fmt(r.mean)} | "
+                        f"{unit.fmt(r.ci_lo)} – {unit.fmt(r.ci_hi)} |"
                     )
                 lines.append("")
 
@@ -657,9 +745,10 @@ def run() -> None:
                 "",
                 "The trend nonetheless rises inside **every** fixed chunk-count stratum "
                 f"({strata_txt}), including short songs where the bias cannot operate "
-                "(2% in the 1950s to 10% in the 2020s). So the direction is solid and "
-                "the **adjusted figure of about +1.4 points per decade should be read "
-                "as the headline**, not the raw +2.7.",
+                f"({_short_stratum_text(agg)}). So the direction is solid and the "
+                f"**adjusted figure of about {agg['chunk_adjusted_per_decade'] * 100:+.1f} "
+                f"points per decade should be read as the headline**, not the raw "
+                f"{agg['unadjusted_per_decade'] * 100:+.1f}.",
                 "",
             ]
 
