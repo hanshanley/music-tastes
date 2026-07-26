@@ -1,0 +1,34 @@
+[project]
+name = "music-tastes"
+version = "0.1.0"
+description = "Are US hit songs getting sadder, and are fewer of them about love?"
+requires-python = ">=3.11"
+dependencies = [
+    "duckdb>=1.1",
+    "pandas>=2.2",
+    "pyarrow>=17",
+    "requests>=2.32",
+    "python-dotenv>=1.0",
+    "tqdm>=4.66",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.2",
+    "numpy>=1.26",
+    "scipy>=1.13",
+    "statsmodels>=0.14",
+    "matplotlib>=3.9",
+]
+
+[project.optional-dependencies]
+embed = ["sentence-transformers>=3.0"]
+llm = ["openai>=1.40"]
+notebook = ["jupyter>=1.0"]
+
+[project.scripts]
+music-tastes = "music_tastes.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/music_tastes"]
