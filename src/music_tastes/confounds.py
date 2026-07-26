@@ -95,6 +95,23 @@ def genre_mix(df: pd.DataFrame) -> pd.DataFrame:
     return share.reset_index()
 
 
+def _attenuation(b0: float, b1: float) -> float | None:
+    """Share of an effect removed by a control, or None when that is meaningless.
+
+    Guarding only against b0 == 0 is not enough. When the unadjusted coefficient is
+    merely small the ratio explodes -- relationship_share had b0 = -0.00006 per
+    decade and reported 690.6% "attenuation" -- and when the two coefficients have
+    opposite signs the quantity is not a fraction of anything.
+    """
+    if not np.isfinite(b0) or not np.isfinite(b1):
+        return None
+    # Below this the effect is indistinguishable from no effect at the scale these
+    # coefficients live on (per-year change in a 0-1 share or a 0-1 valence).
+    if abs(b0) < 1e-5 or np.sign(b1) != np.sign(b0):
+        return None
+    return round(1 - (b1 / b0), 3)
+
+
 def genre_adjusted_trend(df: pd.DataFrame, column: str) -> dict:
     """Year effect with genre fixed effects, using every labelled song at once.
 
@@ -138,7 +155,7 @@ def genre_adjusted_trend(df: pd.DataFrame, column: str) -> dict:
         "unadjusted_p": float(m0.pvalues["debut_year"]),
         "genre_adjusted_year_coef_per_decade": round(b1 * 10, 5),
         "genre_adjusted_p": float(m1.pvalues["debut_year"]),
-        "attenuation_fraction": round(1 - (b1 / b0), 3) if b0 != 0 else None,
+        "attenuation_fraction": _attenuation(b0, b1),
         "survives_genre_control": bool(
             m1.pvalues["debut_year"] < 0.05 and np.sign(b1) == np.sign(b0)
         ),

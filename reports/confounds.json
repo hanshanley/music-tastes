@@ -408,7 +408,7 @@
       "unadjusted_p": 0.8889439103091791,
       "genre_adjusted_year_coef_per_decade": 0.00357,
       "genre_adjusted_p": 0.4390651692407763,
-      "attenuation_fraction": 6.906,
+      "attenuation_fraction": null,
       "survives_genre_control": false
     },
     "genre_strata": {

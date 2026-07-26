@@ -16,7 +16,8 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 
-reports/figures/
-!reports/figures/.gitkeep
+# Figures ARE committed: the README embeds them, so they must render on GitHub.
+# They are derived artefacts, but small (~200-400 KB each) and regenerating them
+# requires the full pipeline, which a reader of the README will not have run.
 
 .DS_Store

@@ -62,6 +62,17 @@ def _generated_stamp() -> str:
     return f"_Generated {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}._"
 
 
+def _pct(value) -> str:
+    """Format a fraction as a percentage, or an em dash when it is undefined.
+
+    Attenuation is None whenever the unadjusted effect is too small for a ratio to
+    mean anything, so every format site has to tolerate that rather than raising.
+    """
+    if value is None or (isinstance(value, float) and value != value):
+        return "—"
+    return f"{value:.0%}"
+
+
 def _missed_median_peak() -> int:
     """Median chart peak of songs we could not get lyrics for.
 
@@ -718,7 +729,7 @@ def run() -> None:
                 f"- **Genre mix explains about half of it** — "
                 f"{mk_ga['unadjusted_year_coef_per_decade']:+.4f}/decade unadjusted "
                 f"falls to {mk_ga['genre_adjusted_year_coef_per_decade']:+.4f} with "
-                f"genre fixed effects ({mk_ga['attenuation_fraction']:.0%} attenuation). "
+                f"genre fixed effects ({_pct(mk_ga.get('attenuation_fraction'))} attenuation). "
                 "Minor keys are simply more common in the genres that grew.",
             ]
             if mk_gs.get("taus"):
@@ -767,7 +778,7 @@ def run() -> None:
                 f"(p={agg['unadjusted_p']:.2g})",
                 f"- Chunk-adjusted: **{agg['chunk_adjusted_per_decade']:+.4f}/decade** "
                 f"(p={agg['chunk_adjusted_p']:.2g}) — "
-                f"{agg['attenuation_fraction']:.0%} attenuation",
+                f"{_pct(agg.get('attenuation_fraction'))} attenuation",
                 "",
                 "The trend nonetheless rises inside **every** fixed chunk-count stratum "
                 f"({strata_txt}), including short songs where the bias cannot operate "
@@ -927,7 +938,7 @@ def run() -> None:
                 f"| lyric valence | {ga['unadjusted_year_coef_per_decade']:+.5f} | "
                 f"{ga['genre_adjusted_year_coef_per_decade']:+.5f} "
                 f"(p={ga['genre_adjusted_p']:.2g}) | "
-                f"{ga['attenuation_fraction']:.0%} | {ga['n']} |",
+                f"{_pct(ga.get('attenuation_fraction'))} | {ga['n']} |",
             ]
             if ind_ga.get("genre_adjusted_year_coef_per_decade") is not None:
                 lines.append(
@@ -935,16 +946,16 @@ def run() -> None:
                     f"{ind_ga['unadjusted_year_coef_per_decade']:+.5f} | "
                     f"{ind_ga['genre_adjusted_year_coef_per_decade']:+.5f} "
                     f"(p={ind_ga['genre_adjusted_p']:.2g}) | "
-                    f"{ind_ga['attenuation_fraction']:.0%} | {ind_ga['n']} |"
+                    f"{_pct(ind_ga.get('attenuation_fraction'))} | {ind_ga['n']} |"
                 )
             lines += [
                 "",
-                f"Genre mix accounts for only {ga['attenuation_fraction']:.0%} of the "
+                f"Genre mix accounts for only {_pct(ga.get('attenuation_fraction'))} of the "
                 "lexicon valence trend, so it is not the explanation there.",
                 "",
                 (
                     f"For the independence trend genre control removes only "
-                    f"{ind_ga['attenuation_fraction']:.0%} of the effect "
+                    f"{_pct(ind_ga.get('attenuation_fraction'))} of the effect "
                     f"(p={ind_ga['genre_adjusted_p']:.2g} adjusted, n={ind_ga['n']:,}). "
                     "**Genre mix is not driving it.** An earlier pass on a sixth as much "
                     "genre-labelled data put the attenuation at 23% and lost "
@@ -952,7 +963,7 @@ def run() -> None:
                     "data."
                     if ind_ga.get("genre_adjusted_p", 1) < 0.05
                     else f"The independence trend keeps "
-                    f"{1 - ind_ga.get('attenuation_fraction', 0):.0%} of its magnitude "
+                    f"{_pct(1 - ind_ga['attenuation_fraction']) if ind_ga.get('attenuation_fraction') is not None else 'most'} of its magnitude "
                     f"under genre control but is not significant at n={ind_ga.get('n', 0):,}, "
                     "a power limitation rather than evidence of absence."
                 ),
