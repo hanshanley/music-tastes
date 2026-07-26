@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Drive the remaining long-running stages to completion unattended.
+# Drive the remaining long-running stages to completion, then rebuild the analysis.
 #
-# Both the lyrics fetch and the NLI stance scorer are resumable and idempotent: they
-# skip anything already present in their on-disk caches. This script therefore just
-# re-runs them until there is nothing left to do, then produces the analysis.
+# Every stage is resumable and idempotent: each skips whatever is already in its
+# on-disk cache. This script therefore just re-runs them until a pass adds nothing,
+# then regenerates the report.
 #
-# Usage:  scripts/finish_pipeline.sh [LYRICS_PID] [NLI_PID]
-# Passing the PIDs of already-running jobs makes the script wait for them rather than
-# starting a competing second copy.
+# Usage: scripts/finish_pipeline.sh [LYRICS_PID] [NLI_PID] [ACOUSTIC_PID]
+# Passing PIDs of already-running jobs makes the script wait for them rather than
+# starting competing copies.
 
 set -uo pipefail
 cd "$(dirname "$0")/.."
@@ -15,51 +15,63 @@ cd "$(dirname "$0")/.."
 PY=.venv/bin/python
 LYRICS_PID="${1:-}"
 NLI_PID="${2:-}"
+ACOUSTIC_PID="${3:-}"
 LOG=data/pipeline_supervisor.log
 
-log() { echo "[$(date -u +%H:%M:%S)] $*" | tee -a "$LOG"; }
+log() { echo "[$(date -u +%H:%M:%S)] $*" >> "$LOG"; }
 
 wait_for_pid() {
   local pid="$1" name="$2"
   [ -z "$pid" ] && return 0
-  while ps -p "$pid" > /dev/null 2>&1; do
-    sleep 120
-  done
+  while ps -p "$pid" > /dev/null 2>&1; do sleep 60; done
   log "$name finished"
 }
 
-log "supervisor started"
+count() { find "$1" -name '*.json' 2>/dev/null | wc -l | tr -d ' '; }
 
-# 1. Let any in-flight jobs finish before starting our own copies, so we never run
-#    two model processes competing for the same GPU.
+log "=== supervisor started ==="
+
+# --- lyrics -----------------------------------------------------------------
 wait_for_pid "$LYRICS_PID" "in-flight lyrics fetch"
-log "running lyrics fetch to completion"
-$PY -m music_tastes.fetch_lyrics --workers 4 >> data/lyrics_fetch.log 2>&1
-log "lyrics fetch complete"
-
-wait_for_pid "$NLI_PID" "in-flight NLI"
-
-# 2. Score stances. Re-run until a pass adds nothing, since each pass picks up lyrics
-#    that landed after the previous pass started.
-prev=-1
-for attempt in $(seq 1 12); do
-  count=$(find data/cache/nli -name '*.json' 2>/dev/null | wc -l | tr -d ' ')
-  log "NLI pass $attempt starting (scored so far: $count)"
-  if [ "$count" = "$prev" ]; then
-    log "no progress since last pass; stopping"
-    break
-  fi
-  prev="$count"
-  $PY -m music_tastes.stance_nli >> data/nli.log 2>&1
+for attempt in 1 2 3; do
+  before=$(ls data/cache/lyrics_cache 2>/dev/null | wc -l | tr -d ' ')
+  log "lyrics pass $attempt (cached: $before)"
+  # --no-api: the search quota is exhausted; verified slug URLs need no API.
+  $PY -m music_tastes.fetch_lyrics --no-api --workers 3 >> data/lyrics_fetch2.log 2>&1
+  after=$(ls data/cache/lyrics_cache 2>/dev/null | wc -l | tr -d ' ')
+  [ "$after" = "$before" ] && break
 done
-log "NLI scoring complete"
+log "lyrics complete"
 
-# 3. Analysis. Each stage is cheap and deterministic.
+# --- stance -----------------------------------------------------------------
+wait_for_pid "$NLI_PID" "in-flight NLI"
+prev=-1
+for attempt in $(seq 1 10); do
+  now=$(count data/cache/nli)
+  log "NLI pass $attempt (scored: $now)"
+  [ "$now" = "$prev" ] && { log "no progress; stopping"; break; }
+  prev="$now"
+  $PY -m music_tastes.stance_nli >> data/nli2.log 2>&1
+done
+log "NLI complete"
+
+# --- acoustic ---------------------------------------------------------------
+wait_for_pid "$ACOUSTIC_PID" "in-flight acoustic"
+prev=-1
+for attempt in 1 2 3; do
+  now=$(count data/cache/mbid)
+  log "acoustic pass $attempt (mbids: $now)"
+  [ "$now" = "$prev" ] && break
+  prev="$now"
+  $PY -m music_tastes.enrich_acoustic >> data/acoustic.log 2>&1
+done
+log "acoustic complete"
+
+# --- analysis ---------------------------------------------------------------
 for stage in features-a coverage trends report; do
   log "running $stage"
   $PY -m music_tastes.cli "$stage" >> data/analysis.log 2>&1 || log "$stage FAILED"
 done
-
 $PY -m music_tastes.gold_set >> data/analysis.log 2>&1 || log "gold_set FAILED"
 
-log "supervisor done -- see reports/findings.md"
+log "=== supervisor done -- see reports/findings.md ==="
