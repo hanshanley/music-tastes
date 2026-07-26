@@ -333,6 +333,40 @@ def run() -> None:
                 "",
             ]
 
+        happy = trends.get("acoustic_mood_happy", {}).get("weighted_all", {})
+        sad = trends.get("acoustic_mood_sad", {}).get("weighted_all", {})
+        if "kendall_tau" in happy and "kendall_tau" in sad:
+            same_way = (happy["kendall_tau"] < 0) and (sad["kendall_tau"] < 0)
+            lines += [
+                "### Essentia mood scores drift; only key is trustworthy",
+                "",
+                f"Essentia's `mood_happy` falls sharply (tau {happy['kendall_tau']:+.3f}, "
+                f"p={happy['p_value']:.2g}, {happy['mean_first_5_years']:.3f} to "
+                f"{happy['mean_last_5_years']:.3f}). Taken alone that looks like strong "
+                "evidence the music itself got sadder.",
+                "",
+                f"But `mood_sad` falls too (tau {sad['kendall_tau']:+.3f}, "
+                f"p={sad['p_value']:.2g}, {sad['mean_first_5_years']:.3f} to "
+                f"{sad['mean_last_5_years']:.3f}).",
+                "",
+            ]
+            if same_way:
+                lines += [
+                    "**Two opposing classifiers moving the same direction is diagnostic "
+                    "of drift, not emotion.** If songs were genuinely sadder, happy "
+                    "should fall while sad rises. Both falling points at something "
+                    "systematic in the audio — most plausibly production and mastering "
+                    "changes (loudness, compression, stereo width) shifting Essentia's "
+                    "features away from its 1990s training distribution. These two "
+                    "series are therefore **not reported as evidence about mood**.",
+                    "",
+                    "Minor-key share is the one acoustic signal that survives: key "
+                    "detection is a far better-posed task than mood classification, the "
+                    "trend is directional rather than a both-down drift, and it is "
+                    "significant in all four variants.",
+                    "",
+                ]
+
         agg = valid.get("aggregation_bias", {})
         if "unadjusted_per_decade" in agg:
             strata_txt = "; ".join(

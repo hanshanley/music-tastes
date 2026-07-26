@@ -120,7 +120,14 @@ the strictest English filter), code-switching (English-token share flat at 0.995
 across decades), lyric length (decline persists within every length quintile, and
 strengthens when repetition is removed), and chart-methodology era.
 
-**Still untested:** genre mix — the acoustic stage is still populating genre labels.
+**Musical (audio) findings:** tempo is **flat** (τ=−0.12, p=0.15 — hits are not getting
+faster or slower). **Minor-key share roughly doubled**, 13.4% → 36.1% (τ=+0.44,
+p=1.8e-07, significant in all four variants) — the one robust musical signal.
+Essentia's `mood_happy` falls sharply, but `mood_sad` falls too; two opposing
+classifiers moving the same way is diagnostic of drift (production/mastering change),
+not emotion, so neither is reported as evidence about mood.
+
+**Genre mix:** tested — accounts for only ~12% of the lexicon valence trend.
 
 **Other limitations:** Spotify's audio-features endpoint was deprecated for new apps in
 November 2024, so BPM comes from AcousticBrainz, whose Essentia estimates suffer octave
