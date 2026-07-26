@@ -15,6 +15,7 @@ STAGES = [
     ("exposure", "Compute exposure weights and the chart-methodology era table"),
     ("lexicons", "Download NRC VAD, NRC EmoLex and VADER"),
     ("fetch-lyrics", "Fetch lyrics into the gitignored local cache"),
+    ("enrich-acoustic", "MusicBrainz -> AcousticBrainz BPM, key and Essentia mood"),
     ("features-a", "Method A: lexicon and embedding-anchor features"),
     ("stance-b", "Method B: local zero-shot NLI stance classification"),
     ("coverage", "Coverage audit (gates every trend claim)"),
@@ -59,6 +60,10 @@ def main(argv: list[str] | None = None) -> int:
             from . import fetch_lyrics
 
             fetch_lyrics.run(limit=args.limit, workers=args.workers)
+        elif stage == "enrich-acoustic":
+            from . import enrich_acoustic
+
+            enrich_acoustic.run(limit=args.limit)
         elif stage == "features-a":
             from . import lyrics_features
 
