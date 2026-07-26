@@ -1,16 +1,16 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 21:50 UTC._
+_Generated 2026-07-26 21:52 UTC._
 
 ## Summary
 
 | Question | Answer | Confidence |
 |---|---|---|
-| Are fewer hits about love/relationships? | **No.** Exposure-weighted share is flat at 65–76% across seven decades. | Good — but note the unweighted series declines and fails the coverage check, so the two views differ. |
+| Are fewer hits about love/relationships? | **No.** Exposure-weighted share is flat at 65–76% across seven decades. | Good — but the unweighted series declines and fails the coverage check, so the two views differ. |
 | Among relationship songs, are more about *not needing* one? | **Yes** — the *direction* is the strongest finding here, ~+1.4 points/decade after correcting for aggregation bias. But the *level* is not quotable: it ranges 0.8%–14.8% purely on how the question is worded. | Direction: strong (survives coverage, genre, era, length, and 4 of 5 paraphrases). Level: unreliable. |
-| Are the lyrics getting sadder? | **Modestly, yes** — about 0.07–0.09 SD per decade. Both a word-norm lexicon and a context-aware model agree once their *opposite* lyric-length biases are removed. | Moderate. The raw lexicon series overstates it roughly 1.5x. |
-| Is the music getting sadder? | **No usable evidence.** Essentia's happy *and* sad scores both fall, which indicates classifier drift. Minor-key share doubles but ~52% is genre mix and it vanishes post-1991. | Weak. |
-| Are songs getting faster or slower? | **No change.** Tempo is flat (tau −0.12, p=0.15). | Good. |
+| Are the lyrics getting sadder? | **Modestly, yes** — about 0.08–0.10 SD per decade. A word-norm lexicon and a context-aware model agree once their *opposite* lyric-length biases are removed. | Moderate — the raw lexicon series overstates it. |
+| Is the music getting sadder? | **No usable evidence.** Essentia's happy *and* sad scores both fall, which indicates classifier drift. Minor-key share doubles but ~60% is genre mix and it vanishes post-1991. | Weak. |
+| Are songs getting faster or slower? | **No change.** Tempo is flat (tau -0.06, p=0.47). | Good. |
 
 The short version: **what songs are *about* changed more than how they *feel*.** Love songs are as common as ever, but the stance inside them shifted markedly toward self-sufficiency. Lyrics did get somewhat less positive, though far less than a naive word-count reading suggests, and the *musical* sadness signals (tempo, mood classifiers) show nothing usable at all.
 

@@ -127,6 +127,70 @@ def run() -> None:
             _plot_decades(decades_df, metric, description, FIGURES / f"{metric}_decade.png")
     _plot_coverage(FIGURES / "coverage_by_year.png")
 
+    # The summary table is derived, not hardcoded. Earlier versions embedded figures
+    # that silently went stale as the sample grew — twice.
+    valid_early = json.loads((REPORTS / "validity.json").read_text()) if (
+        REPORTS / "validity.json"
+    ).exists() else {}
+    conf_early = json.loads((REPORTS / "confounds.json").read_text()) if (
+        REPORTS / "confounds.json"
+    ).exists() else {}
+    recon_early = valid_early.get("length_bias_reconciliation", {})
+    agg_early = valid_early.get("aggregation_bias", {})
+    pr_early = json.loads((REPORTS / "prompt_robustness.json").read_text()) if (
+        REPORTS / "prompt_robustness.json"
+    ).exists() else {}
+
+    def _fmt_valence() -> str:
+        if "contextual" not in recon_early:
+            return "**Not yet measured.**"
+        lo = abs(recon_early["contextual"]["length_adjusted_per_decade_sd"])
+        hi = abs(recon_early["lexicon"]["length_adjusted_per_decade_sd"])
+        lo, hi = sorted((lo, hi))
+        return (
+            f"**Modestly, yes** — about {lo:.2f}–{hi:.2f} SD per decade. A word-norm "
+            "lexicon and a context-aware model agree once their *opposite* "
+            "lyric-length biases are removed."
+        )
+
+    def _fmt_independence() -> str:
+        adj = agg_early.get("chunk_adjusted_per_decade")
+        levels = ""
+        if pr_early.get("by_decade"):
+            shares = [
+                sum(v.values()) / len(v) for v in pr_early["by_decade"].values() if v
+            ]
+            if shares:
+                levels = (
+                    f" But the *level* is not quotable: it ranges "
+                    f"{min(shares):.1%}–{max(shares):.1%} purely on how the question "
+                    "is worded."
+                )
+        mag = f"~{adj * 100:+.1f} points/decade" if adj is not None else "rising"
+        return (
+            f"**Yes** — the *direction* is the strongest finding here, {mag} after "
+            f"correcting for aggregation bias.{levels}"
+        )
+
+    def _fmt_bpm() -> str:
+        b = trends.get("bpm", {}).get("weighted_all", {})
+        if "kendall_tau" not in b:
+            return "**Not yet measured.**"
+        return (
+            f"**No change.** Tempo is flat (tau {b['kendall_tau']:+.2f}, "
+            f"p={b['p_value']:.2g})."
+        )
+
+    def _fmt_music_sadness() -> str:
+        mk = conf_early.get("minor_key_share", {}).get("genre_adjusted", {})
+        att = mk.get("attenuation_fraction")
+        att_txt = f"~{att:.0%} is genre mix" if att is not None else "much is genre mix"
+        return (
+            "**No usable evidence.** Essentia's happy *and* sad scores both fall, "
+            f"which indicates classifier drift. Minor-key share doubles but {att_txt} "
+            "and it vanishes post-1991."
+        )
+
     lines = [
         "# Are US hit songs getting sadder, and are fewer of them about love?",
         "",
@@ -137,22 +201,15 @@ def run() -> None:
         "| Question | Answer | Confidence |",
         "|---|---|---|",
         "| Are fewer hits about love/relationships? | **No.** Exposure-weighted share is "
-        "flat at 65–76% across seven decades. | Good — but note the unweighted series "
+        "flat at 65–76% across seven decades. | Good — but the unweighted series "
         "declines and fails the coverage check, so the two views differ. |",
-        "| Among relationship songs, are more about *not needing* one? | **Yes** — the "
-        "*direction* is the strongest finding here, ~+1.4 points/decade after "
-        "correcting for aggregation bias. But the *level* is not quotable: it ranges "
-        "0.8%–14.8% purely on how the question is worded. | Direction: strong (survives "
-        "coverage, genre, era, length, and 4 of 5 paraphrases). Level: unreliable. |",
-        "| Are the lyrics getting sadder? | **Modestly, yes** — about 0.07–0.09 SD per "
-        "decade. Both a word-norm lexicon and a context-aware model agree once their "
-        "*opposite* lyric-length biases are removed. | Moderate. The raw lexicon series "
-        "overstates it roughly 1.5x. |",
-        "| Is the music getting sadder? | **No usable evidence.** Essentia's happy *and* "
-        "sad scores both fall, which indicates classifier drift. Minor-key share doubles "
-        "but ~52% is genre mix and it vanishes post-1991. | Weak. |",
-        "| Are songs getting faster or slower? | **No change.** Tempo is flat "
-        "(tau −0.12, p=0.15). | Good. |",
+        f"| Among relationship songs, are more about *not needing* one? | "
+        f"{_fmt_independence()} | Direction: strong (survives coverage, genre, era, "
+        "length, and 4 of 5 paraphrases). Level: unreliable. |",
+        f"| Are the lyrics getting sadder? | {_fmt_valence()} | Moderate — the raw "
+        "lexicon series overstates it. |",
+        f"| Is the music getting sadder? | {_fmt_music_sadness()} | Weak. |",
+        f"| Are songs getting faster or slower? | {_fmt_bpm()} | Good. |",
         "",
         "The short version: **what songs are *about* changed more than how they *feel*.** "
         "Love songs are as common as ever, but the stance inside them shifted markedly "
