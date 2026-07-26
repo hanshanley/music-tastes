@@ -1,6 +1,6 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 17:45 UTC._
+_Generated 2026-07-26 18:08 UTC._
 
 ## What this measures
 
@@ -372,6 +372,17 @@ The entailment measure is not broken: its extremes are exactly right (highest �
 **Most plausible reading:** the lexicon decline reflects *vocabulary* change rather than *emotional* change — modern lyrics use words the NRC norms score lower (slang, profanity, concrete nouns) without the songs being sadder in any sense a listener would recognise.
 
 **The word-average valence and joy trends below should therefore be read as not robust to measurement method.** The stance results (relationship share, independence share) come from the entailment model and are unaffected by this.
+
+### The independence rise is real, but half the headline size
+
+Method B scores verse-sized chunks and takes the **maximum**, which is what lets it find a self-sufficiency claim living in a single chorus. But the maximum of N draws rises with N even if nothing underlying changes, and lyrics roughly doubled in length over the period (rho(year, chunks) = +0.57; rho(chunks, p_max) = +0.39). Part of the apparent rise is therefore mechanical.
+
+Unlike lyric length and valence — where length is a mediator and controlling it would remove real signal — this inflation is a property of the **estimator**, not of the music, so adjusting for it is correct.
+
+- Unadjusted: **+0.0272/decade** (p=2.7e-40)
+- Chunk-adjusted: **+0.0141/decade** (p=1.8e-09) — 48% attenuation
+
+The trend nonetheless rises inside **every** fixed chunk-count stratum (short (1-4 chunks) n=2345, rho +0.067; medium (5-7) n=1917, rho +0.110; long (8+) n=762, rho +0.218), including short songs where the bias cannot operate (2% in the 1950s to 10% in the 2020s). So the direction is solid and the **adjusted figure of about +1.4 points per decade should be read as the headline**, not the raw +2.7.
 
 ### Non-English songs — ruled out
 

@@ -100,8 +100,12 @@ sources that were evaluated and rejected.
 
 ## Status
 
-**Robust:** relationship share and stance shares (independence, heartbreak, devotion).
-These come from the gold-validated entailment model.
+**Robust, with a corrected magnitude:** the "I don't need you" stance among
+relationship songs rises in every decade and inside every lyric-length stratum. But
+Method B's chunk-**max** aggregation is inflated by lyric length (lyrics doubled;
+ρ(year, chunks)=+0.57), and that is an estimator artifact rather than a property of
+the music. Adjusting for it halves the slope: **+1.4 points per decade, not +2.7**.
+Relationship share itself is flat.
 
 **Not robust — reported with the caveat:** word-average lyric valence and joy. On an
 identical 690 songs, NRC VAD word norms give ρ(year, valence) = −0.221 (p=4.6e-09)

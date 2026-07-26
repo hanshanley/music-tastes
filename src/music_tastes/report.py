@@ -333,6 +333,41 @@ def run() -> None:
                 "",
             ]
 
+        agg = valid.get("aggregation_bias", {})
+        if "unadjusted_per_decade" in agg:
+            strata_txt = "; ".join(
+                f"{s['stratum']} n={s['n']}, rho {s['spearman_year']:+.3f}"
+                for s in agg.get("within_chunk_strata", [])
+            )
+            lines += [
+                "### The independence rise is real, but half the headline size",
+                "",
+                "Method B scores verse-sized chunks and takes the **maximum**, which is "
+                "what lets it find a self-sufficiency claim living in a single chorus. "
+                "But the maximum of N draws rises with N even if nothing underlying "
+                "changes, and lyrics roughly doubled in length over the period "
+                f"(rho(year, chunks) = {agg['spearman_year_vs_chunks']:+.2f}; "
+                f"rho(chunks, p_max) = {agg['spearman_chunks_vs_max']:+.2f}). Part of "
+                "the apparent rise is therefore mechanical.",
+                "",
+                "Unlike lyric length and valence — where length is a mediator and "
+                "controlling it would remove real signal — this inflation is a property "
+                "of the **estimator**, not of the music, so adjusting for it is correct.",
+                "",
+                f"- Unadjusted: **{agg['unadjusted_per_decade']:+.4f}/decade** "
+                f"(p={agg['unadjusted_p']:.2g})",
+                f"- Chunk-adjusted: **{agg['chunk_adjusted_per_decade']:+.4f}/decade** "
+                f"(p={agg['chunk_adjusted_p']:.2g}) — "
+                f"{agg['attenuation_fraction']:.0%} attenuation",
+                "",
+                "The trend nonetheless rises inside **every** fixed chunk-count stratum "
+                f"({strata_txt}), including short songs where the bias cannot operate "
+                "(2% in the 1950s to 10% in the 2020s). So the direction is solid and "
+                "the **adjusted figure of about +1.4 points per decade should be read "
+                "as the headline**, not the raw +2.7.",
+                "",
+            ]
+
         lang = valid.get("language_robustness", {})
         if "all_songs" in lang:
             lines += [

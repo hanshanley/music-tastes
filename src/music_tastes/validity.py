@@ -304,7 +304,10 @@ def aggregation_bias_test(df: pd.DataFrame, stance: str = "independence") -> dic
     """
     import statsmodels.api as sm
 
-    col = f"is_{stance}"
+    # derive_labels emits "is_independent" for the "independence" hypothesis, so the
+    # label column cannot be derived from the stance name by suffixing alone.
+    label_col = {"independence": "is_independent"}.get(stance, f"is_{stance}")
+    col = label_col
     if col not in df.columns or "n_chunks" not in df.columns:
         return {"note": f"missing {col} or n_chunks"}
 

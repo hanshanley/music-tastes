@@ -92,7 +92,7 @@
     "spearman_tokens": -0.3018,
     "p_tokens": 7.34005159773155e-119,
     "spearman_types": -0.3464,
-    "p_types": 1.6705449505347497e-158,
+    "p_types": 1.6718196274586965e-158,
     "repetition_explains_trend": false
   },
   "uncovered_vocabulary_written": "/Users/hanshanley/Documents/github_projects/music-tastes/reports/validity_uncovered_vocabulary.csv",
@@ -179,5 +179,64 @@
     },
     "max_absolute_shift": 0.0215,
     "language_explains_trend": false
+  },
+  "aggregation_bias": {
+    "stance": "independence",
+    "n": 5024,
+    "spearman_chunks_vs_max": 0.3949,
+    "spearman_year_vs_chunks": 0.5693,
+    "unadjusted_per_decade": 0.02725,
+    "unadjusted_p": 2.732741811641049e-40,
+    "chunk_adjusted_per_decade": 0.01409,
+    "chunk_adjusted_p": 1.7722662906427511e-09,
+    "attenuation_fraction": 0.483,
+    "survives_adjustment": true,
+    "within_chunk_strata": [
+      {
+        "stratum": "short (1-4 chunks)",
+        "n": 2345,
+        "spearman_year": 0.0669,
+        "p_value": 0.0011904492644745038,
+        "by_decade": {
+          "1950": 0.019,
+          "1960": 0.042,
+          "1970": 0.0458,
+          "1980": 0.056,
+          "1990": 0.0647,
+          "2000": 0.0629,
+          "2010": 0.0753,
+          "2020": 0.1045
+        }
+      },
+      {
+        "stratum": "medium (5-7)",
+        "n": 1917,
+        "spearman_year": 0.1098,
+        "p_value": 1.4465822665845233e-06,
+        "by_decade": {
+          "1960": 0.0865,
+          "1970": 0.0622,
+          "1980": 0.0657,
+          "1990": 0.0857,
+          "2000": 0.1355,
+          "2010": 0.1483,
+          "2020": 0.1528
+        }
+      },
+      {
+        "stratum": "long (8+)",
+        "n": 762,
+        "spearman_year": 0.2179,
+        "p_value": 1.2050639271947475e-09,
+        "by_decade": {
+          "1980": 0.122,
+          "1990": 0.1356,
+          "2000": 0.1859,
+          "2010": 0.2903,
+          "2020": 0.4125
+        }
+      }
+    ],
+    "all_strata_positive": true
   }
 }
