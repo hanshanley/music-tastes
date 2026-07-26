@@ -34,6 +34,22 @@
       "points": 1445
     },
     {
+      "decade": 1950,
+      "debut_year": 1959,
+      "title_display": "A Big Hunk O' Love",
+      "artist_display": "Elvis Presley With The Jordanaires",
+      "p": 0.41041654348373413,
+      "points": 1083
+    },
+    {
+      "decade": 1950,
+      "debut_year": 1958,
+      "title_display": "How The Time Flies",
+      "artist_display": "Jerry Wallace",
+      "p": 0.40664103627204895,
+      "points": 965
+    },
+    {
       "decade": 1960,
       "debut_year": 1966,
       "title_display": "Red Rubber Ball",
@@ -64,6 +80,22 @@
       "artist_display": "Bobby Bland",
       "p": 0.9859092235565186,
       "points": 248
+    },
+    {
+      "decade": 1960,
+      "debut_year": 1965,
+      "title_display": "A World Of Our Own",
+      "artist_display": "The Seekers",
+      "p": 0.984471321105957,
+      "points": 589
+    },
+    {
+      "decade": 1960,
+      "debut_year": 1963,
+      "title_display": "Don't Think Twice, It's All Right",
+      "artist_display": "Peter, Paul & Mary",
+      "p": 0.9790558218955994,
+      "points": 722
     },
     {
       "decade": 1970,
@@ -98,6 +130,22 @@
       "points": 868
     },
     {
+      "decade": 1970,
+      "debut_year": 1970,
+      "title_display": "Cracklin' Rosie",
+      "artist_display": "Neil Diamond",
+      "p": 0.9527062773704529,
+      "points": 1260
+    },
+    {
+      "decade": 1970,
+      "debut_year": 1976,
+      "title_display": "Bad Luck",
+      "artist_display": "The Atlanta Disco Band",
+      "p": 0.9462997317314148,
+      "points": 17
+    },
+    {
       "decade": 1980,
       "debut_year": 1984,
       "title_display": "The Glamorous Life",
@@ -128,6 +176,22 @@
       "artist_display": "Aretha Franklin",
       "p": 0.9602867364883423,
       "points": 790
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1981,
+      "title_display": "Angel Of The Morning",
+      "artist_display": "Juice Newton",
+      "p": 0.9561454057693481,
+      "points": 1581
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1983,
+      "title_display": "Baby Jane",
+      "artist_display": "Rod Stewart",
+      "p": 0.9542653560638428,
+      "points": 935
     },
     {
       "decade": 1990,
@@ -162,6 +226,22 @@
       "points": 1615
     },
     {
+      "decade": 1990,
+      "debut_year": 1990,
+      "title_display": "King Of Wishful Thinking (From \"Pretty Woman\")",
+      "artist_display": "Go West",
+      "p": 0.9562272429466248,
+      "points": 1399
+    },
+    {
+      "decade": 1990,
+      "debut_year": 1999,
+      "title_display": "All N My Grill",
+      "artist_display": "Missy \"Misdemeanor\" Elliott Featuring Big Boi & Nicole",
+      "p": 0.9459512233734131,
+      "points": 319
+    },
+    {
       "decade": 2000,
       "debut_year": 2003,
       "title_display": "Me, Myself And I",
@@ -192,6 +272,22 @@
       "artist_display": "Hoku",
       "p": 0.9842910766601562,
       "points": 722
+    },
+    {
+      "decade": 2000,
+      "debut_year": 2006,
+      "title_display": "Say It Right",
+      "artist_display": "Nelly Furtado",
+      "p": 0.9841699004173279,
+      "points": 2447
+    },
+    {
+      "decade": 2000,
+      "debut_year": 2005,
+      "title_display": "DOA",
+      "artist_display": "Foo Fighters",
+      "p": 0.983628511428833,
+      "points": 259
     },
     {
       "decade": 2010,
@@ -226,6 +322,22 @@
       "points": 24
     },
     {
+      "decade": 2010,
+      "debut_year": 2012,
+      "title_display": "Wide Awake",
+      "artist_display": "Katy Perry",
+      "p": 0.9771974086761475,
+      "points": 2234
+    },
+    {
+      "decade": 2010,
+      "debut_year": 2016,
+      "title_display": "Needed Me",
+      "artist_display": "Rihanna",
+      "p": 0.9748690724372864,
+      "points": 3259
+    },
+    {
       "decade": 2020,
       "debut_year": 2020,
       "title_display": "Closure",
@@ -256,6 +368,22 @@
       "artist_display": "Megan Thee Stallion",
       "p": 0.9882448315620422,
       "points": 50
+    },
+    {
+      "decade": 2020,
+      "debut_year": 2022,
+      "title_display": "California Breeze",
+      "artist_display": "Lil Baby",
+      "p": 0.9868786931037903,
+      "points": 343
+    },
+    {
+      "decade": 2020,
+      "debut_year": 2021,
+      "title_display": "Drunk (And I Don't Wanna Go Home)",
+      "artist_display": "Elle King & Miranda Lambert",
+      "p": 0.9867516756057739,
+      "points": 978
     }
   ],
   "borderline": [
