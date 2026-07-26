@@ -132,6 +132,31 @@ def run() -> None:
         "",
         f"_Generated {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}._",
         "",
+        "## Summary",
+        "",
+        "| Question | Answer | Confidence |",
+        "|---|---|---|",
+        "| Are fewer hits about love/relationships? | **No.** Exposure-weighted share is "
+        "flat at 65–76% across seven decades. | Good — but note the unweighted series "
+        "declines and fails the coverage check, so the two views differ. |",
+        "| Among relationship songs, are more about *not needing* one? | **Yes**, rising "
+        "roughly +1.4 points per decade after correcting for aggregation bias (raw "
+        "+2.7 was inflated). | **Strongest finding.** Survives coverage, genre, era and "
+        "lyric-length checks; rises within every lyric-length stratum. |",
+        "| Are the lyrics getting sadder? | **Not demonstrable.** Word-norm lexicons say "
+        "yes; a context-aware model on the same songs finds no trend (p=0.76). | Weak — "
+        "the result depends entirely on which method you use. |",
+        "| Is the music getting sadder? | **No usable evidence.** Essentia's happy *and* "
+        "sad scores both fall, which indicates classifier drift. Minor-key share doubles "
+        "but ~52% is genre mix and it vanishes post-1991. | Weak. |",
+        "| Are songs getting faster or slower? | **No change.** Tempo is flat "
+        "(tau −0.12, p=0.15). | Good. |",
+        "",
+        "The short version: **what songs are *about* changed more than how they *feel*.** "
+        "Love songs are as common as ever, but the stance inside them shifted toward "
+        "self-sufficiency. Every claim that hits became emotionally sadder dissolved "
+        "under a change of measurement method.",
+        "",
         "## What this measures",
         "",
         "Every song that entered the Billboard Hot 100 between 1958-08-04 and the",

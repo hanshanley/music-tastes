@@ -20,6 +20,8 @@ STAGES = [
     ("stance-b", "Method B: local zero-shot NLI stance classification"),
     ("language", "Language ID and code-switching measurement"),
     ("validity", "Construct-validity checks on the sentiment measures"),
+    ("prompt-robustness", "Does the stance result survive rewording the hypothesis?"),
+    ("stance-composition", "Full stance mix within relationship songs over time"),
     ("confounds", "Rival explanations: genre, era, lyric length"),
     ("coverage", "Coverage audit (gates every trend claim)"),
     ("trends", "Year-level trends with bootstrap CIs and rank-based tests"),
@@ -83,6 +85,14 @@ def main(argv: list[str] | None = None) -> int:
             from . import validity
 
             validity.run()
+        elif stage == "prompt-robustness":
+            from . import prompt_robustness
+
+            prompt_robustness.run()
+        elif stage == "stance-composition":
+            from . import stance_composition
+
+            stance_composition.run()
         elif stage == "confounds":
             from . import confounds
 
