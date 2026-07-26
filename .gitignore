@@ -1,0 +1,22 @@
+# Data artifacts are never committed: they are large, and the lyrics cache is copyrighted.
+data/
+!data/.gitkeep
+
+# Lyrics cache (copyrighted text) — belt and braces, in case it moves.
+**/lyrics_cache/
+**/*.lyrics.txt
+
+.env
+.venv/
+venv/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+reports/figures/
+!reports/figures/.gitkeep
+
+.DS_Store

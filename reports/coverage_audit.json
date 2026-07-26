@@ -1,0 +1,13 @@
+{
+  "years_examined": 69,
+  "coverage_lyrics_overall": 0.10579105576345009,
+  "coverage_min": 0.05688622754491018,
+  "coverage_min_year": 1962,
+  "coverage_max": 0.16326530612244897,
+  "coverage_max_year": 2015,
+  "spearman_rho_year_vs_coverage": 0.8016441359152358,
+  "spearman_p": 1.2858404169053027e-16,
+  "coverage_is_year_dependent": true,
+  "complete_case_per_year": 27,
+  "complete_case_n": 1863
+}
