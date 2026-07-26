@@ -100,10 +100,23 @@ sources that were evaluated and rejected.
 
 ## Status
 
-Reported: lyric valence and emotion trends, coverage audit, chart ingestion and song
-resolution.
+**Reported:** lyric valence and emotion trends; relationship-share and stance shares
+(independence, heartbreak, devotion); coverage audit; chart ingestion; song
+resolution; classifier validation.
 
-Specified but **not yet run**, so no results are claimed for them: acoustic
-enrichment (BPM, key, Essentia mood) via MusicBrainz/AcousticBrainz/ReccoBeats, and
-the genre-mix confound check. Spotify's audio-features endpoint was deprecated for new
-applications in November 2024 and is not available to this project.
+**In progress:** lyric fetching and stance scoring are still extending coverage; the
+acoustic stage (BPM, key, Essentia mood) is running. Results refresh by re-running
+`coverage`, `trends` and `report`.
+
+**Known limitations carried into the writeup:**
+
+- Spotify's audio-features endpoint was deprecated for new applications in November
+  2024, so BPM comes from AcousticBrainz. Its features are community-submitted, and
+  Essentia BPM estimates suffer octave errors — "Hey Jude" is reported at 128 BPM
+  against a true tempo near 74.
+- Genre mix is uncontrolled. A shift toward genres with different lyrical conventions
+  is a live rival explanation for the valence decline.
+- The Genius search API enforces a quota that a full 32k run exhausts. The fetcher
+  falls back to verified slug URLs (`--no-api`), which resolve 82.9% of songs at tier
+  A versus 93.8% for the API.
+

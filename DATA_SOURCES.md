@@ -104,10 +104,28 @@ Both run locally; no lyric text is sent to any third-party service.
 
 - **Spotify Web API audio-features** (tempo, valence). Deprecated for newly registered
   applications on 2024-11-27, so it is unavailable to this project.
-- **AcousticBrainz** (MetaBrainz Foundation). API confirmed live and returns
-  `rhythm.bpm` and `mood_happy`/`mood_sad`; the acoustic enrichment stage that would
-  consume it is specified but not yet run, so **no BPM or acoustic mood results are
-  reported**.
 - **GetSongBPM**. Reachable only behind a Cloudflare challenge and requires an API key
   plus a referrer header; not used.
-- **ReccoBeats**. API confirmed live and ISRC-joinable; not yet used.
+- **ReccoBeats**. API confirmed live and ISRC-joinable; retained as a documented
+  fallback but not currently needed.
+
+## Acoustic features
+
+- MetaBrainz Foundation. *MusicBrainz* [database]. <https://musicbrainz.org> — used to
+  resolve chart songs to recording MBIDs and ISRCs. Accessed at the published limit of
+  one request per second with a descriptive User-Agent.
+- MetaBrainz Foundation. *AcousticBrainz* [data set]. <https://acousticbrainz.org> —
+  community-submitted Essentia analysis providing `rhythm.bpm`, `tonal.key_key`,
+  `tonal.key_scale` and high-level mood classifiers.
+- Bogdanov, D., Wack, N., Gómez, E., et al. (2013). ESSENTIA: an Audio Analysis Library
+  for Music Information Retrieval. *ISMIR 2013*. (The analysis library behind
+  AcousticBrainz.)
+
+**Coverage and caveats.** AcousticBrainz features are keyed to a specific *recording*,
+and a hit song usually has several recording MBIDs of which only some carry a
+submission. Querying only the best-matching MBID yielded BPM for 10% of songs;
+querying every acceptable candidate yielded 68%. Coverage remains uneven and is
+subject to the same year-dependence check as lyrics. Essentia BPM estimates are also
+prone to octave errors (reporting double or half the true tempo), so BPM results are
+reported with that caveat rather than as exact tempi.
+
