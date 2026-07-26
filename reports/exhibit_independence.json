@@ -1,0 +1,454 @@
+{
+  "stance": "independence",
+  "top_by_decade": [
+    {
+      "decade": 1950,
+      "debut_year": 1958,
+      "title_display": "Down In Virginia",
+      "artist_display": "Jimmy Reed",
+      "p": 0.5691044330596924,
+      "points": 13
+    },
+    {
+      "decade": 1950,
+      "debut_year": 1959,
+      "title_display": "Mr. Blue",
+      "artist_display": "The Fleetwoods",
+      "p": 0.5540633201599121,
+      "points": 1615
+    },
+    {
+      "decade": 1950,
+      "debut_year": 1959,
+      "title_display": "You Got What It Takes",
+      "artist_display": "Marv Johnson",
+      "p": 0.4335392415523529,
+      "points": 1445
+    },
+    {
+      "decade": 1950,
+      "debut_year": 1959,
+      "title_display": "A Big Hunk O' Love",
+      "artist_display": "Elvis Presley With The Jordanaires",
+      "p": 0.41041654348373413,
+      "points": 1083
+    },
+    {
+      "decade": 1960,
+      "debut_year": 1966,
+      "title_display": "Drive My Car",
+      "artist_display": "Bob Kuban And The In-Men",
+      "p": 0.9949396848678589,
+      "points": 21
+    },
+    {
+      "decade": 1960,
+      "debut_year": 1961,
+      "title_display": "Bye Bye Baby",
+      "artist_display": "Mary Wells",
+      "p": 0.9898500442504883,
+      "points": 285
+    },
+    {
+      "decade": 1960,
+      "debut_year": 1964,
+      "title_display": "Ain't Doing Too Bad (Part 1)",
+      "artist_display": "Bobby Bland",
+      "p": 0.9859092235565186,
+      "points": 248
+    },
+    {
+      "decade": 1960,
+      "debut_year": 1965,
+      "title_display": "A World Of Our Own",
+      "artist_display": "The Seekers",
+      "p": 0.984471321105957,
+      "points": 589
+    },
+    {
+      "decade": 1970,
+      "debut_year": 1974,
+      "title_display": "As Long As He Takes Care Of Home",
+      "artist_display": "Candi Staton",
+      "p": 0.9834387302398682,
+      "points": 223
+    },
+    {
+      "decade": 1970,
+      "debut_year": 1978,
+      "title_display": "I Will Survive",
+      "artist_display": "Gloria Gaynor",
+      "p": 0.9744834303855896,
+      "points": 1811
+    },
+    {
+      "decade": 1970,
+      "debut_year": 1976,
+      "title_display": "Down To Love Town",
+      "artist_display": "The Originals",
+      "p": 0.9683213233947754,
+      "points": 298
+    },
+    {
+      "decade": 1970,
+      "debut_year": 1978,
+      "title_display": "Beast Of Burden",
+      "artist_display": "The Rolling Stones",
+      "p": 0.9578729271888733,
+      "points": 868
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1982,
+      "title_display": "Dreamin'",
+      "artist_display": "John Schneider",
+      "p": 0.9686788320541382,
+      "points": 272
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1986,
+      "title_display": "Another Night",
+      "artist_display": "Aretha Franklin",
+      "p": 0.9602867364883423,
+      "points": 790
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1981,
+      "title_display": "Angel Of The Morning",
+      "artist_display": "Juice Newton",
+      "p": 0.9561454057693481,
+      "points": 1581
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1983,
+      "title_display": "Baby Jane",
+      "artist_display": "Rod Stewart",
+      "p": 0.9542653560638428,
+      "points": 935
+    },
+    {
+      "decade": 1990,
+      "debut_year": 1998,
+      "title_display": "Believe",
+      "artist_display": "Cher",
+      "p": 0.9951514601707458,
+      "points": 2493
+    },
+    {
+      "decade": 1990,
+      "debut_year": 1991,
+      "title_display": "Don't Want To Be A Fool",
+      "artist_display": "Luther Vandross",
+      "p": 0.9851860404014587,
+      "points": 1243
+    },
+    {
+      "decade": 1990,
+      "debut_year": 1994,
+      "title_display": "Don't Turn Around",
+      "artist_display": "Ace Of Base",
+      "p": 0.9801862239837646,
+      "points": 2591
+    },
+    {
+      "decade": 1990,
+      "debut_year": 1995,
+      "title_display": "Diggin' On You",
+      "artist_display": "TLC",
+      "p": 0.970098614692688,
+      "points": 1615
+    },
+    {
+      "decade": 2000,
+      "debut_year": 2005,
+      "title_display": "Don't Bother",
+      "artist_display": "Shakira",
+      "p": 0.9858139753341675,
+      "points": 305
+    },
+    {
+      "decade": 2000,
+      "debut_year": 2000,
+      "title_display": "Another Dumb Blonde",
+      "artist_display": "Hoku",
+      "p": 0.9842910766601562,
+      "points": 722
+    },
+    {
+      "decade": 2000,
+      "debut_year": 2005,
+      "title_display": "DOA",
+      "artist_display": "Foo Fighters",
+      "p": 0.983628511428833,
+      "points": 259
+    },
+    {
+      "decade": 2000,
+      "debut_year": 2002,
+      "title_display": "All I Have",
+      "artist_display": "Jennifer Lopez Featuring LL Cool J",
+      "p": 0.9808942675590515,
+      "points": 1876
+    },
+    {
+      "decade": 2010,
+      "debut_year": 2019,
+      "title_display": "Don't Call Me Up",
+      "artist_display": "Mabel",
+      "p": 0.9975560903549194,
+      "points": 229
+    },
+    {
+      "decade": 2010,
+      "debut_year": 2019,
+      "title_display": "Buy My Own Drinks",
+      "artist_display": "Runaway June",
+      "p": 0.9937466382980347,
+      "points": 47
+    },
+    {
+      "decade": 2010,
+      "debut_year": 2015,
+      "title_display": "Ayo",
+      "artist_display": "Chris Brown & Tyga",
+      "p": 0.9889064431190491,
+      "points": 1264
+    },
+    {
+      "decade": 2010,
+      "debut_year": 2019,
+      "title_display": "Demons And Angels",
+      "artist_display": "A Boogie Wit da Hoodie Featuring Juice WRLD",
+      "p": 0.9853562116622925,
+      "points": 24
+    },
+    {
+      "decade": 2020,
+      "debut_year": 2020,
+      "title_display": "Closure",
+      "artist_display": "Taylor Swift",
+      "p": 0.9981862306594849,
+      "points": 19
+    },
+    {
+      "decade": 2020,
+      "debut_year": 2023,
+      "title_display": "Do It Again",
+      "artist_display": "NLE Choppa & 2Rare",
+      "p": 0.9942250847816467,
+      "points": 55
+    },
+    {
+      "decade": 2020,
+      "debut_year": 2023,
+      "title_display": "Cairo",
+      "artist_display": "Karol G & Ovy On The Drums",
+      "p": 0.9894703030586243,
+      "points": 19
+    },
+    {
+      "decade": 2020,
+      "debut_year": 2020,
+      "title_display": "Captain Hook",
+      "artist_display": "Megan Thee Stallion",
+      "p": 0.9882448315620422,
+      "points": 50
+    }
+  ],
+  "borderline": [
+    {
+      "debut_year": 2008,
+      "title_display": "I'm Yours",
+      "artist_display": "Jason Mraz",
+      "p": 0.502899169921875,
+      "points": 5433
+    },
+    {
+      "debut_year": 2020,
+      "title_display": "Mood",
+      "artist_display": "24kGoldn Featuring iann dior",
+      "p": 0.4511423110961914,
+      "points": 4439
+    },
+    {
+      "debut_year": 2011,
+      "title_display": "Sail",
+      "artist_display": "AWOLNATION",
+      "p": 0.5387822985649109,
+      "points": 3997
+    },
+    {
+      "debut_year": 2004,
+      "title_display": "Yeah!",
+      "artist_display": "Usher Featuring Lil Jon & Ludacris",
+      "p": 0.532896101474762,
+      "points": 3952
+    },
+    {
+      "debut_year": 2010,
+      "title_display": "Dynamite",
+      "artist_display": "Taio Cruz",
+      "p": 0.4987487494945526,
+      "points": 3845
+    },
+    {
+      "debut_year": 2015,
+      "title_display": "Earned It (Fifty Shades Of Grey)",
+      "artist_display": "The Weeknd",
+      "p": 0.5066982507705688,
+      "points": 3292
+    },
+    {
+      "debut_year": 2013,
+      "title_display": "Timber",
+      "artist_display": "Pitbull Featuring Ke$ha",
+      "p": 0.48428863286972046,
+      "points": 3222
+    },
+    {
+      "debut_year": 2023,
+      "title_display": "Agora Hills",
+      "artist_display": "Doja Cat",
+      "p": 0.44996657967567444,
+      "points": 2946
+    },
+    {
+      "debut_year": 2018,
+      "title_display": "Drip Too Hard",
+      "artist_display": "Lil Baby & Gunna",
+      "p": 0.452301561832428,
+      "points": 2895
+    },
+    {
+      "debut_year": 2025,
+      "title_display": "I Got Better",
+      "artist_display": "Morgan Wallen",
+      "p": 0.5190489888191223,
+      "points": 2885
+    },
+    {
+      "debut_year": 2019,
+      "title_display": "Ballin'",
+      "artist_display": "Mustard & Roddy Ricch",
+      "p": 0.44686806201934814,
+      "points": 2853
+    },
+    {
+      "debut_year": 2004,
+      "title_display": "Drop It Like It's Hot",
+      "artist_display": "Snoop Dogg Featuring Pharrell",
+      "p": 0.4526115655899048,
+      "points": 2624
+    },
+    {
+      "debut_year": 1985,
+      "title_display": "Running Up That Hill (A Deal With God)",
+      "artist_display": "Kate Bush",
+      "p": 0.49128052592277527,
+      "points": 2624
+    },
+    {
+      "debut_year": 2020,
+      "title_display": "Blueberry Faygo",
+      "artist_display": "Lil Mosey",
+      "p": 0.5302060842514038,
+      "points": 2465
+    },
+    {
+      "debut_year": 2007,
+      "title_display": "Don't Stop The Music",
+      "artist_display": "Rihanna",
+      "p": 0.45224061608314514,
+      "points": 2297
+    }
+  ],
+  "gate_leakage": [
+    {
+      "debut_year": 2013,
+      "title_display": "Wake Me Up!",
+      "artist_display": "Avicii",
+      "p_stance": 0.9560224413871765,
+      "p_relationship_doc": 0.010944577865302563
+    },
+    {
+      "debut_year": 2019,
+      "title_display": "Old Town Road",
+      "artist_display": "Lil Nas X Featuring Billy Ray Cyrus",
+      "p_stance": 0.9099870324134827,
+      "p_relationship_doc": 0.07369627058506012
+    },
+    {
+      "debut_year": 2013,
+      "title_display": "Royals",
+      "artist_display": "Lorde",
+      "p_stance": 0.9312127232551575,
+      "p_relationship_doc": 0.021409770473837852
+    },
+    {
+      "debut_year": 2019,
+      "title_display": "The Bones",
+      "artist_display": "Maren Morris",
+      "p_stance": 0.9244834780693054,
+      "p_relationship_doc": 0.04463920742273331
+    },
+    {
+      "debut_year": 2001,
+      "title_display": "Family Affair",
+      "artist_display": "Mary J. Blige",
+      "p_stance": 0.9527503252029419,
+      "p_relationship_doc": 0.003389783203601837
+    },
+    {
+      "debut_year": 2009,
+      "title_display": "TiK ToK",
+      "artist_display": "Ke$ha",
+      "p_stance": 0.941600501537323,
+      "p_relationship_doc": 0.0026574311777949333
+    },
+    {
+      "debut_year": 2016,
+      "title_display": "Panda",
+      "artist_display": "Desiigner",
+      "p_stance": 0.9372681975364685,
+      "p_relationship_doc": 0.001213671755976975
+    },
+    {
+      "debut_year": 2011,
+      "title_display": "Good Feeling",
+      "artist_display": "Flo Rida",
+      "p_stance": 0.9623913764953613,
+      "p_relationship_doc": 0.0013858176534995437
+    },
+    {
+      "debut_year": 2017,
+      "title_display": "Bodak Yellow (Money Moves)",
+      "artist_display": "Cardi B",
+      "p_stance": 0.9108631014823914,
+      "p_relationship_doc": 0.05000489205121994
+    },
+    {
+      "debut_year": 2000,
+      "title_display": "Jumpin', Jumpin'",
+      "artist_display": "Destiny's Child",
+      "p_stance": 0.944943904876709,
+      "p_relationship_doc": 0.4285622239112854
+    },
+    {
+      "debut_year": 2003,
+      "title_display": "Damn!",
+      "artist_display": "YoungBloodZ Featuring Lil Jon",
+      "p_stance": 0.9287972450256348,
+      "p_relationship_doc": 0.00016156058700289577
+    },
+    {
+      "debut_year": 1980,
+      "title_display": "Another One Bites The Dust",
+      "artist_display": "Queen",
+      "p_stance": 0.9441254138946533,
+      "p_relationship_doc": 0.003311519045382738
+    }
+  ]
+}

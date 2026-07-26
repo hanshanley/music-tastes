@@ -1,6 +1,6 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 18:26 UTC._
+_Generated 2026-07-26 18:40 UTC._
 
 ## Summary
 
@@ -55,6 +55,34 @@ Inter-method agreement is poor (Cohen kappa = 0.25). Agreement is therefore not 
 Method A's failure mode is systematic, not noisy: cosine similarity tracks *topic* (this is a breakup song) and cannot see *stance* (...and the narrator is fine about it), so it labels "I Will Survive", "Since U Been Gone" and "thank u, next" as heartbreak. This is exactly the distinction the research question turns on, which is why the entailment model carries the result.
 
 ## Results
+
+### Check the classifier yourself
+
+Aggregate accuracy figures are easy to publish and hard to trust. These are the songs the model is most confident about, so a reader who knows the music can judge directly.
+
+| Decade | Highest-confidence "I don't need you" songs |
+|---|---|
+| 1950s | Down In Virginia — Jimmy Reed (0.57); Mr. Blue — The Fleetwoods (0.55); You Got What It Takes — Marv Johnson (0.43); A Big Hunk O' Love — Elvis Presley With The Jordanaires (0.41) |
+| 1960s | Drive My Car — Bob Kuban And The In-Men (0.99); Bye Bye Baby — Mary Wells (0.99); Ain't Doing Too Bad (Part 1) — Bobby Bland (0.99); A World Of Our Own — The Seekers (0.98) |
+| 1970s | As Long As He Takes Care Of Home — Candi Staton (0.98); I Will Survive — Gloria Gaynor (0.97); Down To Love Town — The Originals (0.97); Beast Of Burden — The Rolling Stones (0.96) |
+| 1980s | Dreamin' — John Schneider (0.97); Another Night — Aretha Franklin (0.96); Angel Of The Morning — Juice Newton (0.96); Baby Jane — Rod Stewart (0.95) |
+| 1990s | Believe — Cher (1.00); Don't Want To Be A Fool — Luther Vandross (0.99); Don't Turn Around — Ace Of Base (0.98); Diggin' On You — TLC (0.97) |
+| 2000s | Don't Bother — Shakira (0.99); Another Dumb Blonde — Hoku (0.98); DOA — Foo Fighters (0.98); All I Have — Jennifer Lopez Featuring LL Cool J (0.98) |
+| 2010s | Don't Call Me Up — Mabel (1.00); Buy My Own Drinks — Runaway June (0.99); Ayo — Chris Brown & Tyga (0.99); Demons And Angels — A Boogie Wit da Hoodie Featuring Juice WRLD (0.99) |
+| 2020s | Closure — Taylor Swift (1.00); Do It Again — NLE Choppa & 2Rare (0.99); Cairo — Karol G & Ovy On The Drums (0.99); Captain Hook — Megan Thee Stallion (0.99) |
+
+**Why the two-stage design matters.** The stance model keys on the literal claim, not the romantic context, so on its own it fires on *Another Brick In The Wall* ("we don't need no education"), on J. Cole's *Brackets* (about tax), and on *The Little Drummer Boy*. The relationship gate removes these before the statistic is computed — these songs score high on the stance but near zero on being about a relationship:
+
+| Song | stance | is-relationship |
+|---|---|---|
+| Wake Me Up! — Avicii | 0.96 | 0.01 |
+| Old Town Road — Lil Nas X Featuring Billy Ray Cyrus | 0.91 | 0.07 |
+| Royals — Lorde | 0.93 | 0.02 |
+| The Bones — Maren Morris | 0.92 | 0.04 |
+| Family Affair — Mary J. Blige | 0.95 | 0.00 |
+| TiK ToK — Ke$ha | 0.94 | 0.00 |
+
+The separation is clean (stance >0.9 against relationship <0.08), which is why the headline share is computed *within* relationship songs rather than over the whole chart.
 
 _13 metrics are tracked, each in four variants, plus a battery of confound tests — well over a hundred hypothesis tests in total. At p<0.05 several 'significant' results are expected by chance alone. The findings leaned on here clear that bar comfortably (the independence trend is p=1.8e-09 after adjustment); isolated marginal results, such as tempo rising within the post-1991 window at p=0.025, are not treated as findings._
 

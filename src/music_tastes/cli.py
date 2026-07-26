@@ -25,6 +25,7 @@ STAGES = [
     ("confounds", "Rival explanations: genre, era, lyric length"),
     ("coverage", "Coverage audit (gates every trend claim)"),
     ("trends", "Year-level trends with bootstrap CIs and rank-based tests"),
+    ("exhibit", "Face-validity exhibit: songs driving the stance result"),
     ("report", "Figures and the written findings document"),
 ]
 
@@ -105,6 +106,10 @@ def main(argv: list[str] | None = None) -> int:
             from . import analysis_trends
 
             analysis_trends.run()
+        elif stage == "exhibit":
+            from . import exhibit
+
+            exhibit.run()
         elif stage == "report":
             from . import report
 

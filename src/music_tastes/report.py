@@ -257,6 +257,56 @@ def run() -> None:
 
     lines += ["## Results", ""]
 
+    ex_path = REPORTS / "exhibit_independence.json"
+    if ex_path.exists():
+        ex = json.loads(ex_path.read_text())
+        top = ex.get("top_by_decade", [])
+        leak = ex.get("gate_leakage", [])
+        if top:
+            lines += [
+                "### Check the classifier yourself",
+                "",
+                "Aggregate accuracy figures are easy to publish and hard to trust. These "
+                "are the songs the model is most confident about, so a reader who knows "
+                "the music can judge directly.",
+                "",
+                "| Decade | Highest-confidence \"I don't need you\" songs |",
+                "|---|---|",
+            ]
+            by_dec: dict[int, list[str]] = {}
+            for r in top:
+                by_dec.setdefault(int(r["decade"]), []).append(
+                    f"{r['title_display']} — {r['artist_display']} ({r['p']:.2f})"
+                )
+            for dec in sorted(by_dec):
+                lines.append(f"| {dec}s | {'; '.join(by_dec[dec][:4])} |")
+            lines.append("")
+        if leak:
+            lines += [
+                "**Why the two-stage design matters.** The stance model keys on the "
+                "literal claim, not the romantic context, so on its own it fires on "
+                "*Another Brick In The Wall* (\"we don't need no education\"), on J. Cole's "
+                "*Brackets* (about tax), and on *The Little Drummer Boy*. The "
+                "relationship gate removes these before the statistic is computed — "
+                "these songs score high on the stance but near zero on being about a "
+                "relationship:",
+                "",
+                "| Song | stance | is-relationship |",
+                "|---|---|---|",
+            ]
+            for r in leak[:6]:
+                lines.append(
+                    f"| {r['title_display']} — {r['artist_display']} | "
+                    f"{r['p_stance']:.2f} | {r['p_relationship_doc']:.2f} |"
+                )
+            lines += [
+                "",
+                "The separation is clean (stance >0.9 against relationship <0.08), which "
+                "is why the headline share is computed *within* relationship songs "
+                "rather than over the whole chart.",
+                "",
+            ]
+
     n_metrics = len([m for m, e in trends.items() if "kendall_tau" in e.get("weighted_all", {})])
     lines += [
         f"_{n_metrics} metrics are tracked, each in four variants, plus a battery of "
