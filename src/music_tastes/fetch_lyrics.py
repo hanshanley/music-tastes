@@ -306,6 +306,30 @@ def load_lyrics(song_id: str) -> str | None:
     return json.loads(path.read_text()).get("lyrics")
 
 
+def rebuild_index_from_cache() -> pd.DataFrame:
+    """Reconstruct the lyrics index from the on-disk cache.
+
+    The main run writes its index only when it finishes, which for a full 32k fetch is
+    hours away. The cache is written per song as it completes, so this lets analysis
+    stages work against whatever has landed so far, and doubles as crash recovery.
+    """
+    records = []
+    for path in LYRICS_CACHE.glob("*.json"):
+        try:
+            rec = json.loads(path.read_text())
+        except json.JSONDecodeError:
+            continue
+        records.append({k: v for k, v in rec.items() if k != "lyrics"})
+
+    df = pd.DataFrame(records)
+    if df.empty:
+        return df
+    out = DERIVED / "lyrics_index.parquet"
+    df.to_parquet(out, index=False)
+    print(f"Rebuilt index for {len(df):,} songs from cache -> {out}")
+    return df
+
+
 def run(limit: int | None = None, sample: str = "top", workers: int = 4) -> pd.DataFrame:
     token = env("GENIUS_ACCESS_TOKEN", required=True)
     songs = pd.read_parquet(DERIVED / "songs_weighted.parquet")

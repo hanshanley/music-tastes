@@ -83,6 +83,38 @@ STANCE_ANCHORS: dict[str, list[str]] = {
     ],
 }
 
+# Discriminative axis for the headline question.
+#
+# Validation against songs with known stances showed that argmax over STANCE_ANCHORS
+# reliably identifies devotion, longing and heartbreak, but collapses independence
+# into heartbreak: "I Will Survive", "Since U Been Gone", "thank u, next", "Truth
+# Hurts" and "Stronger (What Doesn't Kill You)" were all labelled heartbreak_loss.
+# The cause is that embedding similarity tracks topic (this is a breakup song) rather
+# than stance (and the narrator is fine about it), and both stances share almost all
+# of their surface vocabulary.
+#
+# These two groups are therefore scored as an explicit contrast: a song high on
+# RESOLVED and low on YEARNING is a "I don't need you" song, whatever its overall
+# mood. The difference between them is a continuous feature, not a hard label, so the
+# analysis can report a distribution instead of forcing a threshold.
+POST_BREAKUP_RESOLVED = [
+    "I am over you and I feel free now that you are gone",
+    "losing you was the best thing that ever happened to me",
+    "I do not need you, I am better off on my own",
+    "I have moved on and I am stronger without you",
+    "do not call me, I am not taking you back",
+    "I am happier alone than I ever was with you",
+]
+
+POST_BREAKUP_YEARNING = [
+    "please come back to me, I want you back",
+    "I still cry over you every single night",
+    "I cannot move on because I am still in love with you",
+    "nothing feels right without you here beside me",
+    "I would do anything to have you back again",
+    "I am begging you not to leave me",
+]
+
 # Transparent keyword route, run alongside the embeddings so a reader can audit why a
 # song scored the way it did. Phrases are matched on normalized lowercase text.
 RELATIONSHIP_KEYWORDS = [

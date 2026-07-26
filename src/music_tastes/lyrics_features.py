@@ -30,6 +30,8 @@ from tqdm import tqdm
 from .fetch_lyrics import load_lyrics
 from .paths import DERIVED, RAW
 from .taxonomy import (
+    POST_BREAKUP_RESOLVED,
+    POST_BREAKUP_YEARNING,
     INDEPENDENCE_PHRASES,
     NON_RELATIONSHIP_ANCHORS,
     RELATIONSHIP_ANCHORS,
@@ -166,6 +168,12 @@ def embedding_features(texts: list[str], batch_size: int = 128) -> pd.DataFrame:
         for phrase in phrases:
             anchor_texts.append(phrase)
             anchor_groups.append(label)
+    for phrase in POST_BREAKUP_RESOLVED:
+        anchor_texts.append(phrase)
+        anchor_groups.append("resolved")
+    for phrase in POST_BREAKUP_YEARNING:
+        anchor_texts.append(phrase)
+        anchor_groups.append("yearning")
 
     anchors = model.encode(
         anchor_texts, normalize_embeddings=True, batch_size=batch_size, show_progress_bar=False
@@ -200,7 +208,7 @@ def embedding_features(texts: list[str], batch_size: int = 128) -> pd.DataFrame:
         max_doc = chunk_sims.max(axis=0)
 
         row: dict[str, float] = {}
-        for group in ["relationship", "non_relationship", *STANCE_LABELS]:
+        for group in ["relationship", "non_relationship", "resolved", "yearning", *STANCE_LABELS]:
             g = groups == group
             row[f"emb_{group}_mean"] = float(mean_doc[g].mean())
             row[f"emb_{group}_max"] = float(max_doc[g].max())
@@ -208,6 +216,11 @@ def embedding_features(texts: list[str], batch_size: int = 128) -> pd.DataFrame:
         row["emb_relationship_margin"] = (
             row["emb_relationship_mean"] - row["emb_non_relationship_mean"]
         )
+        # Discriminative axis: positive means the narrator is resolved/self-sufficient,
+        # negative means still yearning. See taxonomy.POST_BREAKUP_* for why argmax
+        # over stance anchors alone cannot separate these.
+        row["emb_independence_axis"] = row["emb_resolved_max"] - row["emb_yearning_max"]
+
         stance_scores = {s: row[f"emb_{s}_max"] for s in STANCE_LABELS}
         best = max(stance_scores, key=stance_scores.get)
         ordered = sorted(stance_scores.values(), reverse=True)
