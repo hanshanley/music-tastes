@@ -48,8 +48,18 @@ def score_variants(
     """Score a year-balanced sample against every phrasing of the claim."""
     from .stance_nli import _build_pipeline, chunk_lyrics
 
-    df = load_joined()
-    d = df[df["has_lyrics"] & df["is_english"].fillna(False)].copy()
+    # Gate on relationship songs, matching the headline metric. The published
+    # independence share is conditional on being a relationship song, so scoring
+    # paraphrases over *all* English-lyric songs would compare two different
+    # populations and make the level comparison meaningless.
+    from .analysis_trends import derive_labels
+
+    df = derive_labels(load_joined())
+    d = df[
+        df["has_lyrics"]
+        & df["is_english"].fillna(False)
+        & (df.get("is_relationship") == 1)
+    ].copy()
     sample = (
         d.sort_values("points", ascending=False)
         .groupby("debut_year", group_keys=False)

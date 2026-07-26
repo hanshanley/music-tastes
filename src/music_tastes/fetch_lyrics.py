@@ -99,9 +99,18 @@ def _artist_score(want: str, hit: dict) -> float:
             continue
         score = _sim(want, cand)
         cand_tokens = set(cand.split())
+        # Token overlap rescues abbreviated renames ("Lady A" for "Lady Antebellum"),
+        # but it must not be a *containment* measure. Dividing by min() returns 1.0
+        # whenever either name is a subset of the other, which let "B.o.B" match an
+        # unrelated act whose tokens happened to contain b/o/b at tier A. Jaccard
+        # penalises the extra tokens, and short initialisms are excluded entirely
+        # because one- and two-letter tokens carry almost no identifying signal.
         if want_tokens and cand_tokens:
-            overlap = len(want_tokens & cand_tokens) / min(len(want_tokens), len(cand_tokens))
-            score = max(score, overlap)
+            informative = {w for w in want_tokens if len(w) > 2}
+            if informative:
+                union = want_tokens | cand_tokens
+                jaccard = len(want_tokens & cand_tokens) / len(union)
+                score = max(score, jaccard)
         best = max(best, score)
     return best
 
@@ -389,8 +398,13 @@ def fetch_one(song, token: str, use_api: bool = True) -> dict:
         "artist_similarity": as_,
         "n_hits": len(hits),
         "has_lyrics": False,
-        "n_chars": 0,
-        "n_words": 0,
+        # Missing lyrics must be NaN, not 0. Zero is a *valid* word count, so a
+        # sentinel of 0 survives dropna() and enters means as a real observation.
+        # Because lyric coverage is strongly year-dependent, those false zeros
+        # concentrate in the early decades and manufacture a "lyrics got longer"
+        # slope out of missing data.
+        "n_chars": float("nan"),
+        "n_words": float("nan"),
         "is_instrumental": False,
         "is_english": False,
         "source": "genius",
