@@ -39,8 +39,30 @@ from .resolve_songs import normalize_artist, normalize_title, split_artist
 
 GENIUS_SEARCH = "https://api.genius.com/search"
 
-TITLE_THRESHOLD = 0.82
-ARTIST_THRESHOLD = 0.72
+# Matching is tiered rather than a single threshold, because two failure modes need
+# different treatment:
+#   * Artist renames ("Lady Antebellum" -> "Lady A", "Kanye West" -> "Ye"). Genius
+#     shows the current name; the chart preserves the historical billing. The title
+#     matches perfectly while the artist string barely matches at all.
+#   * Genuine covers, where the title matches perfectly and the artist should NOT.
+# Tier A is safe on its own. Tiers B and C trade precision for recall and are recorded
+# separately so the coverage audit can re-run every headline result without them.
+TIER_A = {"title": 0.85, "artist": 0.72}
+TIER_B = {"title": 0.92, "artist": 0.50}
+TIER_C = {"title": 0.96, "artist": 0.30, "max_rank": 2}
+
+# Genius hosts translation and editorial pages alongside songs. These are never the
+# recording we want. Anchored so real acts such as "GZA/Genius" are not caught.
+_JUNK_ARTIST = re.compile(
+    r"^(?:genius(?:\s|$)|pop genius|spotify$|billboard$|apple music$|"
+    r"amazon music$|tidal$|charts?$|rock genius|rap genius)",
+    re.IGNORECASE,
+)
+_JUNK_TITLE = re.compile(
+    r"traducci[oó]n|tradu[çc][aã]o|traduction|übersetzung|перевод|"
+    r"tracklist|playlist|\[top\s*\d+\]|annotated|credits$",
+    re.IGNORECASE,
+)
 
 # Section headers and production credits Genius embeds in the lyric body.
 _SECTION = re.compile(r"\[[^\]]{0,80}\]")
@@ -58,36 +80,123 @@ def _cache_file(song_id: str):
     return LYRICS_CACHE / f"{song_id}.json"
 
 
+def _artist_score(want: str, hit: dict) -> float:
+    """Best artist similarity across the hit's primary and full billing strings.
+
+    Combines sequence ratio with token containment. Token containment is what rescues
+    abbreviated renames such as "Lady A" for "Lady Antebellum", where the sequence
+    ratio alone falls below any usable threshold.
+    """
+    candidates = [
+        normalize_artist(hit.get("primary_artist", {}).get("name") or ""),
+        normalize_artist(hit.get("artist_names") or ""),
+    ]
+    want_tokens = set(want.split())
+    best = 0.0
+    for cand in candidates:
+        if not cand:
+            continue
+        score = _sim(want, cand)
+        cand_tokens = set(cand.split())
+        if want_tokens and cand_tokens:
+            overlap = len(want_tokens & cand_tokens) / min(len(want_tokens), len(cand_tokens))
+            score = max(score, overlap)
+        best = max(best, score)
+    return best
+
+
 def search_genius(title: str, artist: str, token: str) -> list[dict]:
-    primary, _ = split_artist(artist)
-    resp = get(
-        GENIUS_SEARCH,
-        namespace="genius_search",
-        params={"q": f"{title} {primary}"},
-        headers={"Authorization": f"Bearer {token}"},
-    )
-    if resp.status != 200:
-        return []
-    return [h["result"] for h in resp.json().get("response", {}).get("hits", [])]
+    """Search Genius, trying several query forms and pooling the results.
+
+    Genius's search is sensitive to leading articles: the query
+    "I Gotta Feeling The Black Eyed Peas" returns only editorial pages, while
+    "I Gotta Feeling Black Eyed Peas" returns the song as the top hit. We therefore
+    query with the normalized artist (leading "The" removed) and fall back to
+    title-only before giving up.
+    """
+    norm_artist = normalize_artist(artist)
+    queries = [
+        f"{title} {norm_artist}".strip(),
+        f"{norm_artist} {title}".strip(),
+        str(title).strip(),
+    ]
+
+    seen: dict[int, dict] = {}
+    for query in dict.fromkeys(q for q in queries if q):
+        resp = get(
+            GENIUS_SEARCH,
+            namespace="genius_search",
+            params={"q": query},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        if resp.status != 200:
+            continue
+        hits = [h["result"] for h in resp.json().get("response", {}).get("hits", [])]
+        for rank, hit in enumerate(hits):
+            if hit["id"] not in seen:
+                hit["_rank"] = rank
+                seen[hit["id"]] = hit
+        # A clean tier-A hit means the remaining query forms cannot improve on it.
+        _, _, _, tier = pick_match(list(seen.values()), title, artist)
+        if tier == "A":
+            break
+    return list(seen.values())
 
 
-def pick_match(hits: list[dict], title: str, artist: str) -> tuple[dict | None, float, float]:
-    """Choose the best Genius hit, or None if nothing clears both thresholds."""
+def pick_match(
+    hits: list[dict], title: str, artist: str
+) -> tuple[dict | None, float, float, str | None]:
+    """Choose the best Genius hit and the confidence tier it qualified under.
+
+    Returns the best *observed* similarities even when nothing qualifies, so that a
+    failure is diagnosable rather than reported as a flat zero.
+    """
     want_title = normalize_title(title)
     want_artist = normalize_artist(artist)
 
-    best, best_score = None, (0.0, 0.0)
+    best: dict | None = None
+    best_tier: str | None = None
+    best_key = -1.0
+    seen_title, seen_artist = 0.0, 0.0
+
     for hit in hits:
-        got_title = normalize_title(hit.get("title") or "")
-        got_artist = normalize_artist(hit.get("primary_artist", {}).get("name") or "")
-        ts, as_ = _sim(want_title, got_title), _sim(want_artist, got_artist)
-        # Featured artists often occupy the primary slot on one side or the other.
-        full = hit.get("artist_names") or ""
-        as_ = max(as_, _sim(want_artist, normalize_artist(full)))
-        if ts >= TITLE_THRESHOLD and as_ >= ARTIST_THRESHOLD:
-            if ts + as_ > sum(best_score):
-                best, best_score = hit, (ts, as_)
-    return best, best_score[0], best_score[1]
+        hit_title_raw = hit.get("title") or ""
+        hit_artist_raw = hit.get("artist_names") or ""
+        if _JUNK_ARTIST.search(hit_artist_raw) or _JUNK_TITLE.search(hit_title_raw):
+            continue
+        if hit.get("lyrics_state") not in (None, "complete"):
+            continue
+
+        ts = _sim(want_title, normalize_title(hit_title_raw))
+        as_ = _artist_score(want_artist, hit)
+        seen_title, seen_artist = max(seen_title, ts), max(seen_artist, as_)
+
+        if ts >= TIER_A["title"] and as_ >= TIER_A["artist"]:
+            tier = "A"
+        elif ts >= TIER_B["title"] and as_ >= TIER_B["artist"]:
+            tier = "B"
+        elif (
+            ts >= TIER_C["title"]
+            and as_ >= TIER_C["artist"]
+            and hit.get("_rank", 99) <= TIER_C["max_rank"]
+        ):
+            tier = "C"
+        else:
+            continue
+
+        # Prefer the safest tier; break ties on combined similarity.
+        key = {"A": 2.0, "B": 1.0, "C": 0.0}[tier] * 10 + ts + as_
+        if key > best_key:
+            best, best_tier, best_key = hit, tier, key
+
+    if best is None:
+        return None, round(seen_title, 3), round(seen_artist, 3), None
+    return (
+        best,
+        round(_sim(want_title, normalize_title(best.get("title") or "")), 3),
+        round(_artist_score(want_artist, best), 3),
+        best_tier,
+    )
 
 
 def scrape_lyrics(url: str) -> str | None:
