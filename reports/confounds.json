@@ -43,6 +43,25 @@
       "spearman_year_vs_log_words": 0.559480635180799,
       "length_p": 0.0,
       "attenuation": -0.10301396642418442
+    },
+    "genre_adjusted": {
+      "n": 406,
+      "n_genres": 7,
+      "genre_counts": {
+        "rhy": 124,
+        "pop": 105,
+        "hip": 60,
+        "roc": 43,
+        "dan": 31,
+        "jaz": 22,
+        "cla": 21
+      },
+      "unadjusted_year_coef_per_decade": -0.0064,
+      "unadjusted_p": 0.0008187329641243095,
+      "genre_adjusted_year_coef_per_decade": -0.00567,
+      "genre_adjusted_p": 0.006284049813572778,
+      "attenuation_fraction": 0.115,
+      "survives_genre_control": true
     }
   },
   "lyric_joy": {
@@ -89,6 +108,25 @@
       "spearman_year_vs_log_words": 0.5592141363844639,
       "length_p": 0.0,
       "attenuation": -0.09253665273571418
+    },
+    "genre_adjusted": {
+      "n": 406,
+      "n_genres": 7,
+      "genre_counts": {
+        "rhy": 124,
+        "pop": 105,
+        "hip": 60,
+        "roc": 43,
+        "dan": 31,
+        "jaz": 22,
+        "cla": 21
+      },
+      "unadjusted_year_coef_per_decade": -0.00411,
+      "unadjusted_p": 1.8357882253899474e-05,
+      "genre_adjusted_year_coef_per_decade": -0.00356,
+      "genre_adjusted_p": 0.0005571060076549099,
+      "attenuation_fraction": 0.133,
+      "survives_genre_control": true
     }
   },
   "independence_share": {
@@ -96,54 +134,18 @@
       "n_years": 36,
       "year_min": 1991,
       "year_max": 2026,
-      "kendall_tau": 0.19365079365079368,
-      "p_value": 0.09656309500112713,
-      "significant_at_05": false,
-      "theil_sen_slope_per_year": 0.002588362702956995,
+      "kendall_tau": 0.2412698412698413,
+      "p_value": 0.0384171561346835,
+      "significant_at_05": true,
+      "theil_sen_slope_per_year": 0.002485083719191058,
       "theil_sen_slope_ci": [
-        -0.0004303835020276592,
-        0.005437054969880249
+        0.0002561801507115352,
+        0.005618639592687
       ],
-      "change_per_decade": 0.02588362702956995,
-      "mean_first_5_years": 0.0633395992432433,
-      "mean_last_5_years": 0.1245379438734499,
-      "absolute_change": 0.0611983446302066
-    },
-    "post_2005_digital": {
-      "n_years": 22,
-      "year_min": 2005,
-      "year_max": 2026,
-      "kendall_tau": -0.18614718614718614,
-      "p_value": 0.23937855648715442,
-      "significant_at_05": false,
-      "theil_sen_slope_per_year": -0.0038233758353249337,
-      "theil_sen_slope_ci": [
-        -0.011640114588300075,
-        0.003831490635029788
-      ],
-      "change_per_decade": -0.03823375835324934,
-      "mean_first_5_years": 0.19735382228730264,
-      "mean_last_5_years": 0.1245379438734499,
-      "absolute_change": -0.07281587841385274
-    }
-  },
-  "relationship_share": {
-    "post_1991_soundscan": {
-      "n_years": 36,
-      "year_min": 1991,
-      "year_max": 2026,
-      "kendall_tau": -0.1142857142857143,
-      "p_value": 0.3267385445526918,
-      "significant_at_05": false,
-      "theil_sen_slope_per_year": -0.002073328263520138,
-      "theil_sen_slope_ci": [
-        -0.0054595389608005284,
-        0.0017048323240302088
-      ],
-      "change_per_decade": -0.020733282635201383,
-      "mean_first_5_years": 0.7384363411693945,
-      "mean_last_5_years": 0.7051899508006676,
-      "absolute_change": -0.0332463903687269
+      "change_per_decade": 0.024850837191910582,
+      "mean_first_5_years": 0.09024310072857944,
+      "mean_last_5_years": 0.12594436679836912,
+      "absolute_change": 0.03570126606978968
     },
     "post_2005_digital": {
       "n_years": 22,
@@ -152,15 +154,89 @@
       "kendall_tau": -0.03896103896103896,
       "p_value": 0.8236433617484156,
       "significant_at_05": false,
-      "theil_sen_slope_per_year": -0.0006743631186755805,
+      "theil_sen_slope_per_year": -0.0007125322111939482,
       "theil_sen_slope_ci": [
-        -0.010947168831625683,
-        0.006643652213415792
+        -0.006229413672737024,
+        0.005774026348762992
       ],
-      "change_per_decade": -0.006743631186755805,
-      "mean_first_5_years": 0.7503197255796097,
-      "mean_last_5_years": 0.7051899508006676,
-      "absolute_change": -0.04512977477894209
+      "change_per_decade": -0.007125322111939482,
+      "mean_first_5_years": 0.14173577854113334,
+      "mean_last_5_years": 0.12594436679836912,
+      "absolute_change": -0.015791411742764216
+    },
+    "genre_adjusted": {
+      "n": 359,
+      "n_genres": 7,
+      "genre_counts": {
+        "rhy": 126,
+        "pop": 102,
+        "hip": 46,
+        "roc": 29,
+        "dan": 25,
+        "cla": 16,
+        "jaz": 15
+      },
+      "unadjusted_year_coef_per_decade": 0.02424,
+      "unadjusted_p": 0.012464933773164533,
+      "genre_adjusted_year_coef_per_decade": 0.01865,
+      "genre_adjusted_p": 0.06897955769797014,
+      "attenuation_fraction": 0.231,
+      "survives_genre_control": false
+    }
+  },
+  "relationship_share": {
+    "post_1991_soundscan": {
+      "n_years": 36,
+      "year_min": 1991,
+      "year_max": 2026,
+      "kendall_tau": -0.031746031746031744,
+      "p_value": 0.7853007241156084,
+      "significant_at_05": false,
+      "theil_sen_slope_per_year": -0.0004205483152288906,
+      "theil_sen_slope_ci": [
+        -0.0028167892020693644,
+        0.0018363407498910506
+      ],
+      "change_per_decade": -0.004205483152288906,
+      "mean_first_5_years": 0.742109111718869,
+      "mean_last_5_years": 0.7147549686559947,
+      "absolute_change": -0.027354143062874203
+    },
+    "post_2005_digital": {
+      "n_years": 22,
+      "year_min": 2005,
+      "year_max": 2026,
+      "kendall_tau": 0.06493506493506493,
+      "p_value": 0.6964081768655271,
+      "significant_at_05": false,
+      "theil_sen_slope_per_year": 0.0004105749974160514,
+      "theil_sen_slope_ci": [
+        -0.0050124448408227825,
+        0.00396361981222311
+      ],
+      "change_per_decade": 0.004105749974160514,
+      "mean_first_5_years": 0.7249684568608497,
+      "mean_last_5_years": 0.7147549686559947,
+      "absolute_change": -0.010213488204854904
+    },
+    "genre_adjusted": {
+      "n": 494,
+      "n_genres": 7,
+      "genre_counts": {
+        "rhy": 156,
+        "pop": 133,
+        "hip": 70,
+        "roc": 49,
+        "dan": 36,
+        "cla": 26,
+        "jaz": 24
+      },
+      "unadjusted_year_coef_per_decade": 0.03362,
+      "unadjusted_p": 0.0026592669131741157,
+      "genre_adjusted_year_coef_per_decade": 0.03757,
+      "genre_adjusted_p": 0.0018559426495727146,
+      "attenuation_fraction": -0.118,
+      "survives_genre_control": true
     }
   }
 }

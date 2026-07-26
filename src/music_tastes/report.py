@@ -405,7 +405,53 @@ def run() -> None:
                 "",
             ]
         gs = val.get("genre_strata")
-        if gs:
+        ga = val.get("genre_adjusted", {})
+        if "genre_adjusted_year_coef_per_decade" in ga:
+            ind_ga = conf.get("independence_share", {}).get("genre_adjusted", {})
+            lines += [
+                "### Genre mix — tested, and not the driver",
+                "",
+                "Rap and R&B went from absent to dominant on the Hot 100, and they have "
+                "different lyrical conventions, so a change in the *mix* could move the "
+                "average without any genre changing. Re-estimating the year effect with "
+                "genre fixed effects:",
+                "",
+                "| Metric | Unadjusted / decade | Genre-adjusted | Attenuation | n |",
+                "|---|---|---|---|---|",
+                f"| lyric valence | {ga['unadjusted_year_coef_per_decade']:+.5f} | "
+                f"{ga['genre_adjusted_year_coef_per_decade']:+.5f} "
+                f"(p={ga['genre_adjusted_p']:.2g}) | "
+                f"{ga['attenuation_fraction']:.0%} | {ga['n']} |",
+            ]
+            if ind_ga.get("genre_adjusted_year_coef_per_decade") is not None:
+                lines.append(
+                    f"| independence share | "
+                    f"{ind_ga['unadjusted_year_coef_per_decade']:+.5f} | "
+                    f"{ind_ga['genre_adjusted_year_coef_per_decade']:+.5f} "
+                    f"(p={ind_ga['genre_adjusted_p']:.2g}) | "
+                    f"{ind_ga['attenuation_fraction']:.0%} | {ind_ga['n']} |"
+                )
+            lines += [
+                "",
+                "Genre mix accounts for only about a tenth of the lexicon valence "
+                "trend, so it is not the explanation. The independence trend keeps "
+                "roughly three quarters of its magnitude under genre control but loses "
+                "significance — note this runs on the "
+                f"{ind_ga.get('n', 0)} songs carrying both a genre label and a stance "
+                "label, against 3,510 for the headline estimate, so this is a power "
+                "limitation rather than evidence of absence.",
+                "",
+                "**Caveat on the labels themselves.** These are Essentia's automatic "
+                "classifiers, not editorial metadata. Its `genre_dortmund` model was "
+                "discarded outright: it labels 95–98% of everything after 1980 "
+                "\"electronic\", which is not a credible description of the Hot 100. "
+                "`genre_rosamerica` is used instead — balanced across seven classes "
+                "with a plausible trajectory (hip-hop 0% in the 1950s to 22.8% in the "
+                "1990s) — but it is still wrong often enough that this is a sanity "
+                "check, not a clean genre control.",
+                "",
+            ]
+        elif gs:
             lines += [
                 f"### Genre mix",
                 "",
@@ -431,12 +477,17 @@ def run() -> None:
         "2. **Chart tenure has inflated.** Songs now stay on the chart 90+ weeks versus",
         "   ~13 in the 1960s, so exposure weights are normalized within year.",
         "3. **Lyric coverage is uneven** and correlates with year; see above.",
-        "4. **Lexicon sentiment is blind to stance.** Word-level valence cannot tell",
-        "   'I don't need you' from 'I need you', which is why the stance question is",
-        "   answered by an entailment model instead.",
-        "5. **Genre mix is uncontrolled** in this version. A shift toward genres with",
-        "   different lyrical conventions is a live rival explanation for any change",
-        "   in valence.",
+        "4. **Lexicon sentiment is blind to stance and context.** Word-level valence",
+        "   cannot tell 'I don't need you' from 'I need you', cannot see negation, and",
+        "   cannot track 68 years of semantic change. This is not hypothetical here: a",
+        "   context-aware model run on the same songs finds no valence trend at all.",
+        "   Stance questions are therefore answered by the entailment model instead.",
+        "5. **Genre labels are model-inferred, not editorial.** Essentia's classifiers",
+        "   are noisy; `genre_dortmund` was discarded as degenerate. Genre control is a",
+        "   sanity check rather than a clean adjustment.",
+        "6. **Acoustic coverage is partial.** AcousticBrainz is community-submitted, so",
+        "   BPM and mood exist for a subset of songs, and Essentia BPM is prone to",
+        "   octave errors.",
         "",
         "## Sources",
         "",
