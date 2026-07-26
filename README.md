@@ -152,8 +152,9 @@ model shows nothing (p=0.76), which looks like the lexicon is an artifact. But b
 measures are length-biased *in opposite directions* (lexicon ρ=−0.174, contextual
 ρ=+0.227), and lyrics doubled in length — inflating one trend and masking the other.
 Opposite signs on the same nuisance variable means measurement error, not a real
-effect, so adjustment is warranted. Adjusted, the two converge: **−0.068 and −0.092 SD
-per decade, both significant.** Real, but ~1.5× smaller than the raw lexicon implies.
+effect, so adjustment is warranted. Adjusted, the two converge: **−0.100 and −0.085 SD
+per decade** (p=1.1e-15 and 1.3e-11, n=2,070). Real, but smaller than the raw lexicon
+implies.
 Run `music-tastes validity` to reproduce.
 
 **Ruled out as explanations:** non-English songs (ρ moves only −0.303 → −0.281 under

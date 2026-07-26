@@ -92,67 +92,67 @@
     "spearman_tokens": -0.3018,
     "p_tokens": 7.34005159773155e-119,
     "spearman_types": -0.3464,
-    "p_types": 1.672812541143012e-158,
+    "p_types": 1.67476712960458e-158,
     "repetition_explains_trend": false
   },
   "uncovered_vocabulary_written": "/Users/hanshanley/Documents/github_projects/music-tastes/reports/validity_uncovered_vocabulary.csv",
   "contextual_check": {
-    "n": 690,
-    "spearman_year_vs_lexicon_valence": -0.2208,
-    "p_lexicon": 4.558780423604448e-09,
-    "spearman_year_vs_contextual_valence": -0.0118,
-    "p_contextual": 0.7573158479827465,
-    "agreement_between_measures": 0.2816,
-    "p_agreement": 4.813054314676489e-14,
+    "n": 2070,
+    "spearman_year_vs_lexicon_valence": -0.2784,
+    "p_lexicon": 3.731436047728221e-38,
+    "spearman_year_vs_contextual_valence": -0.0017,
+    "p_contextual": 0.9389762005174596,
+    "agreement_between_measures": 0.2628,
+    "p_agreement": 4.94158420583554e-34,
     "same_direction": true,
     "by_decade": [
       {
         "decade": 1950,
-        "n": 20,
-        "lexicon": 0.6428,
-        "contextual": 0.0108
+        "n": 60,
+        "lexicon": 0.6542,
+        "contextual": -0.0616
       },
       {
         "decade": 1960,
-        "n": 100,
-        "lexicon": 0.6313,
-        "contextual": -0.1869
+        "n": 300,
+        "lexicon": 0.6334,
+        "contextual": -0.2084
       },
       {
         "decade": 1970,
-        "n": 100,
-        "lexicon": 0.6398,
-        "contextual": -0.1639
+        "n": 300,
+        "lexicon": 0.6374,
+        "contextual": -0.1591
       },
       {
         "decade": 1980,
-        "n": 100,
-        "lexicon": 0.6148,
-        "contextual": -0.281
+        "n": 300,
+        "lexicon": 0.6215,
+        "contextual": -0.2766
       },
       {
         "decade": 1990,
-        "n": 100,
-        "lexicon": 0.6342,
-        "contextual": -0.2374
+        "n": 300,
+        "lexicon": 0.6261,
+        "contextual": -0.2364
       },
       {
         "decade": 2000,
-        "n": 100,
-        "lexicon": 0.5995,
-        "contextual": -0.2758
+        "n": 300,
+        "lexicon": 0.6035,
+        "contextual": -0.2277
       },
       {
         "decade": 2010,
-        "n": 100,
-        "lexicon": 0.6054,
-        "contextual": -0.0821
+        "n": 300,
+        "lexicon": 0.5955,
+        "contextual": -0.1166
       },
       {
         "decade": 2020,
-        "n": 70,
-        "lexicon": 0.5952,
-        "contextual": -0.2823
+        "n": 210,
+        "lexicon": 0.5853,
+        "contextual": -0.2688
       }
     ]
   },
@@ -240,20 +240,20 @@
     "all_strata_positive": true
   },
   "length_bias_reconciliation": {
-    "n": 690,
+    "n": 2070,
     "contextual": {
-      "length_bias_spearman": 0.2266,
-      "raw_per_decade_sd": -0.0158,
-      "raw_p": 0.40814961851839715,
-      "length_adjusted_per_decade_sd": -0.0918,
-      "length_adjusted_p": 2.5056675439727954e-05
+      "length_bias_spearman": 0.2342,
+      "raw_per_decade_sd": -0.0063,
+      "raw_p": 0.5705594057556732,
+      "length_adjusted_per_decade_sd": -0.0848,
+      "length_adjusted_p": 1.2589380718670515e-11
     },
     "lexicon": {
-      "length_bias_spearman": -0.1738,
-      "raw_per_decade_sd": -0.0969,
-      "raw_p": 3.164442050368466e-07,
-      "length_adjusted_per_decade_sd": -0.0684,
-      "length_adjusted_p": 0.0018097424047957647
+      "length_bias_spearman": -0.2266,
+      "raw_per_decade_sd": -0.1286,
+      "raw_p": 2.2788737872020622e-32,
+      "length_adjusted_per_decade_sd": -0.1003,
+      "length_adjusted_p": 1.0525085117479137e-15
     },
     "biases_have_opposite_sign": true,
     "agree_after_adjustment": true

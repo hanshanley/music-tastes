@@ -1,6 +1,6 @@
 # Are US hit songs getting sadder, and are fewer of them about love?
 
-_Generated 2026-07-26 21:16 UTC._
+_Generated 2026-07-26 21:50 UTC._
 
 ## Summary
 
@@ -402,17 +402,17 @@ Words per song  (higher = wordier)
 
 ### The two valence measures disagree — until you remove length bias
 
-On an identical set of 690 songs the raw comparison looks decisive against the sentiment finding:
+On an identical set of 2070 songs the raw comparison looks decisive against the sentiment finding:
 
 | Measure | Sees context? | raw rho(year, valence) | p |
 |---|---|---|---|
-| NRC VAD word norms | no | -0.221 | 4.6e-09 |
-| Entailment model | yes | -0.012 | 0.76 |
+| NRC VAD word norms | no | -0.278 | 3.7e-38 |
+| Entailment model | yes | -0.002 | 0.94 |
 
 Read naively that says the lexicon result is an artefact. It is not that simple, because **both measures are length-dependent and in opposite directions**:
 
-- lexicon: rho(words, valence) = **-0.174** — longer looks sadder
-- contextual: rho(words, valence) = **+0.227** — longer looks happier
+- lexicon: rho(words, valence) = **-0.227** — longer looks sadder
+- contextual: rho(words, valence) = **+0.234** — longer looks happier
 
 Lyrics roughly doubled in length, so those biases drive the two year-trends apart: the lexicon's decline is inflated and the contextual model's is masked. The apparent disagreement was mostly an artefact of the comparison.
 
@@ -420,10 +420,10 @@ Lyrics roughly doubled in length, so those biases drive the two year-trends apar
 
 | Measure | raw SD/decade | length-adjusted SD/decade | p |
 |---|---|---|---|
-| lexicon | -0.097 | **-0.068** | 0.0018 |
-| contextual | -0.016 | **-0.092** | 2.5e-05 |
+| lexicon | -0.129 | **-0.100** | 1.1e-15 |
+| contextual | -0.006 | **-0.085** | 1.3e-11 |
 
-**Revised conclusion.** Hit lyrics did become modestly less positive — roughly 0.07–0.09 standard deviations per decade — and this now replicates across two methods with very different failure modes. That is real but much smaller than the raw lexicon series suggests, and an earlier version of this report over-retracted it on the strength of the unadjusted comparison alone.
+**Revised conclusion.** Hit lyrics did become modestly less positive — about 0.08–0.10 standard deviations per decade — and this replicates across two methods with very different failure modes on 2,070 songs. It is real but smaller than the raw lexicon series implies, and an earlier version of this report over-retracted it on the strength of the unadjusted comparison alone.
 
 ### Essentia mood scores move together, which means drift
 

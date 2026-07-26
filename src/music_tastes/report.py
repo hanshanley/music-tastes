@@ -434,12 +434,17 @@ def run() -> None:
                 f"**{ctx_r['length_adjusted_per_decade_sd']:+.3f}** | "
                 f"{ctx_r['length_adjusted_p']:.2g} |",
                 "",
-                "**Revised conclusion.** Hit lyrics did become modestly less positive — "
-                "roughly 0.07–0.09 standard deviations per decade — and this now "
-                "replicates across two methods with very different failure modes. That "
-                "is real but much smaller than the raw lexicon series suggests, and an "
-                "earlier version of this report over-retracted it on the strength of "
-                "the unadjusted comparison alone.",
+                (
+                    "**Revised conclusion.** Hit lyrics did become modestly less "
+                    f"positive — about "
+                    f"{abs(ctx_r['length_adjusted_per_decade_sd']):.2f}–"
+                    f"{abs(lex_r['length_adjusted_per_decade_sd']):.2f} standard "
+                    "deviations per decade — and this replicates across two methods "
+                    f"with very different failure modes on {recon['n']:,} songs. It is "
+                    "real but smaller than the raw lexicon series implies, and an "
+                    "earlier version of this report over-retracted it on the strength "
+                    "of the unadjusted comparison alone."
+                ),
                 "",
             ]
         elif "spearman_year_vs_contextual_valence" in ctx:
