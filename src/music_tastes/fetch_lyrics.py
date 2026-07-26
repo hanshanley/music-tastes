@@ -26,6 +26,7 @@ import argparse
 import json
 import re
 import unicodedata
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
 
@@ -305,7 +306,7 @@ def load_lyrics(song_id: str) -> str | None:
     return json.loads(path.read_text()).get("lyrics")
 
 
-def run(limit: int | None = None, sample: str = "top") -> pd.DataFrame:
+def run(limit: int | None = None, sample: str = "top", workers: int = 4) -> pd.DataFrame:
     token = env("GENIUS_ACCESS_TOKEN", required=True)
     songs = pd.read_parquet(DERIVED / "songs_weighted.parquet")
 
@@ -320,29 +321,42 @@ def run(limit: int | None = None, sample: str = "top") -> pd.DataFrame:
                 .head(limit)
             )
 
-    records = []
-    for song in tqdm(list(songs.itertuples()), desc="lyrics", unit="song"):
+    targets = list(songs.itertuples())
+
+    def work(song):
         try:
-            records.append(fetch_one(song, token))
+            return fetch_one(song, token)
         except Exception as exc:  # noqa: BLE001 - one bad song must not kill a long run
-            records.append(
-                {"song_id": song.song_id, "matched": False, "error": str(exc)[:200]}
-            )
+            return {
+                "song_id": song.song_id,
+                "matched": False,
+                "has_lyrics": False,
+                "error": str(exc)[:200],
+            }
+
+    records = []
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = [pool.submit(work, s) for s in targets]
+        for fut in tqdm(as_completed(futures), total=len(futures), desc="lyrics", unit="song"):
+            records.append(fut.result())
 
     df = pd.DataFrame(records)
     out = DERIVED / "lyrics_index.parquet"
-    if out.exists() and limit:
+    if out.exists():
         prior = pd.read_parquet(out)
-        df = pd.concat([prior[~prior["song_id"].isin(df["song_id"])], df])
+        df = pd.concat([prior[~prior["song_id"].isin(df["song_id"])], df], ignore_index=True)
     df.to_parquet(out, index=False)
 
     n = len(df)
-    print(f"\nProcessed {n:,} songs")
+    print(f"\nLyrics index now covers {n:,} songs")
     print(f"  matched on Genius:  {df['matched'].sum():,} ({df['matched'].mean():.1%})")
+    if "match_tier" in df:
+        for tier, cnt in df["match_tier"].value_counts().items():
+            print(f"    tier {tier}: {cnt:,}")
     if "has_lyrics" in df:
-        print(f"  lyrics retrieved:   {df['has_lyrics'].sum():,} "
-              f"({df['has_lyrics'].mean():.1%})")
-        got = df[df["has_lyrics"].fillna(False)]
+        has = df["has_lyrics"].fillna(False)
+        print(f"  lyrics retrieved:   {has.sum():,} ({has.mean():.1%})")
+        got = df[has]
         if len(got):
             print(f"  instrumental:       {got['is_instrumental'].sum():,}")
             print(f"  English (heuristic):{got['is_english'].sum():,}")
@@ -355,5 +369,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--sample", choices=["top", "stratified"], default="top")
+    ap.add_argument("--workers", type=int, default=4)
     args = ap.parse_args()
-    run(limit=args.limit, sample=args.sample)
+    run(limit=args.limit, sample=args.sample, workers=args.workers)
