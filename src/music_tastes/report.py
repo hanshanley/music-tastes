@@ -141,8 +141,11 @@ def run() -> None:
         "",
         "## Coverage, and why it is reported first",
         "",
-        f"- Overall lyric coverage: **{coverage['coverage_lyrics_overall']:.1%}** "
-        f"of charting songs",
+        f"- Overall lyric coverage: **{coverage['coverage_lyrics_overall']:.1%}** of "
+        f"charting songs, and **{coverage.get('coverage_exposure_overall', 0):.1%} of "
+        f"total chart exposure** — the misses are disproportionately low-exposure "
+        f"deep cuts (median peak position #66), so weighted results are better "
+        f"covered than the song count suggests",
         f"- Coverage ranges from {coverage['coverage_min']:.1%} "
         f"({coverage['coverage_min_year']}) to {coverage['coverage_max']:.1%} "
         f"({coverage['coverage_max_year']})",
