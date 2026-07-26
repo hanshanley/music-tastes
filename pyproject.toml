@@ -19,8 +19,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-embed = ["sentence-transformers>=3.0"]
-llm = ["openai>=1.40"]
+# Local inference only. There is no hosted-LLM dependency: the stance classifier
+# is a 435M-parameter NLI model run on-device.
+models = ["sentence-transformers>=3.0", "transformers>=4.40", "torch>=2.2"]
+lang = ["langdetect>=1.0.9", "wordfreq>=3.0"]
+test = ["pytest>=8.0"]
 notebook = ["jupyter>=1.0"]
 
 [project.scripts]

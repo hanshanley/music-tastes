@@ -31,7 +31,27 @@ Every stage is resumable — network responses and model outputs are cached on d
 an interrupted run picks up where it stopped and a completed stage costs nothing to
 re-run.
 
-## How it answers the question
+## Cost: zero
+
+Everything runs locally. There is no paid API in this pipeline and no key to
+configure — `.env` holds only free credentials (a Genius token and a contact string
+for MusicBrainz's User-Agent policy).
+
+| Component | Where it runs | Cost |
+|---|---|---|
+| Stance classifier (`deberta-v3-large-zeroshot-v2.0`, 435M params) | your GPU, via MPS/CUDA | free |
+| Theme anchors (`all-MiniLM-L6-v2`, 22M params) | your GPU | free |
+| Billboard charts, MusicBrainz, AcousticBrainz, NRC lexicons | public endpoints | free |
+| Genius lyrics | free API tier + public pages | free |
+
+**On model size.** 435M parameters is small — roughly 1/300th of a frontier LLM — and
+it runs comfortably on a laptop. It is not chosen for grandeur: the smaller
+`deberta-v3-base` was measured on the validation set first and scored **5/13** against
+large's **13/13** on stance, which is the distinction the whole project turns on. The
+real cost here is wall-clock time (~3 s/song), not money.
+
+If you want it faster, `music-tastes stance-b --limit N` scores a year-balanced prefix,
+so a partial run is still a usable year-stratified sample.
 
 **Exposure.** A song's weight is its chart tenure scored by position (a #1 week is
 worth 100, a #100 week is worth 1). Weights are normalized *within* year, because
@@ -68,6 +88,19 @@ correlates strongly with year, so a "trend" can be manufactured by which songs h
 to be present. `music-tastes coverage` measures that correlation and builds a
 complete-case subset with a constant number of songs per year; every headline result
 is re-run on it, and any result whose direction flips is reported as unresolved.
+
+## Tests
+
+```bash
+uv pip install -e ".[test]"
+.venv/bin/python -m pytest tests/ -q
+```
+
+56 tests covering song-identity normalization, Genius matching (including the
+accept/reject boundary of the slug fallback), and the HTTP rate limiter. The rate
+limiter tests exist because of a real incident: per-thread throttling let four workers
+issue four simultaneous requests, exhausted the Genius quota, and silently produced
+zero successful fetches for six hours.
 
 ## Repository layout
 
