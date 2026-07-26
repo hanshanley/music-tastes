@@ -47,6 +47,31 @@ _COLLAB = re.compile(r"\s*(?:,|&|\+|/|\band\b|\bx\b|\bvs\.?\b|\bwith\b)\s*", re.
 
 _PUNCT = re.compile(r"[^\w\s]")
 _WS = re.compile(r"\s+")
+_PARENTHETICAL = re.compile(r"\s*[\(\[][^\)\]]*[\)\]]")
+
+
+def title_variants(title: str) -> list[str]:
+    """Normalized forms a chart title might take on Genius.
+
+    Three chart conventions need this:
+      * Subtitles are inconsistently carried. Billboard lists "Back To Life" where
+        Genius has "Back to Life (However Do You Want Me)".
+      * Soundtrack tags are appended by Billboard only, as in
+        "Sunflower (Spider-Man: Into The Spider-Verse)".
+      * Double A-sides are charted as one entry, "Foolish Games/You Were Meant For
+        Me", but exist on Genius as two separate songs.
+    """
+    raw = str(title)
+    out: list[str] = []
+    for side in re.split(r"\s*/\s*", raw):
+        for form in (side, _PARENTHETICAL.sub("", side)):
+            norm = normalize_title(form)
+            if norm and norm not in out:
+                out.append(norm)
+    full = normalize_title(raw)
+    if full and full not in out:
+        out.insert(0, full)
+    return out
 
 
 def strip_accents(text: str) -> str:

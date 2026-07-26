@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -20,19 +21,24 @@ import requests
 
 from .paths import CACHE, user_agent
 
-# Minimum seconds between requests, per host. MusicBrainz and AcousticBrainz both
-# publish a 1 req/s limit for anonymous clients; the others are courtesy values.
+# Minimum seconds between requests, per host, enforced globally across all worker
+# threads. MusicBrainz and AcousticBrainz publish a 1 req/s limit for anonymous
+# clients; the others are courtesy values chosen to stay well inside what a large
+# site tolerates from a single research client.
 RATE_LIMITS = {
     "musicbrainz.org": 1.05,
     "acousticbrainz.org": 1.05,
     "api.reccobeats.com": 0.25,
-    "api.genius.com": 0.35,
-    "genius.com": 0.75,
+    "api.genius.com": 0.34,
+    "genius.com": 0.34,
     "api.getsongbpm.com": 0.5,
 }
 DEFAULT_RATE_LIMIT = 0.25
 
 _last_request: dict[str, float] = {}
+_throttle_lock = threading.Lock()
+_cache_locks: dict[str, threading.Lock] = {}
+_cache_locks_guard = threading.Lock()
 
 
 @dataclass
@@ -57,11 +63,21 @@ def _cache_path(url: str, namespace: str) -> Path:
 
 
 def _throttle(host: str) -> None:
+    """Block until this host's minimum interval has elapsed.
+
+    The reservation is made while holding the lock so that concurrent workers queue
+    up behind each other instead of all sleeping until the same instant and then
+    firing simultaneously. Total request rate to a host is therefore capped no matter
+    how many threads are running.
+    """
     interval = RATE_LIMITS.get(host, DEFAULT_RATE_LIMIT)
-    elapsed = time.monotonic() - _last_request.get(host, 0.0)
-    if elapsed < interval:
-        time.sleep(interval - elapsed)
-    _last_request[host] = time.monotonic()
+    with _throttle_lock:
+        now = time.monotonic()
+        earliest = _last_request.get(host, 0.0) + interval
+        wait = max(0.0, earliest - now)
+        _last_request[host] = max(now, earliest)
+    if wait:
+        time.sleep(wait)
 
 
 def get(

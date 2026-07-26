@@ -35,7 +35,7 @@ from tqdm import tqdm
 
 from .http import get
 from .paths import DERIVED, LYRICS_CACHE, env
-from .resolve_songs import normalize_artist, normalize_title, split_artist
+from .resolve_songs import normalize_artist, normalize_title, title_variants
 
 GENIUS_SEARCH = "https://api.genius.com/search"
 
@@ -105,20 +105,30 @@ def _artist_score(want: str, hit: dict) -> float:
     return best
 
 
+def _title_score(want_variants: list[str], hit_title: str) -> float:
+    """Best similarity between any chart-title variant and any hit-title variant."""
+    hit_forms = title_variants(hit_title)
+    return max((_sim(w, h) for w in want_variants for h in hit_forms), default=0.0)
+
+
 def search_genius(title: str, artist: str, token: str) -> list[dict]:
     """Search Genius, trying several query forms and pooling the results.
 
-    Genius's search is sensitive to leading articles: the query
-    "I Gotta Feeling The Black Eyed Peas" returns only editorial pages, while
-    "I Gotta Feeling Black Eyed Peas" returns the song as the top hit. We therefore
-    query with the normalized artist (leading "The" removed) and fall back to
-    title-only before giving up.
+    Genius's search is sensitive to both leading articles and appended subtitles: the
+    query "I Gotta Feeling The Black Eyed Peas" returns only editorial pages, and
+    "Sunflower (Spider-Man: Into The Spider-Verse)" fails to surface "Sunflower". We
+    therefore query with the normalized artist and the stripped-down title first, and
+    widen only if that fails.
     """
     norm_artist = normalize_artist(artist)
+    variants = title_variants(title)
+    base = variants[-1] if variants else str(title)
+
     queries = [
-        f"{title} {norm_artist}".strip(),
-        f"{norm_artist} {title}".strip(),
-        str(title).strip(),
+        f"{base} {norm_artist}".strip(),
+        f"{normalize_title(title)} {norm_artist}".strip(),
+        f"{norm_artist} {base}".strip(),
+        base.strip(),
     ]
 
     seen: dict[int, dict] = {}
@@ -151,7 +161,7 @@ def pick_match(
     Returns the best *observed* similarities even when nothing qualifies, so that a
     failure is diagnosable rather than reported as a flat zero.
     """
-    want_title = normalize_title(title)
+    want_variants = title_variants(title)
     want_artist = normalize_artist(artist)
 
     best: dict | None = None
@@ -167,7 +177,7 @@ def pick_match(
         if hit.get("lyrics_state") not in (None, "complete"):
             continue
 
-        ts = _sim(want_title, normalize_title(hit_title_raw))
+        ts = _title_score(want_variants, hit_title_raw)
         as_ = _artist_score(want_artist, hit)
         seen_title, seen_artist = max(seen_title, ts), max(seen_artist, as_)
 
@@ -193,7 +203,7 @@ def pick_match(
         return None, round(seen_title, 3), round(seen_artist, 3), None
     return (
         best,
-        round(_sim(want_title, normalize_title(best.get("title") or "")), 3),
+        round(_title_score(want_variants, best.get("title") or ""), 3),
         round(_artist_score(want_artist, best), 3),
         best_tier,
     )
@@ -250,17 +260,18 @@ def fetch_one(song, token: str) -> dict:
         return {k: v for k, v in rec.items() if k != "lyrics"}
 
     hits = search_genius(song.title_display, song.artist_display, token)
-    match, ts, as_ = pick_match(hits, song.title_display, song.artist_display)
+    match, ts, as_, tier = pick_match(hits, song.title_display, song.artist_display)
 
     rec = {
         "song_id": song.song_id,
         "matched": match is not None,
+        "match_tier": tier,
         "genius_id": match.get("id") if match else None,
         "genius_url": match.get("url") if match else None,
         "genius_title": match.get("title") if match else None,
         "genius_artist": match.get("artist_names") if match else None,
-        "title_similarity": round(ts, 3),
-        "artist_similarity": round(as_, 3),
+        "title_similarity": ts,
+        "artist_similarity": as_,
         "n_hits": len(hits),
         "has_lyrics": False,
         "n_chars": 0,
