@@ -135,12 +135,18 @@ def get(
     retries: int = 3,
     use_cache: bool = True,
     cache_errors: bool = True,
+    cached_only: bool = False,
 ) -> Response:
     """Fetch ``url``, returning a cached copy when one exists.
 
     ``cache_errors`` stores 4xx responses too, so that a song genuinely absent from a
     source does not get re-requested on every run. 5xx and network errors are retried
     with exponential backoff and never cached.
+
+    ``cached_only`` returns a synthetic 504 instead of touching the network when
+    nothing is cached. This lets an analysis stage re-parse everything already
+    downloaded -- for instance after adding a new field to an extractor -- without
+    issuing traffic or competing with a fetch already in flight.
     """
     full = requests.Request("GET", url, params=params).prepare().url
     path = _cache_path(full, namespace)
@@ -153,6 +159,15 @@ def get(
             text=payload["text"],
             retrieved_at=payload["retrieved_at"],
             from_cache=True,
+        )
+
+    if cached_only:
+        return Response(
+            url=full,
+            status=504,
+            text="",
+            retrieved_at=datetime.now(timezone.utc).isoformat(),
+            from_cache=False,
         )
 
     host = urlparse(full).netloc

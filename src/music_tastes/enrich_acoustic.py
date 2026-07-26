@@ -160,13 +160,45 @@ def lookup_mbid(song) -> dict:
     return rec
 
 
-def fetch_acousticbrainz(mbids: list[str]) -> dict[str, dict]:
-    """Fetch low-level and high-level features for a batch of MBIDs."""
+AB_CACHE = CACHE / "acousticbrainz"
+
+
+def _ab_path(mbid: str):
+    d = AB_CACHE / mbid[:2]
+    d.mkdir(parents=True, exist_ok=True)
+    return d / f"{mbid}.json"
+
+
+def fetch_acousticbrainz(mbids: list[str], cached_only: bool = False) -> dict[str, dict]:
+    """Fetch low-level and high-level features for a batch of MBIDs.
+
+    Results are cached **per MBID**, not per batch. The HTTP cache is keyed on the
+    request URL, and a batched URL contains the whole id list, so a batch composed
+    even slightly differently misses the cache entirely. Storing one file per
+    recording makes re-parsing free regardless of how batches are grouped.
+    """
     out: dict[str, dict] = {}
     if not mbids:
         return out
-    ids = ";".join(mbids)
 
+    missing = []
+    for mbid in mbids:
+        path = _ab_path(mbid)
+        if path.exists():
+            try:
+                rec = json.loads(path.read_text())
+            except json.JSONDecodeError:
+                missing.append(mbid)
+                continue
+            if rec:
+                out[mbid] = rec
+        else:
+            missing.append(mbid)
+
+    if not missing or cached_only:
+        return out
+
+    ids = ";".join(missing)
     try:
         low = get(AB_LOW, namespace="acousticbrainz", params={"recording_ids": ids})
         high = get(AB_HIGH, namespace="acousticbrainz", params={"recording_ids": ids})
@@ -176,7 +208,7 @@ def fetch_acousticbrainz(mbids: list[str]) -> dict[str, dict]:
     low_data = low.json() if low.status == 200 else {}
     high_data = high.json() if high.status == 200 else {}
 
-    for mbid in mbids:
+    for mbid in missing:
         rec: dict[str, float | str | None] = {"mbid": mbid}
         entry = (low_data.get(mbid) or {}).get("0") or {}
         ll = entry.get("lowlevel") or {}
@@ -218,9 +250,73 @@ def fetch_acousticbrainz(mbids: list[str]) -> dict[str, dict]:
         if voice.get("value"):
             rec["ab_voice_instrumental"] = voice["value"]
 
+        # Write even an empty result, so a recording with no submission is not
+        # re-requested on every run.
+        _ab_path(mbid).write_text(json.dumps(rec if len(rec) > 1 else {}))
         if len(rec) > 1:
             out[mbid] = rec
     return out
+
+
+def rebuild_from_cache() -> pd.DataFrame:
+    """Rebuild the feature table from cached lookups, issuing no new requests.
+
+    Used after adding a field to the extractor (genre, for instance) so that
+    everything already downloaded gains the new column without re-fetching, and
+    without competing with an enrichment run already in flight.
+    """
+    mb_records = []
+    for path in MBID_CACHE.rglob("*.json"):
+        try:
+            mb_records.append(json.loads(path.read_text()))
+        except json.JSONDecodeError:
+            continue
+    if not mb_records:
+        return pd.DataFrame()
+
+    mb = pd.DataFrame(mb_records)
+    wanted: list[str] = []
+    for cands in mb.get("candidate_mbids", pd.Series(dtype=object)).dropna():
+        if isinstance(cands, (list, tuple)):
+            wanted.extend(cands)
+    wanted = list(dict.fromkeys(wanted))
+
+    features: dict[str, dict] = {}
+    for i in tqdm(range(0, len(wanted), AB_BATCH), desc="ab-cache", unit="batch"):
+        features.update(fetch_acousticbrainz(wanted[i : i + AB_BATCH], cached_only=True))
+
+    out = _attach(mb, features)
+    out.to_parquet(DERIVED / "acoustic_features.parquet", index=False)
+    have = int(out["bpm"].notna().sum()) if "bpm" in out else 0
+    genre = int(out["ab_genre_dortmund"].notna().sum()) if "ab_genre_dortmund" in out else 0
+    print(f"Rebuilt {len(out):,} rows from cache: {have:,} with BPM, {genre:,} with genre")
+    return out
+
+
+def _attach(mb: pd.DataFrame, features: dict[str, dict]) -> pd.DataFrame:
+    """Attach the first candidate recording that actually has features."""
+    rows = []
+    for r in mb.itertuples():
+        row = {
+            "song_id": r.song_id,
+            "mbid": getattr(r, "mbid", None),
+            "isrc": getattr(r, "isrc", None),
+            "mb_title": getattr(r, "mb_title", None),
+            "mb_artist": getattr(r, "mb_artist", None),
+        }
+        # Records cached before candidate_mbids existed read back as NaN, and a
+        # single-MBID fallback keeps them usable rather than dropping them.
+        cands = getattr(r, "candidate_mbids", None)
+        if not isinstance(cands, (list, tuple)):
+            cands = [row["mbid"]] if isinstance(row["mbid"], str) else []
+        for cand in cands:
+            if cand in features:
+                feat = dict(features[cand])
+                row["feature_mbid"] = feat.pop("mbid", None)
+                row.update(feat)
+                break
+        rows.append(row)
+    return pd.DataFrame(rows)
 
 
 def run(limit: int | None = None, workers: int = 6) -> pd.DataFrame:
@@ -262,7 +358,8 @@ def run(limit: int | None = None, workers: int = 6) -> pd.DataFrame:
     # Query every acceptable recording MBID, not just the best one.
     wanted: list[str] = []
     for cands in mb.get("candidate_mbids", pd.Series(dtype=object)).dropna():
-        wanted.extend(cands)
+        if isinstance(cands, (list, tuple)):
+            wanted.extend(cands)
     wanted = list(dict.fromkeys(wanted))
     print(f"  querying AcousticBrainz for {len(wanted):,} candidate recordings")
 
@@ -270,22 +367,7 @@ def run(limit: int | None = None, workers: int = 6) -> pd.DataFrame:
     for i in tqdm(range(0, len(wanted), AB_BATCH), desc="acousticbrainz", unit="batch"):
         features.update(fetch_acousticbrainz(wanted[i : i + AB_BATCH]))
 
-    # Attach the first candidate that actually has features to each song.
-    rows = []
-    for r in mb.itertuples():
-        row = {"song_id": r.song_id, "mbid": r.mbid,
-               "isrc": getattr(r, "isrc", None),
-               "mb_title": getattr(r, "mb_title", None),
-               "mb_artist": getattr(r, "mb_artist", None)}
-        for cand in (getattr(r, "candidate_mbids", None) or []):
-            if cand in features:
-                feat = dict(features[cand])
-                row["feature_mbid"] = feat.pop("mbid", None)
-                row.update(feat)
-                break
-        rows.append(row)
-
-    out = pd.DataFrame(rows)
+    out = _attach(mb, features)
     path = DERIVED / "acoustic_features.parquet"
     out.to_parquet(path, index=False)
 
