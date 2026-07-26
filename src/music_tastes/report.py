@@ -112,15 +112,15 @@ def run() -> None:
         "",
         "## Coverage, and why it is reported first",
         "",
-        f"- Songs on the chart: **{coverage.get('complete_case_n', 0) and ''}"
-        f"{int(coverage.get('n_songs', 0)) if 'n_songs' in coverage else ''}**"
-        if "n_songs" in coverage else "",
-        f"- Overall lyric coverage: **{coverage['coverage_lyrics_overall']:.1%}**",
+        f"- Overall lyric coverage: **{coverage['coverage_lyrics_overall']:.1%}** "
+        f"of charting songs",
         f"- Coverage ranges from {coverage['coverage_min']:.1%} "
         f"({coverage['coverage_min_year']}) to {coverage['coverage_max']:.1%} "
         f"({coverage['coverage_max_year']})",
         f"- Spearman(year, coverage) = **{coverage['spearman_rho_year_vs_coverage']:+.3f}** "
         f"(p = {coverage['spearman_p']:.2g})",
+        "",
+        "![coverage](figures/coverage_by_year.png)",
         "",
     ]
     if coverage.get("coverage_is_year_dependent"):
@@ -131,6 +131,72 @@ def run() -> None:
             "the result is marked unresolved rather than reported as a finding.",
             "",
         ]
+
+    lines += ["## How much to trust the classifiers", ""]
+    gold_path = REPORTS / "gold" / "validation.json"
+    if gold_path.exists():
+        gold = json.loads(gold_path.read_text())
+        rand = gold.get("random_sample", {})
+        pur = gold.get("purposive_sample", {})
+        if "method_b_relationship" in rand:
+            b = rand["method_b_relationship"]
+            lines += [
+                f"**Random hand-labelled sample ({b['n']} songs, four per decade).** "
+                "This is an unbiased estimate.",
+                "",
+                "| Task | Method | Accuracy | Precision | Recall | Cohen kappa |",
+                "|---|---|---|---|---|---|",
+                f"| Is it a relationship song? | B (NLI) | {b['accuracy']:.2f} | "
+                f"{b['precision']:.2f} | {b['recall']:.2f} | {b['cohen_kappa']:.2f} |",
+            ]
+            a = rand.get("method_a_relationship")
+            if a:
+                lines.append(
+                    f"| Is it a relationship song? | A (embeddings) | {a['accuracy']:.2f} | "
+                    f"{a['precision']:.2f} | {a['recall']:.2f} | {a['cohen_kappa']:.2f} |"
+                )
+            lines.append("")
+            if "methods_agree_kappa" in rand:
+                lines += [
+                    f"Inter-method agreement is poor (Cohen kappa = "
+                    f"{rand['methods_agree_kappa']:.2f}). Agreement is therefore not "
+                    "treated as evidence in itself; the hand labels decide which "
+                    "method is right, and Method B is used for all reported stance "
+                    "results.",
+                    "",
+                ]
+        if "method_b_independence" in pur:
+            b = pur["method_b_independence"]
+            a = pur.get("method_a_independence")
+            lines += [
+                f"**Purposive independence set ({b['n']} famous songs with "
+                "uncontroversial stances).** These were chosen for being clear-cut, so "
+                "this is an **upper bound**, not an unbiased estimate. It exists "
+                "because independence songs are rare -- the random sample of 32 "
+                "contained exactly one, too few to estimate precision or recall for "
+                "the class this project is about.",
+                "",
+                "| Method | Accuracy | Precision | Recall |",
+                "|---|---|---|---|",
+                f"| B (NLI) | {b['accuracy']:.2f} | {b['precision']:.2f} | {b['recall']:.2f} |",
+            ]
+            if a:
+                lines.append(
+                    f"| A (embeddings) | {a['accuracy']:.2f} | {a['precision']:.2f} | "
+                    f"{a['recall']:.2f} |"
+                )
+            lines += [
+                "",
+                "Method A's failure mode is systematic, not noisy: cosine similarity "
+                "tracks *topic* (this is a breakup song) and cannot see *stance* "
+                "(...and the narrator is fine about it), so it labels "
+                "\"I Will Survive\", \"Since U Been Gone\" and \"thank u, next\" as "
+                "heartbreak. This is exactly the distinction the research question "
+                "turns on, which is why the entailment model carries the result.",
+                "",
+            ]
+    else:
+        lines += ["_Validation has not been run yet._", ""]
 
     lines += ["## Results", ""]
     for metric, entry in trends.items():
