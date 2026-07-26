@@ -153,3 +153,47 @@ class TestTrendTest:
 
 def test_threshold_is_the_natural_entailment_cut():
     assert P_THRESHOLD == 0.5
+
+
+class TestChunkRegrouping:
+    """The batched scorer flattens chunks across songs, then regroups by owner.
+
+    A regrouping error would attach one song's chorus to another song's score and
+    corrupt every downstream statistic without raising anything, so the invariant
+    is checked directly rather than assumed.
+    """
+
+    def test_owner_mapping_is_stable_under_reordering(self):
+        from music_tastes.stance_nli import chunk_lyrics
+
+        songs = {
+            "s0000000000000001": "alpha " * 200,
+            "s0000000000000002": "beta " * 90,
+            "s0000000000000003": "gamma " * 400,
+        }
+        flat, owner = [], []
+        for song_id, text in songs.items():
+            chunks = chunk_lyrics(text)
+            flat.extend(chunks)
+            owner.extend([song_id] * len(chunks))
+
+        assert len(flat) == len(owner), "every chunk must carry exactly one owner"
+
+        regrouped: dict[str, list[str]] = {}
+        for song_id, chunk in zip(owner, flat):
+            regrouped.setdefault(song_id, []).append(chunk)
+
+        for song_id, text in songs.items():
+            assert regrouped[song_id] == chunk_lyrics(text)
+
+    def test_dedup_never_drops_every_chunk(self):
+        """A lyric that is one repeated line must still yield a chunk to score."""
+        from music_tastes.stance_nli import chunk_lyrics
+
+        assert chunk_lyrics("na " * 300)
+        assert chunk_lyrics("one line only")
+
+    def test_empty_lyric_yields_no_chunks(self):
+        from music_tastes.stance_nli import chunk_lyrics
+
+        assert chunk_lyrics("") == []
