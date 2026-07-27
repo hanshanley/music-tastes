@@ -277,6 +277,30 @@ def _slugify(text: str, capitalize_first: bool) -> str:
     return "-".join(p.lower() for p in parts)
 
 
+def _raw_title_variants(title: str) -> list[str]:
+    """Title variants that preserve punctuation, for URL construction.
+
+    :func:`~music_tastes.resolve_songs.title_variants` normalises punctuation to
+    spaces, which is right for similarity scoring but wrong for building a slug:
+    "That's What I Like" becomes "that s what i like" and then slugifies to
+    "that-s-what-i-like", where Genius uses "thats-what-i-like". Feeding normalised
+    titles into the slug builder silently broke every title containing an
+    apostrophe. These variants apply the same splitting and subtitle-stripping but
+    leave the characters alone so :func:`_slugify` can drop apostrophes itself.
+    """
+    raw = str(title).strip()
+    out: list[str] = [raw]
+    for side in re.split(r"\s*/\s*", raw):
+        side = side.strip()
+        for form in (side, _PAREN.sub("", side).strip()):
+            if form and form not in out:
+                out.append(form)
+    stripped = _PAREN.sub("", raw).strip()
+    if stripped and stripped not in out:
+        out.append(stripped)
+    return out
+
+
 def slug_candidates(title: str, artist: str) -> list[str]:
     """Genius song-page URLs guessed directly from artist and title.
 
@@ -288,18 +312,23 @@ def slug_candidates(title: str, artist: str) -> list[str]:
     Guessing is only safe because the result is verified against the page's own
     <title> before being accepted; see :func:`verify_page`.
     """
-    primary = normalize_artist(artist)
-    variants = title_variants(title)
+    primary_raw = re.split(_FEAT_SPLIT, str(artist))[0].strip()
+    artists = [a for a in (str(artist).strip(), primary_raw) if a]
+
     urls: list[str] = []
-    for t in variants[:3]:
-        for a in {primary, _slugify(str(artist).split("Featuring")[0], False)}:
-            if not a or not t:
+    for t in _raw_title_variants(title)[:4]:
+        for a in artists:
+            slug_a, slug_t = _slugify(a, True), _slugify(t, False)
+            if not slug_a or not slug_t:
                 continue
-            url = f"https://genius.com/{_slugify(a, True)}-{_slugify(t, False)}-lyrics"
+            url = f"https://genius.com/{slug_a}-{slug_t}-lyrics"
             if url not in urls:
                 urls.append(url)
     return urls
 
+
+_PAREN = re.compile(r"\s*[\(\[][^\)\]]*[\)\]]")
+_FEAT_SPLIT = r"(?i)\s+(?:featuring|feat\.?|ft\.?|with|duet with|introducing)\s+"
 
 _TITLE_TAG = re.compile(r"<title>([^<]*)</title>", re.IGNORECASE)
 
