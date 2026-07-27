@@ -1,14 +1,14 @@
 {
   "years_examined": 69,
-  "coverage_lyrics_overall": 0.7739709220293234,
-  "coverage_exposure_overall": 0.8346273855834668,
-  "coverage_min": 0.518324607329843,
+  "coverage_lyrics_overall": 0.8542727440034353,
+  "coverage_exposure_overall": 0.9169418261838196,
+  "coverage_min": 0.6003490401396161,
   "coverage_min_year": 1959,
-  "coverage_max": 0.9227373068432672,
-  "coverage_max_year": 2017,
-  "spearman_rho_year_vs_coverage": 0.9535257581293389,
-  "spearman_p": 1.2629240923316857e-36,
+  "coverage_max": 0.9649122807017544,
+  "coverage_max_year": 2026,
+  "spearman_rho_year_vs_coverage": 0.9097552064303984,
+  "spearman_p": 2.79544984803085e-27,
   "coverage_is_year_dependent": true,
-  "complete_case_per_year": 207,
-  "complete_case_n": 14283
+  "complete_case_per_year": 221,
+  "complete_case_n": 15249
 }
