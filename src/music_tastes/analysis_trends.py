@@ -2,17 +2,15 @@
 
 Every series is produced four ways and all four are reported:
 
-  * exposure-weighted and unweighted -- weighting by chart points answers "what did
-    America hear", the unweighted version answers "what did the industry release into
-    the chart". These can diverge and the difference is itself informative.
-  * on all covered songs and on the complete-case subset from
-    :mod:`music_tastes.coverage` -- a trend that appears only in the full set is a
-    coverage artefact, not a finding.
+  * exposure-weighted and unweighted -- chart points are an exposure proxy, while
+    the unweighted view gives every covered chart song equal weight. Neither is
+    a census of listening or of all releases.
+  * on all observed songs and on a metric-eligible balanced covered-song subset
+    from :mod:`music_tastes.coverage`. Disagreement warrants caution; agreement
+    does not establish that missingness bias is absent.
 
-Weights are normalized *within* each year. Without that, the streaming era would
-dominate every pooled statistic: chart tenure has grown from roughly 13 weeks in the
-1960s to 90+ weeks today, so raw chart points are an order of magnitude larger now and
-would swamp any cross-year comparison.
+Weights are normalized within each debut-year cohort. Songs' observed chart
+lifetimes and their completeness differ across cohorts.
 
 Trend tests are rank-based (Mann-Kendall, Theil-Sen) rather than least-squares,
 because these series are short, autocorrelated and not reliably linear.
@@ -28,7 +26,7 @@ import pandas as pd
 from scipy import stats
 
 from .coverage import complete_case_subset, load_joined
-from .paths import DERIVED, REPORTS, require
+from .paths import DERIVED, INTERIM, REPORTS, require, atomic_json
 
 BOOTSTRAP_SEED = 20260725
 RNG = np.random.default_rng(BOOTSTRAP_SEED)
@@ -92,6 +90,94 @@ def derive_labels(df: pd.DataFrame, threshold: float = P_THRESHOLD) -> pd.DataFr
                 val[rel != 1] = np.nan
             df[name] = val
     return df
+
+
+def chart_year_frame(songs: pd.DataFrame, exposure: pd.DataFrame) -> pd.DataFrame:
+    features = songs.drop(columns=["points", "log_points", "weeks", "unweighted"], errors="ignore")
+    features = features.rename(columns={"debut_year": "cohort_year"})
+    joined = exposure.merge(features, on="song_id", how="left", validate="many_to_one")
+    return joined.rename(columns={"chart_year": "debut_year"})
+
+
+def comparison_series(df: pd.DataFrame) -> None:
+    path = DERIVED / "song_year_exposure.parquet"
+    if not path.exists():
+        return
+    chart = chart_year_frame(df, pd.read_parquet(path))
+    rows = []
+    results = {}
+    cutoff_year = int(chart["debut_year"].max())
+    integrity = INTERIM / "chart_integrity.json"
+    cutoff = json.loads(integrity.read_text()).get("chart_through") if integrity.exists() else None
+    latest_incomplete = (
+        cutoff is None
+        or (pd.Timestamp(cutoff) + pd.Timedelta(days=7)).year == cutoff_year
+    )
+    for metric, (column, _, _) in METRICS.items():
+        entry = {}
+        for variant, weight in [("weighted_all", "points"), ("unweighted_all", None)]:
+            res = run_metric(chart, metric, column, weight)
+            if res:
+                series = res["series"].copy()
+                series["metric"] = metric
+                series["variant"] = variant
+                series["partial_year"] = (series["year"] == cutoff_year) & latest_incomplete
+                rows.append(series)
+                entry[variant] = res["trend"]
+                entry[f"{variant}_completed_years"] = trend_test(
+                    series[~series["partial_year"]]
+                )
+        if entry:
+            results[metric] = entry
+    if rows:
+        pd.concat(rows, ignore_index=True).to_csv(REPORTS / "chart_year_series.csv", index=False)
+    atomic_json(REPORTS / "chart_year_trend_results.json", {
+        "time_basis": "chart_year",
+        "latest_year_flagged": cutoff_year if latest_incomplete else None,
+        "note": "Each song contributes to every year it charted. Bootstrap resamples songs within year.",
+        "metrics": results,
+    })
+
+
+def fixed_followup_frame(songs: pd.DataFrame, entries: pd.DataFrame, weeks: int = 52) -> pd.DataFrame:
+    cutoff = pd.to_datetime(entries["chart_week"]).max()
+    first = pd.to_datetime(songs["first_charted"])
+    latest_first = first.groupby(songs["debut_year"]).max()
+    complete_years = latest_first[latest_first + pd.Timedelta(weeks=weeks) <= cutoff].index
+    eligible = songs[songs["debut_year"].isin(complete_years)].copy()
+    rows = entries.merge(
+        eligible[["song_id", "first_charted"]], on="song_id", validate="many_to_one"
+    )
+    age = pd.to_datetime(rows["chart_week"]) - pd.to_datetime(rows["first_charted"])
+    rows = rows[(age >= pd.Timedelta(0)) & (age < pd.Timedelta(weeks=weeks))].copy()
+    rows["points"] = 101 - rows["rank"]
+    weights = rows.groupby("song_id", as_index=False)["points"].sum()
+    return eligible.drop(columns="points").merge(weights, on="song_id", validate="one_to_one")
+
+
+def followup_comparison(df: pd.DataFrame) -> None:
+    path = INTERIM / "chart_entries_resolved.parquet"
+    if not path.exists() or "first_charted" not in df:
+        return
+    matched = fixed_followup_frame(df, pd.read_parquet(path))
+    rows, results = [], {}
+    for metric, (column, _, _) in METRICS.items():
+        for variant, weight in [("weighted_all", "points"), ("unweighted_all", None)]:
+            res = run_metric(matched, metric, column, weight)
+            if res:
+                series = res["series"].assign(metric=metric, variant=variant)
+                rows.append(series)
+                results.setdefault(metric, {})[variant] = res["trend"]
+    if rows:
+        pd.concat(rows, ignore_index=True).to_csv(
+            REPORTS / "followup_52_week_series.csv", index=False
+        )
+    atomic_json(REPORTS / "followup_52_week_trend_results.json", {
+        "weeks": 52, "n_songs": len(matched),
+        "latest_cohort_year": int(matched["debut_year"].max()) if len(matched) else None,
+        "note": "First 52 calendar weeks of chart points; only entirely observed debut-year cohorts.",
+        "metrics": results,
+    })
 
 
 def _weighted_mean(values: np.ndarray, weights: np.ndarray) -> float:
@@ -209,13 +295,25 @@ def decade_series(
 
 def run(threshold: float = P_THRESHOLD) -> dict:
     _reset_rng()
-    df = derive_labels(load_joined(), threshold)
-    subset = derive_labels(complete_case_subset(load_joined()), threshold)
+    raw = load_joined()
+    df = derive_labels(raw, threshold)
+    comparison_series(df)
+    followup_comparison(df)
+    threshold_rows = []
+    for cut in (0.3, 0.4, 0.5, 0.6, 0.7):
+        labels = derive_labels(raw, cut)
+        res = run_metric(labels, "relationship_share", "is_relationship", "points")
+        if res:
+            threshold_rows.append({"threshold": cut, **res["trend"]})
+    atomic_json(REPORTS / "relationship_threshold_sensitivity.json", {"results": threshold_rows})
 
     results: dict[str, dict] = {}
     all_series = []
 
     for metric, (column, description, direction) in METRICS.items():
+        if column not in df:
+            continue
+        subset = complete_case_subset(df, column=column)
         entry: dict[str, dict] = {"description": description, "higher_means": direction}
         for label, data, weight in [
             ("weighted_all", df, "points"),

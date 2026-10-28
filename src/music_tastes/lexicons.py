@@ -23,14 +23,16 @@ archives. They are downloaded at build time and never redistributed in this repo
 from __future__ import annotations
 
 import io
+import hashlib
 import json
 import zipfile
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pandas as pd
 import requests
 
-from .paths import RAW, user_agent
+from .paths import RAW, atomic_json, atomic_parquet, user_agent
 
 LEX_DIR = RAW / "lexicons"
 
@@ -41,6 +43,15 @@ SOURCES = {
             "Mohammad, S. M. (2018). Obtaining Reliable Human Ratings of Valence, "
             "Arousal, and Dominance for 20,000 English Words. ACL 2018. "
             "National Research Council Canada."
+        ),
+    },
+    "nrc_vad_v21": {
+        "url": "https://saifmohammad.com/WebDocs/Lexicons/NRC-VAD-Lexicon-v2.1.zip",
+        "version": "2.1",
+        "citation": (
+            "Mohammad, S. M. (2025). NRC VAD Lexicon v2: Norms for Valence, "
+            "Arousal, and Dominance for over 55k English Terms. arXiv:2503.23547. "
+            "See also Mohammad (2018), ACL."
         ),
     },
     "nrc_emolex": {
@@ -120,6 +131,65 @@ def build_vad() -> tuple[pd.DataFrame, str]:
     out = df.dropna().drop_duplicates("word").reset_index(drop=True)
     out.to_parquet(LEX_DIR / "nrc_vad.parquet", index=False)
     return out, ts
+
+
+def parse_vad_v21(blob: bytes) -> pd.DataFrame:
+    """Read the exact v2.1 English file, retaining its native bipolar scale."""
+    with zipfile.ZipFile(io.BytesIO(blob)) as archive:
+        members = [
+            name for name in archive.namelist()
+            if name.rsplit("/", 1)[-1] == "NRC-VAD-Lexicon-v2.1.txt"
+            and not name.startswith("__MACOSX/")
+        ]
+        if len(members) != 1:
+            raise ValueError("Expected one canonical NRC VAD v2.1 file")
+        with archive.open(members[0]) as handle:
+            frame = pd.read_csv(handle, sep="\t", keep_default_na=False)
+    if list(frame.columns) != ["term", "valence", "arousal", "dominance"]:
+        raise ValueError("Unexpected NRC VAD v2.1 columns")
+    frame["term"] = frame["term"].astype(str).str.strip().str.lower()
+    if frame.empty or frame["term"].eq("").any() or frame["term"].duplicated().any():
+        raise ValueError("Empty or duplicate NRC VAD v2.1 terms")
+    for column in ("valence", "arousal", "dominance"):
+        frame[column] = pd.to_numeric(frame[column], errors="raise")
+        if not frame[column].between(-1, 1).all():
+            raise ValueError(f"NRC VAD v2.1 {column} outside [-1, 1]")
+    return frame
+
+
+def load_vad_v21(archive: Path | None = None, offline: bool = False) -> pd.DataFrame:
+    """Import a local archive or reuse/download a private, fingerprinted copy."""
+    path = LEX_DIR / "nrc_vad_v21.parquet"
+    provenance = path.with_suffix(".provenance.json")
+    if archive is None and path.exists() and provenance.exists():
+        info = json.loads(provenance.read_text())
+        if (
+            info.get("version") == "2.1"
+            and info.get("normalized_sha256") == hashlib.sha256(path.read_bytes()).hexdigest()
+        ):
+            return pd.read_parquet(path)
+        raise ValueError("NRC VAD v2.1 cache changed; reimport the source archive")
+    if archive is None:
+        if offline:
+            raise FileNotFoundError(
+                "Import NRC VAD v2.1 first: music-tastes vad-robustness "
+                "--vad-archive /path/to/NRC-VAD-Lexicon-v2.1.zip"
+            )
+        blob, timestamp = _download("nrc_vad_v21")
+        origin = "download"
+    else:
+        blob = Path(archive).expanduser().read_bytes()
+        timestamp = datetime.now(timezone.utc).isoformat()
+        origin = "local_archive"
+    frame = parse_vad_v21(blob)
+    atomic_parquet(path, frame)
+    atomic_json(provenance, {
+        **SOURCES["nrc_vad_v21"], "origin": origin, "imported_at": timestamp,
+        "archive_sha256": hashlib.sha256(blob).hexdigest(),
+        "normalized_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "n_terms": len(frame), "native_scale": [-1, 1],
+    })
+    return frame
 
 
 def build_emolex() -> tuple[pd.DataFrame, str]:

@@ -1,0 +1,173 @@
+{
+  "run_id": "20261028T163013Z-9657a50b",
+  "status": "complete",
+  "started_at": "2026-10-28T16:30:13.290350+00:00",
+  "limited": false,
+  "offline": true,
+  "stages": {
+    "ingest-charts": "complete",
+    "resolve-songs": "complete",
+    "exposure": "complete",
+    "features-a": "complete",
+    "stance-b": "complete",
+    "language": "complete",
+    "coverage": "complete",
+    "trends": "complete",
+    "vad-robustness": "complete",
+    "validity": "complete",
+    "prompt-robustness": "complete",
+    "stance-composition": "complete",
+    "confounds": "complete",
+    "gold-set": "complete",
+    "exhibit": "complete",
+    "report": "complete"
+  },
+  "python": "3.12.13",
+  "models": {
+    "nli": {
+      "model": "MoritzLaurer/deberta-v3-large-zeroshot-v2.0",
+      "revision": "cf44676c28ba7312e5c5f8f8d2c22b3e0c9cdae2"
+    },
+    "embedding": {
+      "model": "sentence-transformers/all-MiniLM-L6-v2",
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+    }
+  },
+  "configuration": {
+    "as_of": null,
+    "genius_api_requested": true,
+    "workers": 4,
+    "retry_after_days": 7,
+    "lrclib_fallback": true,
+    "hypotheses": {
+      "relationship": "This song is about a romantic or sexual relationship.",
+      "independence": "The singer does not need this person and will be fine without them.",
+      "devotion": "The singer is devoted to their partner and wants to stay with them forever.",
+      "longing": "The singer wants someone they cannot have and is longing for them.",
+      "heartbreak": "The singer is heartbroken and wants their ex-partner back.",
+      "casual": "The singer wants a purely physical relationship with no commitment.",
+      "conflict": "The singer is angry at their partner for mistreating or betraying them."
+    },
+    "doc_words": 380,
+    "chunk_words": 70,
+    "max_chunks": 12
+  },
+  "baseline": {
+    "python": "3.12.13",
+    "supported_python": true,
+    "artifacts": {
+      "raw/billboard_hot100_all.json": {
+        "bytes": 43997225
+      },
+      "raw/billboard_hot100_all.provenance.json": {
+        "bytes": 314
+      },
+      "raw/billboard_hot100_secondary.parquet": {
+        "bytes": 1803712
+      },
+      "raw/billboard_hot100_secondary.provenance.json": {
+        "bytes": 360
+      },
+      "interim/chart_crosscheck.json": {
+        "bytes": 6955
+      },
+      "interim/chart_entries.parquet": {
+        "bytes": 2682770
+      },
+      "interim/chart_entries_resolved.parquet": {
+        "bytes": 7700667
+      },
+      "interim/chart_integrity.json": {
+        "bytes": 513
+      },
+      "interim/merge_review.csv": {
+        "bytes": 6726
+      },
+      "interim/songs.parquet": {
+        "bytes": 2689461
+      },
+      "derived/chart_eras.json": {
+        "bytes": 1340
+      },
+      "derived/contextual_valence.parquet": {
+        "bytes": 54644
+      },
+      "derived/contextual_valence.signature.json": {
+        "bytes": 85
+      },
+      "derived/contextual_valence.summary.json": {
+        "bytes": 1143
+      },
+      "derived/decade_series.parquet": {
+        "bytes": 8741
+      },
+      "derived/language_profile.parquet": {
+        "bytes": 1546741
+      },
+      "derived/lyric_features_method_a.parquet": {
+        "bytes": 11022754
+      },
+      "derived/lyric_features_method_b.parquet": {
+        "bytes": 5082029
+      },
+      "derived/lyrics_index.parquet": {
+        "bytes": 2560605
+      },
+      "derived/nrc_vad_robustness.parquet": {
+        "bytes": 7852118
+      },
+      "derived/nrc_vad_robustness.signature.json": {
+        "bytes": 85
+      },
+      "derived/prompt_robustness.parquet": {
+        "bytes": 95721
+      },
+      "derived/prompt_robustness.signature.json": {
+        "bytes": 85
+      },
+      "derived/relationship_sensitivity.parquet": {
+        "bytes": 15090
+      },
+      "derived/relationship_sensitivity.signature.json": {
+        "bytes": 85
+      },
+      "derived/review_challenge.csv": {
+        "bytes": 7577
+      },
+      "derived/review_packet.csv": {
+        "bytes": 14550
+      },
+      "derived/review_packet.provenance.json": {
+        "bytes": 382
+      },
+      "derived/song_year_exposure.parquet": {
+        "bytes": 1075188
+      },
+      "derived/songs_weighted.parquet": {
+        "bytes": 3086087
+      },
+      "derived/valence_type_vs_token.parquet": {
+        "bytes": 1115131
+      },
+      "derived/yearly_series.parquet": {
+        "bytes": 73318
+      }
+    },
+    "last_complete": {
+      "run_id": "20261028T153706Z-399c5b5b",
+      "status": "complete",
+      "chart_through": "2026-10-31",
+      "completed_at": "2026-10-28T15:42:25.474654+00:00",
+      "output_signature": "71bb64b0edaa609cf67074c84c572f8ec2ce3c6d25208b4e0fbbf50db6535383"
+    }
+  },
+  "population": {
+    "songs": 32732,
+    "eligible": 28885
+  },
+  "audio_status": "unavailable",
+  "chart_through": "2026-10-31",
+  "source_signature": "fda4247c791014155a4183f3c1fa5a6548e7e724f3fc4a3af62d370d51bae73a",
+  "completed_at": "2026-10-28T16:36:24.116310+00:00",
+  "output_signature": "31d85295035819b67cc2ac136614ca226dea4549c8acc283f00207d3536e2f53"
+}

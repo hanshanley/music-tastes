@@ -1,0 +1,48 @@
+:root {
+  color-scheme: light;
+  --paper: #faf9f6;
+  --ink: #242d32;
+  --muted: #657079;
+  --line: #dedfd9;
+  --accent: #935244;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.65 system-ui, sans-serif; }
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: .2em; }
+a:hover { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+header, main, footer { max-width: 1100px; margin: auto; padding: 0 32px; }
+header { display: flex; justify-content: space-between; align-items: center; min-height: 88px; border-bottom: 1px solid var(--line); }
+.wordmark { font-weight: 650; text-decoration: none; letter-spacing: -.03em; }
+nav { display: flex; gap: 28px; font-size: 14px; }
+nav a { text-decoration: none; }
+.intro { padding: 88px 0 72px; }
+.eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .12em; font-size: 12px; }
+h1, h2 { font-family: Georgia, serif; font-weight: 400; line-height: 1.12; letter-spacing: -.035em; }
+h1 { max-width: 920px; font-size: clamp(36px, 5.2vw, 66px); margin: 24px 0; }
+h2 { font-size: clamp(27px, 3vw, 36px); margin: 0 0 20px; }
+.lede { max-width: 710px; font-size: 21px; color: var(--muted); }
+.status { max-width: 800px; border-left: 2px solid var(--accent); padding-left: 18px; margin-top: 32px; font-size: 14px; }
+.preview { font-size: 12px; color: var(--muted); }
+.evidence, .methods, #downloads { padding: 52px 0; border-top: 1px solid var(--line); }
+.section-head { max-width: 710px; }
+.section-head p, figcaption { color: var(--muted); }
+figure { margin: 28px 0 0; }
+figure img { width: 100%; height: auto; display: block; }
+figcaption { font-size: 13px; margin-top: 12px; }
+.methods p { max-width: 790px; }
+.downloads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px 36px; list-style: none; padding: 0; font-size: 14px; }
+.downloads a { overflow-wrap: anywhere; }
+footer { border-top: 1px solid var(--line); padding-top: 30px; padding-bottom: 48px; color: var(--muted); font-size: 12px; }
+.skip { position: absolute; top: -60px; left: 16px; }
+.skip:focus { top: 12px; background: var(--paper); padding: 8px; z-index: 1; }
+@media (max-width: 600px) {
+  header, main, footer { padding-left: 20px; padding-right: 20px; }
+  header { min-height: 72px; }
+  nav { gap: 15px; font-size: 12px; }
+  .intro { padding: 52px 0; }
+  .lede { font-size: 18px; }
+  .downloads { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

@@ -1,14 +1,25 @@
 {
   "years_examined": 69,
-  "coverage_lyrics_overall": 0.8542727440034353,
-  "coverage_exposure_overall": 0.9169418261838196,
-  "coverage_min": 0.6003490401396161,
+  "coverage_lyrics_overall": 0.8938347794207503,
+  "coverage_exposure_overall": 0.9429567468736392,
+  "coverage_min": 0.6963350785340314,
   "coverage_min_year": 1959,
-  "coverage_max": 0.9649122807017544,
-  "coverage_max_year": 2026,
-  "spearman_rho_year_vs_coverage": 0.9097552064303984,
-  "spearman_p": 2.79544984803085e-27,
+  "coverage_max": 0.977924944812362,
+  "coverage_max_year": 2017,
+  "spearman_rho_year_vs_coverage": 0.8624406284252832,
+  "spearman_p": 1.7242228289510677e-21,
   "coverage_is_year_dependent": true,
-  "complete_case_per_year": 221,
-  "complete_case_n": 15249
+  "n_songs": 32732,
+  "n_lyrics": 29257,
+  "n_scored_b": 28885,
+  "lyric_outcomes": {
+    "usable": 28885,
+    "no_confident_match": 2895,
+    "language_or_short_text": 372,
+    "instrumental": 332,
+    "transient_failure": 248
+  },
+  "subset_note": "Equal-N high-exposure covered songs, not a fully observed or unbiased population.",
+  "complete_case_per_year": 254,
+  "complete_case_n": 17526
 }

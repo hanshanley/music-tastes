@@ -27,6 +27,27 @@ def _reset_state():
 
 
 class TestAdaptiveBackoff:
+    @pytest.mark.parametrize("status", [429, 503])
+    def test_requests_honor_server_retry_after_and_share_backoff(self, monkeypatch, tmp_path, status):
+        from types import SimpleNamespace
+
+        responses = iter([
+            SimpleNamespace(status_code=status, headers={"Retry-After": "30"}),
+            SimpleNamespace(status_code=200, headers={}, text="[]", ok=True),
+        ])
+        pauses = []
+        monkeypatch.setattr(http, "_cache_path", lambda *args: tmp_path / "response.json")
+        monkeypatch.setattr(http, "_throttle", lambda host: None)
+        monkeypatch.setattr(http.time, "sleep", pauses.append)
+        monkeypatch.setattr(http.requests, "get", lambda *args, **kwargs: next(responses))
+
+        response = http.get("https://lrclib.net/api/search", namespace="test", use_cache=False)
+
+        assert response.status == 200
+        assert pauses == [30]
+        assert http._penalty["lrclib.net"] > 0
+        assert not (tmp_path / "response.json").exists()
+
     def test_penalty_starts_empty(self):
         assert http._current_interval("api.genius.com") == pytest.approx(
             http.RATE_LIMITS["api.genius.com"]

@@ -11,6 +11,7 @@ import hashlib
 import json
 import threading
 import time
+from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -19,7 +20,7 @@ from urllib.parse import urlparse
 
 import requests
 
-from .paths import CACHE, user_agent
+from .paths import CACHE, user_agent, atomic_json
 
 # Minimum seconds between requests, per host, enforced globally across all worker
 # threads. MusicBrainz and AcousticBrainz publish a 1 req/s limit for anonymous
@@ -31,6 +32,7 @@ RATE_LIMITS = {
     "api.reccobeats.com": 0.25,
     "api.genius.com": 0.34,
     "genius.com": 0.34,
+    "lrclib.net": 1.05,
     "api.getsongbpm.com": 0.5,
 }
 DEFAULT_RATE_LIMIT = 0.25
@@ -38,7 +40,7 @@ DEFAULT_RATE_LIMIT = 0.25
 _last_request: dict[str, float] = {}
 _throttle_lock = threading.Lock()
 
-# Adaptive per-host penalty applied on top of RATE_LIMITS.
+# Adaptive per-host penalty for rate limits and overload, on top of RATE_LIMITS.
 #
 # Without this, a 429 is handled by each worker independently: every thread retries on
 # its own backoff schedule while the others keep issuing fresh requests, so the server
@@ -47,13 +49,14 @@ _throttle_lock = threading.Lock()
 # below is global, so one 429 slows every thread, and it decays only on success.
 _penalty: dict[str, float] = {}
 MAX_PENALTY = 60.0
+REFRESH_ERRORS = ContextVar("refresh_errors", default=False)
 
 
 def circuit_open(host: str) -> bool:
-    """True when a host has been rate limited to the point of being unusable.
+    """True when a host has been rate limited or overloaded until unusable.
 
-    Once the adaptive penalty saturates, further requests are near-certain to return
-    429 and merely extend the block. Callers with an alternative route should check
+    Once the adaptive penalty saturates, further requests are likely to remain
+    rejected and merely extend the block. Callers with an alternative route should check
     this and take it instead of continuing to poll a closed door.
     """
     return _penalty.get(host, 0.0) >= MAX_PENALTY
@@ -65,7 +68,7 @@ def _current_interval(host: str) -> float:
 
 
 def note_rate_limited(host: str, retry_after: float | None = None) -> float:
-    """Register a 429 for a host and return how long to sleep before retrying."""
+    """Register rate limiting or overload and return the retry delay."""
     with _throttle_lock:
         current = _penalty.get(host, 0.0)
         # Multiplicative increase, starting from the base interval.
@@ -140,8 +143,9 @@ def get(
     """Fetch ``url``, returning a cached copy when one exists.
 
     ``cache_errors`` stores 4xx responses too, so that a song genuinely absent from a
-    source does not get re-requested on every run. 5xx and network errors are retried
-    with exponential backoff and never cached.
+    source does not get re-requested on every run. Rate limits and HTTP 503 honor
+    numeric Retry-After headers with shared backoff. Other 5xx and network errors
+    use exponential backoff. These transient failures are never cached.
 
     ``cached_only`` returns a synthetic 504 instead of touching the network when
     nothing is cached. This lets an analysis stage re-parse everything already
@@ -152,14 +156,15 @@ def get(
     path = _cache_path(full, namespace)
 
     if use_cache and path.exists():
-        payload = json.loads(path.read_text())
-        return Response(
-            url=full,
-            status=payload["status"],
-            text=payload["text"],
-            retrieved_at=payload["retrieved_at"],
-            from_cache=True,
-        )
+        try:
+            payload = json.loads(path.read_text())
+            if not (REFRESH_ERRORS.get() and payload["status"] >= 400):
+                return Response(
+                    url=full, status=payload["status"], text=payload["text"],
+                    retrieved_at=payload["retrieved_at"], from_cache=True,
+                )
+        except (ValueError, KeyError):
+            pass
 
     if cached_only:
         return Response(
@@ -185,7 +190,7 @@ def get(
             time.sleep(2**attempt)
             continue
 
-        if r.status_code == 429:
+        if r.status_code in (429, 503):
             retry_after = None
             try:
                 retry_after = float(r.headers.get("Retry-After", ""))
@@ -193,7 +198,7 @@ def get(
                 retry_after = None
             delay = note_rate_limited(host, retry_after)
             last_error = RuntimeError(
-                f"HTTP 429 from {host}; backing off {delay:.1f}s "
+                f"HTTP {r.status_code} from {host}; backing off {delay:.1f}s "
                 f"(host penalty now {_penalty.get(host, 0):.1f}s)"
             )
             time.sleep(delay)
@@ -213,16 +218,12 @@ def get(
             from_cache=False,
         )
         if use_cache and (r.ok or cache_errors):
-            path.write_text(
-                json.dumps(
-                    {
+            atomic_json(path, {
                         "url": full,
                         "status": resp.status,
                         "text": resp.text,
                         "retrieved_at": resp.retrieved_at,
-                    }
-                )
-            )
+                    })
         return resp
 
     raise RuntimeError(f"Failed to fetch {full} after {retries} attempts") from last_error

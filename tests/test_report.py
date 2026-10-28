@@ -105,13 +105,60 @@ class TestDerivedClaims:
                 f"stale hardcoded figure still reachable in an emitted string: {stale}"
             )
 
-    def test_missed_median_peak_is_an_integer_rank(self):
+    def test_missed_median_peak_is_an_integer_rank(self, monkeypatch, tmp_path):
+        import pandas as pd
+
+        monkeypatch.setattr(report, "DERIVED", tmp_path)
+        pd.DataFrame({"song_id": ["a", "b"], "has_lyrics": [True, False]}).to_parquet(
+            tmp_path / "lyrics_index.parquet"
+        )
+        pd.DataFrame({"song_id": ["a", "b"], "peak_rank": [1, 59]}).to_parquet(
+            tmp_path / "songs_weighted.parquet"
+        )
         got = report._missed_median_peak()
         assert isinstance(got, int)
         assert 1 <= got <= 100
 
     def test_share_range_text_mentions_decades(self):
         assert "decade" in report._share_range_text()
+
+    def test_vad_appendix_renders_current_estimate_and_comparison_chart(self, monkeypatch, tmp_path):
+        import pandas as pd
+
+        monkeypatch.setattr(report, "REPORTS", tmp_path)
+        monkeypatch.setattr(report, "FIGURES", tmp_path)
+        result = {
+            "n_matched_all_variants": 60, "n_eligible": 64,
+            "results": [{
+                "sample": "matched_all_variants", "time_basis": "debut_year",
+                "weighting": "exposure", "dimension": "valence", "variant": "v21_tokens",
+                "trend": {"change_per_decade": .0123, "kendall_tau": .4},
+            }],
+        }
+        (tmp_path / "nrc_vad_robustness.json").write_text(json.dumps(result))
+        (tmp_path / "nrc_vad_statistics.json").write_text(json.dumps({
+            "first_complete_year": 1959, "last_complete_year": 2025, "n_comparisons": 67,
+            "tests": [{
+                "is_primary": True, "method": "newey_west", "window_years": 5,
+                "dimension": "valence", "slope_per_decade": -.004,
+                "ci95_lo": -.006, "ci95_hi": -.002, "p_holm_primary": .003,
+            }],
+        }))
+        pd.DataFrame([
+            {"sample": "matched_all_variants", "time_basis": "debut_year",
+             "weighting": "exposure", "dimension": dimension, "variant": variant,
+             "year": year, "mean": .5, "ci_lo": .4, "ci_hi": .6}
+            for dimension in ("valence", "arousal", "dominance")
+            for variant in ("v1_tokens", "v21_tokens") for year in (2000, 2001)
+        ]).to_csv(tmp_path / "nrc_vad_series.csv", index=False)
+        text = "\n".join(report._vad_section())
+        assert "| v21_tokens | +0.0123 | +0.40 |" in text
+        assert "**60 identical songs**" in text and "**64 eligible lyrics**" in text
+        assert "validated sadness classifier" in text
+        assert "| Valence | -0.00400 | [-0.00600, -0.00200] | 0.003 |" in text
+        assert "not establish a flat trend" in text
+        assert "nrc_vad_statistics.csv" in text
+        assert (tmp_path / "nrc_vad_robustness.png").is_file()
 
 
 class TestReportArtifacts:

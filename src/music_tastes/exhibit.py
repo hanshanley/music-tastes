@@ -63,24 +63,22 @@ def top_by_decade(
 
 
 def gate_leakage(df: pd.DataFrame, stance: str = "independence", n: int = 12) -> pd.DataFrame:
-    """Songs scoring high on the stance that the relationship gate rejects.
+    """High stance scores with a scored-negative relationship label.
 
-    These are the classifier's characteristic false positives — it keys on the
-    literal claim rather than the romantic context. Showing them demonstrates that
-    the relationship condition is doing real work, and makes the failure mode
-    explicit rather than hidden.
+    These are model disagreements for review, not confirmed false positives.
+    Missing topic labels do not establish rejection by the relationship gate.
     """
     col = STANCE_COLS[stance]
     if col not in df.columns or "is_relationship" not in df.columns:
         return pd.DataFrame()
-    d = df[(df[col] > 0.9) & (df["is_relationship"] != 1)]
+    d = df[(df[col] > 0.9) & df["is_relationship"].eq(0)]
     return d.nlargest(n, "points")[
         ["debut_year", "title_display", "artist_display", col, "p_relationship_doc"]
     ].rename(columns={col: "p_stance"})
 
 
 def borderline(df: pd.DataFrame, stance: str, n: int = 15, window: float = 0.06) -> pd.DataFrame:
-    """Songs sitting closest to the decision threshold, where errors concentrate."""
+    """Songs whose stance scores are closest to the decision threshold."""
     col = STANCE_COLS[stance]
     if col not in df.columns:
         return pd.DataFrame()
@@ -103,7 +101,7 @@ def run(stance: str = "independence", per_decade: int = 6) -> dict:
     top.to_csv(REPORTS / f"exhibit_top_{stance}.csv", index=False)
     edge.to_csv(REPORTS / f"exhibit_borderline_{stance}.csv", index=False)
 
-    print(f"Highest-confidence '{stance}' songs by decade")
+    print(f"Highest-scoring '{stance}' songs by decade")
     print("(a reader who knows the music can check these directly)\n")
     for decade, g in top.groupby("decade"):
         print(f"  {int(decade)}s")
@@ -115,8 +113,7 @@ def run(stance: str = "independence", per_decade: int = 6) -> dict:
     if not leak.empty:
         leak.to_csv(REPORTS / f"exhibit_gate_leakage_{stance}.csv", index=False)
         print(f"High '{stance}' scores REJECTED by the relationship gate")
-        print("(the classifier's characteristic false positives — it keys on the")
-        print(" literal claim, not the romantic context):\n")
+        print("(candidates for independent review, not confirmed classifier errors)\n")
         for r in leak.itertuples():
             print(f"    p_stance={r.p_stance:.2f} p_rel={r.p_relationship_doc:.2f}  "
                   f"{r.debut_year}  {r.title_display[:34]:34} — {r.artist_display[:22]}")
@@ -124,7 +121,7 @@ def run(stance: str = "independence", per_decade: int = 6) -> dict:
 
     if not edge.empty:
         print(f"Closest calls (within {0.06} of the {P_THRESHOLD} threshold) —")
-        print("where the classifier is least reliable:\n")
+        print("candidates for independent review:\n")
         for r in edge.itertuples():
             print(f"    {r.p:.2f}  {r.debut_year}  {r.title_display[:38]:38} — "
                   f"{r.artist_display[:24]}")

@@ -1,32 +1,62 @@
 {
   "threshold": 0.5,
   "random_sample": {
-    "n_scored": 30,
+    "n_scored": 26,
+    "n_missing_score": 4,
+    "sampling_note": "Legacy labels; selection/annotation provenance not independently audited.",
     "method_b_relationship": {
-      "n": 30,
-      "tp": 15,
-      "fp": 1,
+      "n": 26,
+      "tp": 12,
+      "fp": 0,
       "fn": 0,
       "tn": 14,
-      "accuracy": 0.9666666666666667,
-      "precision": 0.9375,
+      "accuracy": 1.0,
+      "precision": 1.0,
       "recall": 1.0,
-      "f1": 0.967741935483871,
-      "cohen_kappa": 0.9333333333333333
+      "f1": 1.0,
+      "ci95_wilson": {
+        "accuracy": [
+          0.8712710781407846,
+          1.0
+        ],
+        "precision": [
+          0.7575059933447591,
+          1.0
+        ],
+        "recall": [
+          0.7575059933447591,
+          1.0
+        ]
+      },
+      "cohen_kappa": 1.0
     },
     "method_a_relationship": {
-      "n": 30,
-      "tp": 12,
+      "n": 26,
+      "tp": 11,
       "fp": 7,
-      "fn": 3,
-      "tn": 8,
-      "accuracy": 0.6666666666666666,
-      "precision": 0.631578947368421,
-      "recall": 0.8,
-      "f1": 0.7058823529411765,
-      "cohen_kappa": 0.33333333333333337
+      "fn": 1,
+      "tn": 7,
+      "accuracy": 0.6923076923076923,
+      "precision": 0.6111111111111112,
+      "recall": 0.9166666666666666,
+      "f1": 0.7333333333333333,
+      "ci95_wilson": {
+        "accuracy": [
+          0.5001174167780164,
+          0.8349868440453624
+        ],
+        "precision": [
+          0.3861904160223791,
+          0.7969475342783637
+        ],
+        "recall": [
+          0.646120088858883,
+          0.9851349055950828
+        ]
+      },
+      "cohen_kappa": 0.4022988505747126
     },
-    "methods_agree_kappa": 0.25339366515837114
+    "methods_agree_kappa": 0.4022988505747126
   },
   "purposive_sample": {
     "n_scored": 13,
@@ -41,6 +71,20 @@
       "precision": 1.0,
       "recall": 1.0,
       "f1": 1.0,
+      "ci95_wilson": {
+        "accuracy": [
+          0.7719046276458015,
+          1.0
+        ],
+        "precision": [
+          0.6755924351161198,
+          1.0
+        ],
+        "recall": [
+          0.6755924351161198,
+          1.0
+        ]
+      },
       "cohen_kappa": 1.0
     },
     "method_a_independence": {
@@ -53,7 +97,158 @@
       "precision": 1.0,
       "recall": 0.25,
       "f1": 0.4,
+      "ci95_wilson": {
+        "accuracy": [
+          0.29143795714506004,
+          0.7679393219046168
+        ],
+        "precision": [
+          0.3423802275066531,
+          1.0
+        ],
+        "recall": [
+          0.07147921275210901,
+          0.5907245696898311
+        ]
+      },
       "cohen_kappa": 0.20408163265306123
     }
+  },
+  "independent_review": {
+    "status": "partial",
+    "n_reviewed": 0,
+    "n_total": 160,
+    "n_uncertain": 0,
+    "n_scored": 0,
+    "note": "Equal-decade review; report per-decade metrics, not unbiased population accuracy.",
+    "by_decade": {},
+    "conditional_stances": {
+      "independence": {
+        "scope": "Human relationship-positive songs; predictions include the production topic gate.",
+        "n": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "accuracy": NaN,
+        "precision": NaN,
+        "recall": NaN,
+        "f1": NaN,
+        "ci95_wilson": {
+          "accuracy": null,
+          "precision": null,
+          "recall": null
+        },
+        "cohen_kappa": null
+      },
+      "devotion": {
+        "scope": "Human relationship-positive songs; predictions include the production topic gate.",
+        "n": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "accuracy": NaN,
+        "precision": NaN,
+        "recall": NaN,
+        "f1": NaN,
+        "ci95_wilson": {
+          "accuracy": null,
+          "precision": null,
+          "recall": null
+        },
+        "cohen_kappa": null
+      },
+      "longing": {
+        "scope": "Human relationship-positive songs; predictions include the production topic gate.",
+        "n": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "accuracy": NaN,
+        "precision": NaN,
+        "recall": NaN,
+        "f1": NaN,
+        "ci95_wilson": {
+          "accuracy": null,
+          "precision": null,
+          "recall": null
+        },
+        "cohen_kappa": null
+      },
+      "heartbreak": {
+        "scope": "Human relationship-positive songs; predictions include the production topic gate.",
+        "n": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "accuracy": NaN,
+        "precision": NaN,
+        "recall": NaN,
+        "f1": NaN,
+        "ci95_wilson": {
+          "accuracy": null,
+          "precision": null,
+          "recall": null
+        },
+        "cohen_kappa": null
+      },
+      "casual": {
+        "scope": "Human relationship-positive songs; predictions include the production topic gate.",
+        "n": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "accuracy": NaN,
+        "precision": NaN,
+        "recall": NaN,
+        "f1": NaN,
+        "ci95_wilson": {
+          "accuracy": null,
+          "precision": null,
+          "recall": null
+        },
+        "cohen_kappa": null
+      },
+      "conflict": {
+        "scope": "Human relationship-positive songs; predictions include the production topic gate.",
+        "n": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "accuracy": NaN,
+        "precision": NaN,
+        "recall": NaN,
+        "f1": NaN,
+        "ci95_wilson": {
+          "accuracy": null,
+          "precision": null,
+          "recall": null
+        },
+        "cohen_kappa": null
+      }
+    },
+    "ungated_independence": {
+      "n": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "accuracy": NaN,
+      "precision": NaN,
+      "recall": NaN,
+      "f1": NaN,
+      "ci95_wilson": {
+        "accuracy": null,
+        "precision": null,
+        "recall": null
+      },
+      "cohen_kappa": null
+    },
+    "stance_review_status": "pending"
   }
 }

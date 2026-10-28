@@ -21,3 +21,7 @@ __pycache__/
 # requires the full pipeline, which a reader of the README will not have run.
 
 .DS_Store
+
+# Static exports are rebuilt from committed public reports.
+site/index.html
+site/assets/

@@ -1,0 +1,41 @@
+{
+  "n": 160,
+  "threshold": 0.5,
+  "comparisons": {
+    "main_subject": {
+      "n": 160,
+      "label_disagreement": 0.04375,
+      "n_multiple_windows": 51,
+      "label_disagreement_multiple_windows": 0.0392156862745098
+    },
+    "describes": {
+      "n": 160,
+      "label_disagreement": 0.075,
+      "n_multiple_windows": 51,
+      "label_disagreement_multiple_windows": 0.09803921568627451
+    },
+    "window_max": {
+      "n": 160,
+      "label_disagreement": 0.00625,
+      "n_multiple_windows": 51,
+      "label_disagreement_multiple_windows": 0.0196078431372549
+    },
+    "window_mean": {
+      "n": 160,
+      "label_disagreement": 0.03125,
+      "n_multiple_windows": 51,
+      "label_disagreement_multiple_windows": 0.09803921568627451
+    }
+  },
+  "by_decade": {
+    "1950": 20,
+    "1960": 20,
+    "1970": 20,
+    "1980": 20,
+    "1990": 20,
+    "2000": 20,
+    "2010": 20,
+    "2020": 20
+  },
+  "note": "Equal-decade scored-song sample; sensitivity, not accuracy or population prevalence. Wording comparisons use the same first 380 words. Broader input uses up to 12 deduplicated 380-word windows; max/mean also change aggregation. Tokenizer truncation still applies. The production classifier is unchanged."
+}

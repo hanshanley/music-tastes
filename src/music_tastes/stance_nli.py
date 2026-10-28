@@ -1,33 +1,10 @@
 """Stage 6 (Method B): stance classification with a local zero-shot NLI model.
 
-Why NLI rather than a hosted LLM
---------------------------------
-The plan called for a hosted LLM here. It was replaced with a local natural-language
-inference model for three reasons: no API credential was available, the user asked for
-a local solution where feasible, and -- decisively -- validation showed this approach
-is accurate enough to carry the headline result.
-
-Why NLI rather than the embedding anchors of Method A
------------------------------------------------------
-Cosine similarity measures topical overlap, so it cannot distinguish "I don't need
-you" from "I want you back": both are breakup songs using the same vocabulary. On a
-13-song set with known stances, Method A scored 6/13. Entailment is negation-sensitive
-and scored 13/13 on the same set.
-
-Two design choices carry that accuracy:
-
-*Chunk-level maximum.* A song's claim to self-sufficiency usually lives in the chorus
-and is diluted when the whole lyric is judged at once. Scoring verse-sized chunks and
-taking the maximum lifted "I Will Survive" from 0.33 (miss) to 0.97 (hit) and
-"Since U Been Gone" from 0.05 to 0.85, without producing any false positive: the four
-devotion/yearning controls stayed between 0.004 and 0.082.
-
-*Deduplicated chunks.* Choruses repeat, and repeated text costs inference time without
-adding information, so identical normalized chunks are scored once.
-
-Validation set results are reproduced in ``reports/`` by the gold-set stage; the 13
-songs used during development are a smoke test, not the gold set, and are labelled
-again by hand there.
+The relationship topic is scored on the first 380 cleaned words. Stances use the
+maximum over up to 12 deduplicated 70-word chunks. The two tasks are independent;
+analysis subsequently gates stance shares on a relationship-positive topic label.
+Legacy small-sample validation is developmental evidence, not proof of population
+accuracy. See METHODS.md for the rubric, denominator, and review limitations.
 """
 
 from __future__ import annotations
@@ -35,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import hashlib
 
 import numpy as np
 import pandas as pd
@@ -42,9 +20,10 @@ from tqdm import tqdm
 
 from .fetch_lyrics import load_lyrics
 from .lyrics_features import clean_lyrics
-from .paths import CACHE, DERIVED
+from .paths import CACHE, DERIVED, atomic_json, atomic_parquet
 
 MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v2.0"
+MODEL_REVISION = "cf44676c28ba7312e5c5f8f8d2c22b3e0c9cdae2"
 NLI_CACHE = CACHE / "nli"
 
 CHUNK_WORDS = 70
@@ -68,6 +47,40 @@ HYPOTHESES = {
 # are better answered from the full lyric; stance questions are better answered from
 # the strongest chunk.
 DOC_LEVEL = {"relationship"}
+
+
+def cache_signature(text: str) -> str:
+    config = {
+        "schema": 1, "model": MODEL, "revision": MODEL_REVISION,
+        "hypotheses": HYPOTHESES, "doc_words": DOC_WORDS,
+        "chunk_words": CHUNK_WORDS, "max_chunks": MAX_CHUNKS,
+        "preprocessing": 1, "text": clean_lyrics(text),
+    }
+    return hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest()
+
+
+def valid_record(record: dict, text: str) -> bool:
+    keys = ["p_relationship_doc"] + [f"p_{key}_max" for key in CHUNK_KEYS]
+    return (
+        isinstance(record, dict)
+        and not record.get("error")
+        and record.get("signature") == cache_signature(text)
+        and all(
+            isinstance(record.get(k), (int, float))
+            and np.isfinite(record[k]) and 0 <= record[k] <= 1 for k in keys
+        )
+    )
+
+
+def read_record(song_id: str) -> dict | None:
+    try:
+        rec = json.loads(_cache_path(song_id).read_text())
+        text = load_lyrics(song_id)
+        return rec if (
+            text and valid_record(rec, text) and rec.get("song_id") == song_id
+        ) else None
+    except (OSError, ValueError, TypeError):
+        return None
 
 
 _SONG_ID_RE = re.compile(r"^s[0-9a-f]{16}$")
@@ -113,7 +126,10 @@ def _build_pipeline(device: str | None, fp16: bool = True):
     if fp16 and device in ("mps", "cuda"):
         kwargs["torch_dtype"] = torch.float16
     print(f"Loading {MODEL} on {device} (fp16={bool(kwargs)}) ...")
-    return pipeline("zero-shot-classification", model=MODEL, device=device, **kwargs)
+    return pipeline(
+        "zero-shot-classification", model=MODEL, revision=MODEL_REVISION,
+        device=device, **kwargs
+    )
 
 
 CHUNK_KEYS = [k for k in HYPOTHESES if k not in DOC_LEVEL]
@@ -192,14 +208,17 @@ def rebuild_from_cache() -> pd.DataFrame:
     records = []
     for path in NLI_CACHE.rglob("*.json"):
         try:
-            records.append(json.loads(path.read_text()))
-        except json.JSONDecodeError:
+            rec = read_record(path.stem)
+            if rec:
+                records.append(rec)
+        except ValueError:
             continue
     df = pd.DataFrame(records)
     if df.empty:
         return df
+    df = df.sort_values("song_id").reset_index(drop=True)
     out = DERIVED / "lyric_features_method_b.parquet"
-    df.to_parquet(out, index=False)
+    atomic_parquet(out, df)
     print(f"Rebuilt Method B features for {len(df):,} songs -> {out}")
     return df
 
@@ -241,11 +260,12 @@ def run(
         & ~index["is_instrumental"].fillna(False)
         & index["is_english"].fillna(False)
     ]
-    song_ids = _priority_order(list(usable["song_id"]), songs)
+    all_ids = _priority_order(list(usable["song_id"]), songs)
+    song_ids = all_ids
     if limit:
         song_ids = song_ids[:limit]
 
-    todo = [s for s in song_ids if not _cache_path(s).exists()]
+    todo = [s for s in song_ids if read_record(s) is None]
     print(f"{len(song_ids):,} songs with usable lyrics; {len(todo):,} still to score")
 
     if todo:
@@ -254,28 +274,32 @@ def run(
             for i in range(0, len(todo), group_size):
                 group = todo[i : i + group_size]
                 texts = {}
+                signatures = {}
                 for song_id in group:
                     raw = load_lyrics(song_id)
                     if raw:
                         texts[song_id] = clean_lyrics(raw)
+                        signatures[song_id] = cache_signature(raw)
                 try:
                     scored = score_batch(clf, texts, batch_size)
                 except Exception as exc:  # noqa: BLE001 - keep a long run alive
                     scored = {sid: {"error": str(exc)[:200]} for sid in texts}
                 for song_id, rec in scored.items():
                     rec["song_id"] = song_id
-                    _cache_path(song_id).write_text(json.dumps(rec))
+                    rec["signature"] = signatures[song_id]
+                    rec["model_revision"] = MODEL_REVISION
+                    atomic_json(_cache_path(song_id), rec)
                 bar.update(len(group))
 
     records = []
-    for song_id in song_ids:
-        path = _cache_path(song_id)
-        if path.exists():
-            records.append(json.loads(path.read_text()))
+    for song_id in all_ids:
+        rec = read_record(song_id)
+        if rec:
+            records.append(rec)
 
-    df = pd.DataFrame(records)
+    df = pd.DataFrame(records) if records else pd.DataFrame(columns=["song_id"])
     out = DERIVED / "lyric_features_method_b.parquet"
-    df.to_parquet(out, index=False)
+    atomic_parquet(out, df)
 
     print(f"\nWrote {len(df):,} rows to {out}")
     for key in HYPOTHESES:

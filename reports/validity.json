@@ -2,258 +2,259 @@
   "length_strata": [
     {
       "length_quintile": 1,
-      "n": 1139,
-      "words_min": 31,
-      "words_max": 200,
-      "spearman_year_vs_valence": -0.1414,
-      "p_value": 1.649353573263159e-06
+      "n": 5851,
+      "words_min": 20,
+      "words_max": 192,
+      "spearman_year_vs_valence": -0.106,
+      "p_value": 4.238602652884218e-16
     },
     {
       "length_quintile": 2,
-      "n": 1137,
-      "words_min": 201,
-      "words_max": 272,
-      "spearman_year_vs_valence": -0.1809,
-      "p_value": 8.136502611335887e-10
+      "n": 5744,
+      "words_min": 193,
+      "words_max": 258,
+      "spearman_year_vs_valence": -0.1257,
+      "p_value": 1.1267554984961161e-21
     },
     {
       "length_quintile": 3,
-      "n": 1123,
-      "words_min": 273,
-      "words_max": 354,
-      "spearman_year_vs_valence": -0.1783,
-      "p_value": 1.7898455718832745e-09
+      "n": 5794,
+      "words_min": 259,
+      "words_max": 333,
+      "spearman_year_vs_valence": -0.1695,
+      "p_value": 1.3618272950130588e-38
     },
     {
       "length_quintile": 4,
-      "n": 1138,
-      "words_min": 355,
-      "words_max": 508,
-      "spearman_year_vs_valence": -0.2911,
-      "p_value": 1.1383986382856719e-23
+      "n": 5741,
+      "words_min": 334,
+      "words_max": 471,
+      "spearman_year_vs_valence": -0.2802,
+      "p_value": 4.7291533492058534e-104
     },
     {
       "length_quintile": 5,
-      "n": 1127,
-      "words_min": 509,
-      "words_max": 1499,
-      "spearman_year_vs_valence": -0.2951,
-      "p_value": 4.491595152257848e-24
+      "n": 5754,
+      "words_min": 472,
+      "words_max": 3157,
+      "spearman_year_vs_valence": -0.3314,
+      "p_value": 1.4700102473112168e-147
     }
   ],
   "coverage_drift": {
-    "spearman_year_vs_coverage": -0.1973,
-    "p_value": 8.49087429298904e-51,
+    "spearman_year_vs_coverage": -0.152,
+    "p_value": 8.600675013512862e-149,
     "by_decade": [
       {
         "decade": 1950,
-        "n": 110,
-        "vad_coverage": 0.3499
+        "n": 645,
+        "vad_coverage": 0.3451
       },
       {
         "decade": 1960,
-        "n": 959,
-        "vad_coverage": 0.3526
+        "n": 5375,
+        "vad_coverage": 0.3446
       },
       {
         "decade": 1970,
-        "n": 808,
-        "vad_coverage": 0.3598
+        "n": 4522,
+        "vad_coverage": 0.3513
       },
       {
         "decade": 1980,
-        "n": 639,
-        "vad_coverage": 0.3462
+        "n": 3807,
+        "vad_coverage": 0.3446
       },
       {
         "decade": 1990,
-        "n": 628,
-        "vad_coverage": 0.3383
+        "n": 3181,
+        "vad_coverage": 0.3386
       },
       {
         "decade": 2000,
-        "n": 678,
-        "vad_coverage": 0.3275
+        "n": 3242,
+        "vad_coverage": 0.325
       },
       {
         "decade": 2010,
-        "n": 950,
-        "vad_coverage": 0.3288
+        "n": 4217,
+        "vad_coverage": 0.326
       },
       {
         "decade": 2020,
-        "n": 892,
-        "vad_coverage": 0.3176
+        "n": 3895,
+        "vad_coverage": 0.3154
       }
     ]
   },
   "type_vs_token": {
-    "n": 5630,
-    "spearman_tokens": -0.3018,
-    "p_tokens": 7.34005159773155e-119,
-    "spearman_types": -0.3464,
-    "p_types": 1.670457307468863e-158,
+    "n": 28682,
+    "spearman_tokens": -0.2784,
+    "p_tokens": 0.0,
+    "spearman_types": -0.3355,
+    "p_types": 0.0,
     "repetition_explains_trend": false
   },
-  "uncovered_vocabulary_written": "/Users/hanshanley/Documents/github_projects/music-tastes/reports/validity_uncovered_vocabulary.csv",
-  "contextual_check": {
-    "n": 828,
-    "spearman_year_vs_lexicon_valence": -0.2136,
-    "p_lexicon": 5.339127727655004e-10,
-    "spearman_year_vs_contextual_valence": -0.0091,
-    "p_contextual": 0.794643346715669,
-    "agreement_between_measures": 0.2826,
-    "p_agreement": 1.1440926812549696e-16,
-    "same_direction": true,
-    "by_decade": [
-      {
-        "decade": 1950,
-        "n": 24,
-        "lexicon": 0.6398,
-        "contextual": -0.037
-      },
-      {
-        "decade": 1960,
-        "n": 120,
-        "lexicon": 0.6282,
-        "contextual": -0.2118
-      },
-      {
-        "decade": 1970,
-        "n": 120,
-        "lexicon": 0.6406,
-        "contextual": -0.1298
-      },
-      {
-        "decade": 1980,
-        "n": 120,
-        "lexicon": 0.6159,
-        "contextual": -0.2744
-      },
-      {
-        "decade": 1990,
-        "n": 120,
-        "lexicon": 0.6283,
-        "contextual": -0.2416
-      },
-      {
-        "decade": 2000,
-        "n": 120,
-        "lexicon": 0.6026,
-        "contextual": -0.264
-      },
-      {
-        "decade": 2010,
-        "n": 120,
-        "lexicon": 0.6067,
-        "contextual": -0.0928
-      },
-      {
-        "decade": 2020,
-        "n": 84,
-        "lexicon": 0.5914,
-        "contextual": -0.2799
-      }
-    ]
-  },
+  "uncovered_vocabulary_written": "/Users/hanshanley/Documents/personal_projects/music-tastes/data/runs/20261028T163013Z-9657a50b/reports/validity_uncovered_vocabulary.csv",
   "language_robustness": {
     "all_songs": {
-      "n": 5664,
-      "spearman": -0.3029,
-      "p_value": 1.770502292119947e-120
+      "n": 28884,
+      "spearman": -0.2798,
+      "p_value": 0.0
     },
     "detected_english": {
-      "n": 5602,
-      "spearman": -0.2978,
-      "p_value": 4.297817636523914e-115
+      "n": 28656,
+      "spearman": -0.2764,
+      "p_value": 0.0
     },
     "english_confident": {
-      "n": 5517,
-      "spearman": -0.2979,
-      "p_value": 1.896736973459883e-113
+      "n": 28248,
+      "spearman": -0.2777,
+      "p_value": 0.0
     },
     "english_monolingual": {
-      "n": 5229,
-      "spearman": -0.2814,
-      "p_value": 9.454726029063314e-96
+      "n": 26842,
+      "spearman": -0.2622,
+      "p_value": 0.0
     },
-    "max_absolute_shift": 0.0215,
+    "max_absolute_shift": 0.0176,
     "language_explains_trend": false
   },
   "aggregation_bias": {
     "stance": "independence",
-    "n": 6267,
-    "spearman_chunks_vs_max": 0.391,
-    "spearman_year_vs_chunks": 0.5759,
-    "unadjusted_per_decade": 0.0281,
-    "unadjusted_p": 5.859899157879299e-50,
-    "chunk_adjusted_per_decade": 0.01413,
-    "chunk_adjusted_p": 6.601050878856609e-11,
-    "attenuation_fraction": 0.497,
+    "n": 18789,
+    "spearman_chunks_vs_max": 0.3716,
+    "spearman_year_vs_chunks": 0.5969,
+    "unadjusted_per_decade": 0.02771,
+    "unadjusted_p": 8.277573704105066e-145,
+    "chunk_adjusted_per_decade": 0.01267,
+    "chunk_adjusted_p": 3.4743973785050136e-24,
+    "attenuation_fraction": 0.543,
     "survives_adjustment": true,
     "within_chunk_strata": [
       {
         "stratum": "short (1-4 chunks)",
-        "n": 2839,
-        "spearman_year": 0.0644,
-        "p_value": 0.0005998821848671058,
+        "n": 9596,
+        "spearman_year": 0.0505,
+        "p_value": 7.354655096540829e-07,
         "by_decade": {
-          "1950": 0.0207,
-          "1960": 0.0443,
-          "1970": 0.046,
-          "1980": 0.0558,
-          "1990": 0.062,
-          "2000": 0.0696,
-          "2010": 0.0679,
-          "2020": 0.1104
+          "1950": 0.0196,
+          "1960": 0.0507,
+          "1970": 0.0595,
+          "1980": 0.063,
+          "1990": 0.0567,
+          "2000": 0.0609,
+          "2010": 0.0809,
+          "2020": 0.1011
         }
       },
       {
         "stratum": "medium (5-7)",
-        "n": 2416,
-        "spearman_year": 0.1096,
-        "p_value": 6.62540162714285e-08,
+        "n": 6744,
+        "spearman_year": 0.1297,
+        "p_value": 1.0858733999001769e-26,
         "by_decade": {
-          "1960": 0.0887,
-          "1970": 0.0672,
-          "1980": 0.0752,
-          "1990": 0.0801,
-          "2000": 0.1447,
-          "2010": 0.1537,
-          "2020": 0.1603
+          "1960": 0.07,
+          "1970": 0.0835,
+          "1980": 0.0749,
+          "1990": 0.0905,
+          "2000": 0.1608,
+          "2010": 0.1623,
+          "2020": 0.1865
         }
       },
       {
         "stratum": "long (8+)",
-        "n": 1012,
-        "spearman_year": 0.1831,
-        "p_value": 4.473298430039757e-09,
+        "n": 2449,
+        "spearman_year": 0.1731,
+        "p_value": 6.318600715488492e-18,
         "by_decade": {
-          "1980": 0.1765,
-          "1990": 0.1761,
-          "2000": 0.189,
-          "2010": 0.304,
-          "2020": 0.4021
+          "1970": 0.1585,
+          "1980": 0.1497,
+          "1990": 0.2005,
+          "2000": 0.2356,
+          "2010": 0.3138,
+          "2020": 0.3884
         }
       }
     ],
     "all_strata_positive": true
   },
+  "contextual_check": {
+    "n": 828,
+    "spearman_year_vs_lexicon_valence": -0.133,
+    "p_lexicon": 0.00012386036754130338,
+    "spearman_year_vs_contextual_valence": -0.0148,
+    "p_contextual": 0.6700597000967748,
+    "agreement_between_measures": 0.2986,
+    "p_agreement": 1.6335279618359696e-18,
+    "same_direction": true,
+    "by_decade": [
+      {
+        "decade": 1950,
+        "n": 24,
+        "lexicon": 0.6448,
+        "contextual": -0.0821
+      },
+      {
+        "decade": 1960,
+        "n": 120,
+        "lexicon": 0.6156,
+        "contextual": -0.226
+      },
+      {
+        "decade": 1970,
+        "n": 120,
+        "lexicon": 0.6386,
+        "contextual": -0.1867
+      },
+      {
+        "decade": 1980,
+        "n": 120,
+        "lexicon": 0.6294,
+        "contextual": -0.2346
+      },
+      {
+        "decade": 1990,
+        "n": 120,
+        "lexicon": 0.6328,
+        "contextual": -0.3303
+      },
+      {
+        "decade": 2000,
+        "n": 120,
+        "lexicon": 0.6025,
+        "contextual": -0.2945
+      },
+      {
+        "decade": 2010,
+        "n": 120,
+        "lexicon": 0.609,
+        "contextual": -0.1657
+      },
+      {
+        "decade": 2020,
+        "n": 84,
+        "lexicon": 0.6057,
+        "contextual": -0.2851
+      }
+    ]
+  },
   "length_bias_reconciliation": {
     "n": 828,
     "contextual": {
-      "length_bias_spearman": 0.2392,
-      "raw_per_decade_sd": -0.0139,
-      "raw_p": 0.426545753260323,
-      "length_adjusted_per_decade_sd": -0.0971,
-      "length_adjusted_p": 1.142315068268209e-06
+      "length_bias_spearman": 0.1512,
+      "raw_per_decade_sd": -0.0188,
+      "raw_p": 0.28272764753435126,
+      "length_adjusted_per_decade_sd": -0.0661,
+      "length_adjusted_p": 0.001067252214997035
     },
     "lexicon": {
-      "length_bias_spearman": -0.1731,
-      "raw_per_decade_sd": -0.0954,
-      "raw_p": 3.5303626891205904e-08,
-      "length_adjusted_per_decade_sd": -0.0659,
-      "length_adjusted_p": 0.001083553557246143
+      "length_bias_spearman": -0.1396,
+      "raw_per_decade_sd": -0.0645,
+      "raw_p": 0.00020635285840689782,
+      "length_adjusted_per_decade_sd": -0.0419,
+      "length_adjusted_p": 0.037947968430445615
     },
     "biases_have_opposite_sign": true,
     "agree_after_adjustment": true

@@ -1,0 +1,94 @@
+{
+  "results": [
+    {
+      "threshold": 0.3,
+      "n_years": 69,
+      "year_min": 1958,
+      "year_max": 2026,
+      "kendall_tau": -0.040920716112531966,
+      "p_value": 0.619024332046362,
+      "significant_at_05": false,
+      "theil_sen_slope_per_year": -0.00018822276532016232,
+      "theil_sen_slope_ci": [
+        -0.0009287396757215938,
+        0.0005183697682972465
+      ],
+      "change_per_decade": -0.0018822276532016232,
+      "mean_first_5_years": 0.7607608228614142,
+      "mean_last_5_years": 0.7496587458297906,
+      "absolute_change": -0.01110207703162358
+    },
+    {
+      "threshold": 0.4,
+      "n_years": 69,
+      "year_min": 1958,
+      "year_max": 2026,
+      "kendall_tau": -0.07161125319693094,
+      "p_value": 0.38421363081924453,
+      "significant_at_05": false,
+      "theil_sen_slope_per_year": -0.00029305322390922356,
+      "theil_sen_slope_ci": [
+        -0.0010647259890536592,
+        0.0004564738967275253
+      ],
+      "change_per_decade": -0.0029305322390922356,
+      "mean_first_5_years": 0.7499633389885677,
+      "mean_last_5_years": 0.736662149926401,
+      "absolute_change": -0.013301189062166707
+    },
+    {
+      "threshold": 0.5,
+      "n_years": 69,
+      "year_min": 1958,
+      "year_max": 2026,
+      "kendall_tau": -0.09633418584825233,
+      "p_value": 0.24177135658313054,
+      "significant_at_05": false,
+      "theil_sen_slope_per_year": -0.0003826743630229224,
+      "theil_sen_slope_ci": [
+        -0.0011224399001090466,
+        0.000338401005996612
+      ],
+      "change_per_decade": -0.003826743630229224,
+      "mean_first_5_years": 0.7419822717234308,
+      "mean_last_5_years": 0.7199026422159487,
+      "absolute_change": -0.0220796295074821
+    },
+    {
+      "threshold": 0.6,
+      "n_years": 69,
+      "year_min": 1958,
+      "year_max": 2026,
+      "kendall_tau": -0.113384484228474,
+      "p_value": 0.1682800482085911,
+      "significant_at_05": false,
+      "theil_sen_slope_per_year": -0.0004439383448220631,
+      "theil_sen_slope_ci": [
+        -0.001186686624061184,
+        0.0002788209111599795
+      ],
+      "change_per_decade": -0.004439383448220631,
+      "mean_first_5_years": 0.7358331439932987,
+      "mean_last_5_years": 0.7024643058488754,
+      "absolute_change": -0.03336883814442326
+    },
+    {
+      "threshold": 0.7,
+      "n_years": 69,
+      "year_min": 1958,
+      "year_max": 2026,
+      "kendall_tau": -0.1227621483375959,
+      "p_value": 0.13577760181658202,
+      "significant_at_05": false,
+      "theil_sen_slope_per_year": -0.0005634754335537073,
+      "theil_sen_slope_ci": [
+        -0.0013227420086306396,
+        0.0001909465063045192
+      ],
+      "change_per_decade": -0.005634754335537073,
+      "mean_first_5_years": 0.721415320577951,
+      "mean_last_5_years": 0.6895902360953304,
+      "absolute_change": -0.03182508448262056
+    }
+  ]
+}

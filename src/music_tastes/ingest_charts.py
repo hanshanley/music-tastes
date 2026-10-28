@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 import pandas as pd
 
 from .http import get
-from .paths import INTERIM, RAW
+from .paths import INTERIM, RAW, atomic_json, atomic_text, atomic_parquet
 
 PRIMARY_URL = "https://raw.githubusercontent.com/mhollingshead/billboard-hot-100/main/all.json"
 SECONDARY_URL = (
@@ -28,31 +28,57 @@ SECONDARY_URL = (
 )
 
 
-def _fetch_primary() -> list[dict]:
+def _fetch_primary(refresh: bool = False, offline: bool = False) -> list[dict]:
     """Download the full weekly archive, caching the raw payload on disk."""
     local = RAW / "billboard_hot100_all.json"
-    if local.exists():
+    if local.exists() and (not refresh or offline):
         print(f"Using cached primary archive: {local}")
         return json.loads(local.read_text())
+    if offline:
+        raise SystemExit("No cached chart archive. Run ingest-charts online first.")
 
     print(f"Downloading primary archive from {PRIMARY_URL} ...")
     # This payload is ~90 MB, so it bypasses the small-response JSON cache.
     resp = get(PRIMARY_URL, namespace="billboard", timeout=300, use_cache=False)
     if resp.status != 200:
         raise SystemExit(f"Primary archive fetch failed with HTTP {resp.status}")
-    local.write_text(resp.text)
-    (RAW / "billboard_hot100_all.provenance.json").write_text(
-        json.dumps(
-            {
+    weeks = json.loads(resp.text)
+    validate_charts(_normalize_primary(weeks))
+    atomic_text(local, resp.text)
+    atomic_json(RAW / "billboard_hot100_all.provenance.json", {
                 "url": PRIMARY_URL,
                 "retrieved_at": resp.retrieved_at,
                 "source": "mhollingshead/billboard-hot-100 (GitHub)",
                 "upstream": "Billboard Hot 100, compiled by Billboard from Luminate data",
-            },
-            indent=2,
-        )
-    )
-    return json.loads(resp.text)
+                "chart_through": max(w["date"] for w in weeks),
+            })
+    return weeks
+
+
+def validate_charts(df: pd.DataFrame) -> dict:
+    if df.empty:
+        raise ValueError("Chart archive is empty")
+    if df.duplicated(["chart_week", "rank"]).any():
+        raise ValueError("Duplicate chart-week/rank positions")
+    if not df["rank"].between(1, 100).all():
+        raise ValueError("Chart ranks must be between 1 and 100")
+    dates = pd.Series(sorted(df["chart_week"].unique()))
+    gaps = dates.diff().dt.days
+    # Both archives switch from Monday issue dates to Saturday at this boundary.
+    missing = [
+        str(dates.iloc[i]) for i in gaps[gaps > 10].index
+        if not (str(dates.iloc[i - 1]) == "1961-12-25" and str(dates.iloc[i]) == "1962-01-06")
+    ]
+    sizes = df.groupby("chart_week").size()
+    incomplete = {str(k): int(v) for k, v in sizes[sizes != 100].items()}
+    return {
+        "chart_from": str(dates.iloc[0]),
+        "chart_through": str(dates.iloc[-1]),
+        "weeks": len(dates),
+        "positions": len(df),
+        "gaps_before": missing,
+        "non_100_position_weeks": incomplete,
+    }
 
 
 def _normalize_primary(weeks: list[dict]) -> pd.DataFrame:
@@ -141,8 +167,9 @@ def _cross_check(primary: pd.DataFrame, secondary: pd.DataFrame) -> dict:
 
     def key(df: pd.DataFrame) -> pd.DataFrame:
         out = df.copy()
-        out["title_key"] = out["title"].str.lower().str.replace(r"\s+", " ", regex=True).str.strip()
-        return out.set_index(["chart_week", "rank"])["title_key"]
+        for column in ("title", "artist"):
+            out[column] = out[column].str.lower().str.replace(r"\s+", " ", regex=True).str.strip()
+        return out.set_index(["chart_week", "rank"])[["title", "artist"]]
 
     shared_weeks = sorted(set(primary["chart_week"]) & set(secondary["chart_week"]))
     p = key(primary[primary["chart_week"].isin(shared_weeks)])
@@ -150,16 +177,22 @@ def _cross_check(primary: pd.DataFrame, secondary: pd.DataFrame) -> dict:
 
     p = p[~p.index.duplicated()]
     s = s[~s.index.duplicated()]
-    joined = pd.concat([p.rename("primary"), s.rename("secondary")], axis=1, join="inner")
-    mismatches = joined[joined["primary"] != joined["secondary"]]
+    joined = p.join(s, how="outer", lsuffix="_primary", rsuffix="_secondary")
+    present = joined.dropna()
+    mismatches = present[
+        (present["title_primary"] != present["title_secondary"])
+        | (present["artist_primary"] != present["artist_secondary"])
+    ]
 
     report = {
         "shared_weeks": len(shared_weeks),
         "primary_only_weeks": len(set(primary["chart_week"]) - set(secondary["chart_week"])),
         "secondary_only_weeks": len(set(secondary["chart_week"]) - set(primary["chart_week"])),
-        "compared_positions": int(len(joined)),
+        "compared_positions": int(len(present)),
+        "missing_primary_positions": int(joined["title_primary"].isna().sum()),
+        "missing_secondary_positions": int(joined["title_secondary"].isna().sum()),
         "mismatched_positions": int(len(mismatches)),
-        "mismatch_rate": round(len(mismatches) / len(joined), 6) if len(joined) else None,
+        "mismatch_rate": round(len(mismatches) / len(present), 6) if len(present) else None,
         "examples": mismatches.head(25).reset_index().to_dict("records"),
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
@@ -169,22 +202,18 @@ def _cross_check(primary: pd.DataFrame, secondary: pd.DataFrame) -> dict:
     return report
 
 
-def run() -> pd.DataFrame:
-    weeks = _fetch_primary()
+def run(refresh: bool = False, offline: bool = False, as_of: str | None = None) -> pd.DataFrame:
+    weeks = _fetch_primary(refresh=refresh, offline=offline)
     df = _normalize_primary(weeks)
-
-    out = INTERIM / "chart_entries.parquet"
-    df.to_parquet(out, index=False)
-
-    print(f"\nIngested {len(df):,} chart positions")
-    print(f"  weeks:  {df['chart_week'].nunique():,} "
-          f"({df['chart_week'].min()} → {df['chart_week'].max()})")
-    print(f"  unique (title, artist) pairs: {df.groupby(['title', 'artist']).ngroups:,}")
-    print(f"  wrote {out}")
-
     print("\nCross-checking against the independent UT Austin archive ...")
-    secondary = _fetch_secondary()
+    secondary_path = RAW / "billboard_hot100_secondary.parquet"
+    secondary = (
+        pd.read_parquet(secondary_path) if offline and secondary_path.exists()
+        else None if offline else _fetch_secondary()
+    )
+    df["chart_source"] = "mhollingshead"
     if secondary is not None:
+        atomic_parquet(secondary_path, secondary)
         report = _cross_check(df, secondary)
         path = INTERIM / "chart_crosscheck.json"
         path.write_text(json.dumps(report, indent=2, default=str))
@@ -192,6 +221,30 @@ def run() -> pd.DataFrame:
         print(f"  mismatches: {report['mismatched_positions']:,} "
               f"({(report['mismatch_rate'] or 0) * 100:.4f}%)")
         print(f"  wrote {path}")
+        extra = secondary[~secondary["chart_week"].isin(df["chart_week"])].copy()
+        if not extra.empty:
+            validate_charts(extra)
+            sizes = extra.groupby("chart_week").size()
+            if (sizes != 100).any():
+                raise SystemExit("Secondary-only chart weeks are incomplete; refusing to append")
+            extra["chart_source"] = "utdata"
+            df = pd.concat([df, extra], ignore_index=True)
+    else:
+        atomic_json(INTERIM / "chart_crosscheck.json", {
+            "status": "not_checked", "reason": "offline" if offline else "source_unavailable"
+        })
+    if as_of:
+        df = df[df["chart_week"] <= pd.Timestamp(as_of).date()].copy()
+    df = df.sort_values(["chart_week", "rank"]).reset_index(drop=True)
+    audit = validate_charts(df)
+    audit["sources"] = df.groupby("chart_source").size().astype(int).to_dict()
+    atomic_json(INTERIM / "chart_integrity.json", audit)
+    if audit["gaps_before"]:
+        raise SystemExit(f"Missing chart weeks before: {audit['gaps_before']}")
+    out = INTERIM / "chart_entries.parquet"
+    atomic_parquet(out, df)
+    print(f"\nIngested {len(df):,} positions, {df['chart_week'].nunique():,} weeks")
+    print(f"  {audit['chart_from']} through {audit['chart_through']} -> {out}")
 
     return df
 

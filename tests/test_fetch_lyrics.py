@@ -45,6 +45,38 @@ class TestSlugConstruction:
         urls = slug_candidates("Sunflower (Spider-Man: Into The Spider-Verse)", "Post Malone")
         assert any(u.endswith("-sunflower-lyrics") for u in urls)
 
+    def test_leading_article_alternative_keeps_original_first(self):
+        urls = slug_candidates("Example", "The Example Band")
+        assert urls[0] == "https://genius.com/The-example-band-example-lyrics"
+        assert "https://genius.com/Example-band-example-lyrics" in urls
+
+    def test_dotted_initials_alternative(self):
+        urls = slug_candidates("Example", "P.M. Example")
+        assert "https://genius.com/Pm-example-example-lyrics" in urls
+        assert len(urls) == len(set(urls))
+
+    def test_missing_article_alternative_keeps_original_first(self):
+        urls = slug_candidates("Example", "Example Band")
+        assert urls[0] == "https://genius.com/Example-band-example-lyrics"
+        assert "https://genius.com/The-example-band-example-lyrics" in urls
+
+    def test_optional_quoted_nickname_alternative(self):
+        urls = slug_candidates("Example", 'First "Nickname" Last')
+        assert "https://genius.com/First-nickname-last-example-lyrics" in urls
+        assert "https://genius.com/First-last-example-lyrics" in urls
+
+    def test_missing_artist_does_not_invent_an_article_only_artist(self):
+        assert slug_candidates("Example", " ") == []
+
+    def test_alternate_slug_still_requires_matching_page_identity(self, monkeypatch):
+        from music_tastes import fetch_lyrics
+        from music_tastes.http import Response
+
+        monkeypatch.setattr(fetch_lyrics, "get", lambda *a, **k: Response(
+            "", 200, _page("Different Act – Example Lyrics | Genius Lyrics"), "", False
+        ))
+        assert fetch_lyrics.match_via_slug("Example", "The Example Band") is None
+
 
 class TestVerifyPage:
     def test_accepts_exact_match(self):
@@ -130,8 +162,12 @@ class TestLyricHeuristics:
     def test_instrumental_detected(self):
         assert looks_instrumental("[Instrumental]")
 
-    def test_short_text_treated_as_instrumental(self):
-        assert looks_instrumental("[Intro]\nla la")
+    def test_instrumental_section_does_not_exclude_a_vocal_song(self):
+        assert not looks_instrumental("[Verse]\nYou and me together\n[Instrumental]\n[Outro]")
+        assert looks_instrumental("[Intro]\n[Instrumental]\n...")
+
+    def test_short_text_is_not_evidence_of_an_instrumental(self):
+        assert not looks_instrumental("[Intro]\nla la")
 
     def test_normal_lyric_not_instrumental(self):
         text = "I heard there was a secret chord that David played and it pleased the Lord " * 3

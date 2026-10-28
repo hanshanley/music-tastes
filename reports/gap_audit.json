@@ -1,0 +1,138 @@
+{
+  "baseline": {
+    "n_songs": 32732,
+    "n_lyrics": 29257,
+    "chart_through": "2026-10-31"
+  },
+  "current": {
+    "years_examined": 69,
+    "coverage_lyrics_overall": 0.8938347794207503,
+    "coverage_exposure_overall": 0.9429567468736392,
+    "coverage_min": 0.6963350785340314,
+    "coverage_min_year": 1959,
+    "coverage_max": 0.977924944812362,
+    "coverage_max_year": 2017,
+    "spearman_rho_year_vs_coverage": 0.8624406284252832,
+    "spearman_p": 1.7242228289510677e-21,
+    "coverage_is_year_dependent": true,
+    "n_songs": 32732,
+    "n_lyrics": 29257,
+    "n_scored_b": 28885,
+    "lyric_outcomes": {
+      "usable": 28885,
+      "no_confident_match": 2895,
+      "language_or_short_text": 372,
+      "instrumental": 332,
+      "transient_failure": 248
+    },
+    "subset_note": "Equal-N high-exposure covered songs, not a fully observed or unbiased population.",
+    "complete_case_per_year": 254,
+    "complete_case_n": 17526
+  },
+  "chart_through": "2026-10-31",
+  "chart_integrity": {
+    "chart_from": "1958-08-04",
+    "chart_through": "2026-10-31",
+    "weeks": 3562,
+    "positions": 356187,
+    "gaps_before": [],
+    "non_100_position_weeks": {
+      "1976-12-04": 99,
+      "1976-12-11": 99,
+      "1976-12-18": 99,
+      "1976-12-25": 99,
+      "1977-01-01": 99,
+      "1977-01-08": 99,
+      "1977-01-15": 99,
+      "1977-01-22": 99,
+      "1977-01-29": 99,
+      "1977-02-12": 99,
+      "1977-02-19": 99,
+      "1977-02-26": 99,
+      "1977-03-05": 99
+    },
+    "sources": {
+      "mhollingshead": 355987,
+      "utdata": 200
+    }
+  },
+  "comparison_note": "Changes describe different chart/lyric snapshots, not matched-song recovery counts. A legacy snapshot without a manifest has no verified chart cutoff.",
+  "matched_recovery": {
+    "observed_at": "2026-10-28T05:53:44.925864+00:00",
+    "additional_lyrics": 462,
+    "eligibility_reclassifications": 145,
+    "lyrics_before_merge": 28845,
+    "lyrics_after_merge": 29257,
+    "recovery_states": {
+      "recording-instrumental-corrections": "complete",
+      "instrumental-section-reclassification": "complete",
+      "genius-variant-recovery": "complete",
+      "genius-additional-variants": "complete",
+      "lrclib-formatting-recovery": "complete",
+      "lrclib-recovery": "deferred_server_overload",
+      "lrclib-instrumental-audit": "complete"
+    },
+    "retry_passes": [
+      {
+        "status": "deferred_time_bound",
+        "targeted": 694,
+        "attempted": 104,
+        "retrieved": 32,
+        "outcomes": {
+          "no_confident_match": 65,
+          "usable": 32,
+          "transient_failure": 6,
+          "instrumental": 1
+        },
+        "started_at": "2026-10-27T23:35:58.970614+00:00",
+        "finished_at": "2026-10-28T01:06:05.601565+00:00"
+      },
+      {
+        "status": "deferred_time_bound",
+        "targeted": 545,
+        "attempted": 88,
+        "retrieved": 31,
+        "outcomes": {
+          "instrumental": 3,
+          "no_confident_match": 51,
+          "usable": 31,
+          "transient_failure": 3
+        },
+        "started_at": "2026-10-28T01:30:55.125415+00:00",
+        "finished_at": "2026-10-28T03:01:19.761181+00:00"
+      },
+      {
+        "status": "deferred_time_bound",
+        "targeted": 460,
+        "attempted": 95,
+        "retrieved": 34,
+        "outcomes": {
+          "no_confident_match": 54,
+          "usable": 33,
+          "transient_failure": 6,
+          "language_or_short_text": 1,
+          "instrumental": 1
+        },
+        "started_at": "2026-10-28T03:02:50.352261+00:00",
+        "finished_at": "2026-10-28T04:33:47.675741+00:00"
+      },
+      {
+        "status": "deferred_server_overload",
+        "targeted": 371,
+        "attempted": 129,
+        "retrieved": 40,
+        "outcomes": {
+          "no_confident_match": 76,
+          "usable": 39,
+          "language_or_short_text": 1,
+          "instrumental": 7,
+          "transient_failure": 6
+        },
+        "started_at": "2026-10-28T04:35:01.806466+00:00",
+        "finished_at": "2026-10-28T05:41:45.219013+00:00"
+      }
+    ],
+    "removed_recording_transcriptions": 50,
+    "removal_note": "Excluded instrumental-recording transcriptions; this does not establish that every attached word was fabricated or that the recordings lack speech."
+  }
+}

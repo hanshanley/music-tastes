@@ -4,50 +4,50 @@
     {
       "decade": 1950,
       "debut_year": 1959,
+      "title_display": "It Doesn't Matter Anymore",
+      "artist_display": "Buddy Holly",
+      "p": 0.9559813141822815,
+      "points": 873
+    },
+    {
+      "decade": 1950,
+      "debut_year": 1959,
+      "title_display": "I'm Ready",
+      "artist_display": "Fats Domino",
+      "p": 0.9513686299324036,
+      "points": 679
+    },
+    {
+      "decade": 1950,
+      "debut_year": 1958,
+      "title_display": "Give Myself A Party",
+      "artist_display": "Don Gibson",
+      "p": 0.9474297165870667,
+      "points": 320
+    },
+    {
+      "decade": 1950,
+      "debut_year": 1959,
+      "title_display": "I Never Felt Like This",
+      "artist_display": "Jack Scott",
+      "p": 0.9026095867156982,
+      "points": 45
+    },
+    {
+      "decade": 1950,
+      "debut_year": 1959,
+      "title_display": "I'll Never Fall In Love Again",
+      "artist_display": "Johnnie Ray",
+      "p": 0.90183424949646,
+      "points": 117
+    },
+    {
+      "decade": 1950,
+      "debut_year": 1959,
       "title_display": "Makin' Love",
       "artist_display": "Floyd Robinson",
-      "p": 0.845815122127533,
+      "p": 0.845496416091919,
       "points": 1113
-    },
-    {
-      "decade": 1950,
-      "debut_year": 1958,
-      "title_display": "Down In Virginia",
-      "artist_display": "Jimmy Reed",
-      "p": 0.5691044330596924,
-      "points": 13
-    },
-    {
-      "decade": 1950,
-      "debut_year": 1959,
-      "title_display": "Mr. Blue",
-      "artist_display": "The Fleetwoods",
-      "p": 0.5540633201599121,
-      "points": 1615
-    },
-    {
-      "decade": 1950,
-      "debut_year": 1959,
-      "title_display": "You Got What It Takes",
-      "artist_display": "Marv Johnson",
-      "p": 0.4335392415523529,
-      "points": 1445
-    },
-    {
-      "decade": 1950,
-      "debut_year": 1959,
-      "title_display": "A Big Hunk O' Love",
-      "artist_display": "Elvis Presley With The Jordanaires",
-      "p": 0.41041654348373413,
-      "points": 1083
-    },
-    {
-      "decade": 1950,
-      "debut_year": 1958,
-      "title_display": "How The Time Flies",
-      "artist_display": "Jerry Wallace",
-      "p": 0.40664103627204895,
-      "points": 965
     },
     {
       "decade": 1960,
@@ -59,11 +59,11 @@
     },
     {
       "decade": 1960,
-      "debut_year": 1966,
-      "title_display": "Drive My Car",
-      "artist_display": "Bob Kuban And The In-Men",
-      "p": 0.9949396848678589,
-      "points": 21
+      "debut_year": 1968,
+      "title_display": "I Ain't Got To Love Nobody Else",
+      "artist_display": "The Masqueraders",
+      "p": 0.9941003918647766,
+      "points": 169
     },
     {
       "decade": 1960,
@@ -75,10 +75,18 @@
     },
     {
       "decade": 1960,
+      "debut_year": 1967,
+      "title_display": "Gonna Get Along Without Ya' Now",
+      "artist_display": "Trini Lopez",
+      "p": 0.9887118935585022,
+      "points": 17
+    },
+    {
+      "decade": 1960,
       "debut_year": 1964,
       "title_display": "Ain't Doing Too Bad (Part 1)",
       "artist_display": "Bobby Bland",
-      "p": 0.9859092235565186,
+      "p": 0.9859363436698914,
       "points": 248
     },
     {
@@ -86,208 +94,208 @@
       "debut_year": 1965,
       "title_display": "A World Of Our Own",
       "artist_display": "The Seekers",
-      "p": 0.984471321105957,
+      "p": 0.9845011234283447,
       "points": 589
-    },
-    {
-      "decade": 1960,
-      "debut_year": 1963,
-      "title_display": "Don't Think Twice, It's All Right",
-      "artist_display": "Peter, Paul & Mary",
-      "p": 0.9790558218955994,
-      "points": 722
-    },
-    {
-      "decade": 1970,
-      "debut_year": 1974,
-      "title_display": "As Long As He Takes Care Of Home",
-      "artist_display": "Candi Staton",
-      "p": 0.9834387302398682,
-      "points": 223
-    },
-    {
-      "decade": 1970,
-      "debut_year": 1978,
-      "title_display": "I Will Survive",
-      "artist_display": "Gloria Gaynor",
-      "p": 0.9744834303855896,
-      "points": 1811
-    },
-    {
-      "decade": 1970,
-      "debut_year": 1976,
-      "title_display": "Down To Love Town",
-      "artist_display": "The Originals",
-      "p": 0.9683213233947754,
-      "points": 298
-    },
-    {
-      "decade": 1970,
-      "debut_year": 1978,
-      "title_display": "Beast Of Burden",
-      "artist_display": "The Rolling Stones",
-      "p": 0.9578729271888733,
-      "points": 868
     },
     {
       "decade": 1970,
       "debut_year": 1970,
-      "title_display": "Cracklin' Rosie",
-      "artist_display": "Neil Diamond",
-      "p": 0.9527062773704529,
-      "points": 1260
+      "title_display": "I Have Learned To Do Without You",
+      "artist_display": "Mavis Staples",
+      "p": 0.9987356066703796,
+      "points": 45
     },
     {
       "decade": 1970,
-      "debut_year": 1976,
-      "title_display": "Bad Luck",
-      "artist_display": "The Atlanta Disco Band",
-      "p": 0.9462997317314148,
-      "points": 17
+      "debut_year": 1979,
+      "title_display": "Goodbye Stranger",
+      "artist_display": "Supertramp",
+      "p": 0.9935243129730225,
+      "points": 874
     },
     {
-      "decade": 1980,
-      "debut_year": 1984,
-      "title_display": "The Glamorous Life",
-      "artist_display": "Sheila E.",
-      "p": 0.9802241921424866,
-      "points": 1606
+      "decade": 1970,
+      "debut_year": 1973,
+      "title_display": "I'm Doin' Fine Now",
+      "artist_display": "New York City",
+      "p": 0.9934611916542053,
+      "points": 1202
     },
     {
-      "decade": 1980,
-      "debut_year": 1982,
-      "title_display": "Dreamin'",
-      "artist_display": "John Schneider",
-      "p": 0.9686788320541382,
-      "points": 272
+      "decade": 1970,
+      "debut_year": 1978,
+      "title_display": "Promises",
+      "artist_display": "Eric Clapton And His Band",
+      "p": 0.9918753504753113,
+      "points": 1117
     },
     {
-      "decade": 1980,
-      "debut_year": 1989,
-      "title_display": "Free Fallin'",
+      "decade": 1970,
+      "debut_year": 1978,
+      "title_display": "Listen To Her Heart",
       "artist_display": "Tom Petty",
-      "p": 0.9621075987815857,
-      "points": 1312
+      "p": 0.9888635277748108,
+      "points": 164
     },
     {
-      "decade": 1980,
-      "debut_year": 1986,
-      "title_display": "Another Night",
-      "artist_display": "Aretha Franklin",
-      "p": 0.9602867364883423,
-      "points": 790
-    },
-    {
-      "decade": 1980,
-      "debut_year": 1981,
-      "title_display": "Angel Of The Morning",
-      "artist_display": "Juice Newton",
-      "p": 0.9561454057693481,
-      "points": 1581
+      "decade": 1970,
+      "debut_year": 1974,
+      "title_display": "Steppin' Out (Gonna Boogie Tonight)",
+      "artist_display": "Tony Orlando & Dawn",
+      "p": 0.9874236583709717,
+      "points": 864
     },
     {
       "decade": 1980,
       "debut_year": 1983,
-      "title_display": "Baby Jane",
-      "artist_display": "Rod Stewart",
-      "p": 0.9542653560638428,
-      "points": 935
+      "title_display": "I Won't Be Home Tonight",
+      "artist_display": "Tony Carey",
+      "p": 0.9986436367034912,
+      "points": 97
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1982,
+      "title_display": "Tough World",
+      "artist_display": "Donnie Iris",
+      "p": 0.9965165853500366,
+      "points": 186
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1989,
+      "title_display": "Never Had A Lot To Lose",
+      "artist_display": "Cheap Trick",
+      "p": 0.9890342950820923,
+      "points": 107
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1989,
+      "title_display": "Run To Paradise",
+      "artist_display": "Choirboys",
+      "p": 0.9884026050567627,
+      "points": 91
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1981,
+      "title_display": "I Can Take Care Of Myself",
+      "artist_display": "Billy & The Beaters",
+      "p": 0.9858821630477905,
+      "points": 468
+    },
+    {
+      "decade": 1980,
+      "debut_year": 1981,
+      "title_display": "Mistaken Identity",
+      "artist_display": "Kim Carnes",
+      "p": 0.9856215119361877,
+      "points": 166
+    },
+    {
+      "decade": 1990,
+      "debut_year": 1995,
+      "title_display": "You'll See",
+      "artist_display": "Madonna",
+      "p": 0.9988685846328735,
+      "points": 1442
+    },
+    {
+      "decade": 1990,
+      "debut_year": 1996,
+      "title_display": "I Will Survive",
+      "artist_display": "Chantay Savage",
+      "p": 0.9988619685173035,
+      "points": 964
+    },
+    {
+      "decade": 1990,
+      "debut_year": 1997,
+      "title_display": "You Don't Have To Love Me",
+      "artist_display": "Monifah",
+      "p": 0.9952077269554138,
+      "points": 143
     },
     {
       "decade": 1990,
       "debut_year": 1998,
       "title_display": "Believe",
       "artist_display": "Cher",
-      "p": 0.9951514601707458,
+      "p": 0.9951135516166687,
       "points": 2493
     },
     {
       "decade": 1990,
-      "debut_year": 1991,
-      "title_display": "Don't Want To Be A Fool",
-      "artist_display": "Luther Vandross",
-      "p": 0.9851860404014587,
-      "points": 1243
-    },
-    {
-      "decade": 1990,
-      "debut_year": 1994,
-      "title_display": "Don't Turn Around",
-      "artist_display": "Ace Of Base",
-      "p": 0.9801862239837646,
-      "points": 2591
-    },
-    {
-      "decade": 1990,
-      "debut_year": 1995,
-      "title_display": "Diggin' On You",
-      "artist_display": "TLC",
-      "p": 0.970098614692688,
-      "points": 1615
-    },
-    {
-      "decade": 1990,
-      "debut_year": 1990,
-      "title_display": "King Of Wishful Thinking (From \"Pretty Woman\")",
-      "artist_display": "Go West",
-      "p": 0.9562272429466248,
-      "points": 1399
+      "debut_year": 1996,
+      "title_display": "I Don't Need Your Love",
+      "artist_display": "Angelina",
+      "p": 0.9938430190086365,
+      "points": 210
     },
     {
       "decade": 1990,
       "debut_year": 1999,
-      "title_display": "All N My Grill",
-      "artist_display": "Missy \"Misdemeanor\" Elliott Featuring Big Boi & Nicole",
-      "p": 0.9459512233734131,
-      "points": 319
+      "title_display": "Strong Enough",
+      "artist_display": "Cher",
+      "p": 0.9928786158561707,
+      "points": 349
+    },
+    {
+      "decade": 2000,
+      "debut_year": 2007,
+      "title_display": "I Don't Need A Man",
+      "artist_display": "The Pussycat Dolls",
+      "p": 0.9988883137702942,
+      "points": 8
+    },
+    {
+      "decade": 2000,
+      "debut_year": 2009,
+      "title_display": "Hey",
+      "artist_display": "Mitchel Musso",
+      "p": 0.9975844621658325,
+      "points": 50
+    },
+    {
+      "decade": 2000,
+      "debut_year": 2009,
+      "title_display": "It's Alright, It's OK",
+      "artist_display": "Ashley Tisdale",
+      "p": 0.9969663023948669,
+      "points": 2
+    },
+    {
+      "decade": 2000,
+      "debut_year": 2002,
+      "title_display": "U Don't Have To Call",
+      "artist_display": "Usher",
+      "p": 0.9952540993690491,
+      "points": 2103
     },
     {
       "decade": 2000,
       "debut_year": 2003,
       "title_display": "Me, Myself And I",
       "artist_display": "Beyonce",
-      "p": 0.9941573739051819,
+      "p": 0.9941800236701965,
       "points": 1878
     },
     {
       "decade": 2000,
-      "debut_year": 2005,
-      "title_display": "Don't Bother",
-      "artist_display": "Shakira",
-      "p": 0.9858139753341675,
-      "points": 305
+      "debut_year": 2008,
+      "title_display": "Love Don't Live Here",
+      "artist_display": "Lady Antebellum",
+      "p": 0.9898891448974609,
+      "points": 480
     },
     {
-      "decade": 2000,
-      "debut_year": 2007,
-      "title_display": "U + Ur Hand",
-      "artist_display": "P!nk",
-      "p": 0.985772967338562,
-      "points": 1934
-    },
-    {
-      "decade": 2000,
-      "debut_year": 2000,
-      "title_display": "Another Dumb Blonde",
-      "artist_display": "Hoku",
-      "p": 0.9842910766601562,
-      "points": 722
-    },
-    {
-      "decade": 2000,
-      "debut_year": 2006,
-      "title_display": "Say It Right",
-      "artist_display": "Nelly Furtado",
-      "p": 0.9841699004173279,
-      "points": 2447
-    },
-    {
-      "decade": 2000,
-      "debut_year": 2005,
-      "title_display": "DOA",
-      "artist_display": "Foo Fighters",
-      "p": 0.983628511428833,
-      "points": 259
+      "decade": 2010,
+      "debut_year": 2015,
+      "title_display": "Love Myself",
+      "artist_display": "Hailee Steinfeld",
+      "p": 0.9980695247650146,
+      "points": 767
     },
     {
       "decade": 2010,
@@ -302,88 +310,80 @@
       "debut_year": 2019,
       "title_display": "Buy My Own Drinks",
       "artist_display": "Runaway June",
-      "p": 0.9937466382980347,
+      "p": 0.9937101006507874,
       "points": 47
     },
     {
       "decade": 2010,
-      "debut_year": 2015,
-      "title_display": "Ayo",
-      "artist_display": "Chris Brown & Tyga",
-      "p": 0.9889064431190491,
-      "points": 1264
-    },
-    {
-      "decade": 2010,
-      "debut_year": 2019,
-      "title_display": "Demons And Angels",
-      "artist_display": "A Boogie Wit da Hoodie Featuring Juice WRLD",
-      "p": 0.9853562116622925,
-      "points": 24
-    },
-    {
-      "decade": 2010,
-      "debut_year": 2012,
-      "title_display": "Wide Awake",
-      "artist_display": "Katy Perry",
-      "p": 0.9771974086761475,
-      "points": 2234
-    },
-    {
-      "decade": 2010,
       "debut_year": 2016,
-      "title_display": "Needed Me",
-      "artist_display": "Rihanna",
-      "p": 0.9748690724372864,
-      "points": 3259
+      "title_display": "Shout Out To My Ex",
+      "artist_display": "Little Mix",
+      "p": 0.9904959201812744,
+      "points": 53
+    },
+    {
+      "decade": 2010,
+      "debut_year": 2015,
+      "title_display": "House Party",
+      "artist_display": "Sam Hunt",
+      "p": 0.9891815781593323,
+      "points": 1112
+    },
+    {
+      "decade": 2010,
+      "debut_year": 2011,
+      "title_display": "Wanted You More",
+      "artist_display": "Lady Antebellum",
+      "p": 0.989076554775238,
+      "points": 89
     },
     {
       "decade": 2020,
       "debut_year": 2020,
       "title_display": "Closure",
       "artist_display": "Taylor Swift",
-      "p": 0.9981862306594849,
+      "p": 0.9981827139854431,
       "points": 19
     },
     {
       "decade": 2020,
-      "debut_year": 2023,
-      "title_display": "Do It Again",
-      "artist_display": "NLE Choppa & 2Rare",
-      "p": 0.9942250847816467,
-      "points": 55
+      "debut_year": 2025,
+      "title_display": "Past Life",
+      "artist_display": "Ariana Grande",
+      "p": 0.9959378242492676,
+      "points": 48
+    },
+    {
+      "decade": 2020,
+      "debut_year": 2025,
+      "title_display": "I'm Not There For You",
+      "artist_display": "jessie murph",
+      "p": 0.995461642742157,
+      "points": 41
+    },
+    {
+      "decade": 2020,
+      "debut_year": 2024,
+      "title_display": "Indifferent",
+      "artist_display": "Megan Moroney",
+      "p": 0.9926825761795044,
+      "points": 17
+    },
+    {
+      "decade": 2020,
+      "debut_year": 2025,
+      "title_display": "Shake It To The Max (Fly)",
+      "artist_display": "MOLIY, Silent Addy, Skillibeng & Shenseea",
+      "p": 0.9917323589324951,
+      "points": 695
     },
     {
       "decade": 2020,
       "debut_year": 2023,
-      "title_display": "Cairo",
-      "artist_display": "Karol G & Ovy On The Drums",
-      "p": 0.9894703030586243,
-      "points": 19
-    },
-    {
-      "decade": 2020,
-      "debut_year": 2020,
-      "title_display": "Captain Hook",
-      "artist_display": "Megan Thee Stallion",
-      "p": 0.9882448315620422,
-      "points": 50
-    },
-    {
-      "decade": 2020,
-      "debut_year": 2022,
-      "title_display": "California Breeze",
-      "artist_display": "Lil Baby",
-      "p": 0.9868786931037903,
-      "points": 343
-    },
-    {
-      "decade": 2020,
-      "debut_year": 2021,
-      "title_display": "Drunk (And I Don't Wanna Go Home)",
-      "artist_display": "Elle King & Miranda Lambert",
-      "p": 0.9867516756057739,
-      "points": 978
+      "title_display": "Princess Diana",
+      "artist_display": "Ice Spice & Nicki Minaj",
+      "p": 0.9916681051254272,
+      "points": 1075
     }
   ],
   "borderline": [
@@ -391,106 +391,106 @@
       "debut_year": 2008,
       "title_display": "I'm Yours",
       "artist_display": "Jason Mraz",
-      "p": 0.502899169921875,
+      "p": 0.5015105605125427,
       "points": 5433
     },
     {
       "debut_year": 2020,
       "title_display": "Mood",
       "artist_display": "24kGoldn Featuring iann dior",
-      "p": 0.4511423110961914,
+      "p": 0.4517969489097595,
       "points": 4439
     },
     {
       "debut_year": 2011,
       "title_display": "Sail",
       "artist_display": "AWOLNATION",
-      "p": 0.5387822985649109,
+      "p": 0.5415565967559814,
       "points": 3997
     },
     {
       "debut_year": 2004,
       "title_display": "Yeah!",
       "artist_display": "Usher Featuring Lil Jon & Ludacris",
-      "p": 0.532896101474762,
+      "p": 0.5318173170089722,
       "points": 3952
     },
     {
       "debut_year": 2010,
       "title_display": "Dynamite",
       "artist_display": "Taio Cruz",
-      "p": 0.4987487494945526,
+      "p": 0.4992523193359375,
       "points": 3845
+    },
+    {
+      "debut_year": 1997,
+      "title_display": "How's It Going To Be",
+      "artist_display": "Third Eye Blind",
+      "p": 0.4720977544784546,
+      "points": 3687
     },
     {
       "debut_year": 2015,
       "title_display": "Earned It (Fifty Shades Of Grey)",
       "artist_display": "The Weeknd",
-      "p": 0.5066982507705688,
+      "p": 0.5068354606628418,
       "points": 3292
     },
     {
       "debut_year": 2013,
       "title_display": "Timber",
       "artist_display": "Pitbull Featuring Ke$ha",
-      "p": 0.48428863286972046,
+      "p": 0.4866364598274231,
       "points": 3222
     },
     {
       "debut_year": 2023,
       "title_display": "Agora Hills",
       "artist_display": "Doja Cat",
-      "p": 0.44996657967567444,
+      "p": 0.4498835504055023,
       "points": 2946
     },
     {
       "debut_year": 2018,
       "title_display": "Drip Too Hard",
       "artist_display": "Lil Baby & Gunna",
-      "p": 0.452301561832428,
+      "p": 0.4506162405014038,
       "points": 2895
     },
     {
       "debut_year": 2025,
       "title_display": "I Got Better",
       "artist_display": "Morgan Wallen",
-      "p": 0.5190489888191223,
+      "p": 0.5179365873336792,
       "points": 2885
     },
     {
       "debut_year": 2019,
       "title_display": "Ballin'",
       "artist_display": "Mustard & Roddy Ricch",
-      "p": 0.44686806201934814,
+      "p": 0.4454541802406311,
       "points": 2853
     },
     {
       "debut_year": 2011,
       "title_display": "Pumped Up Kicks",
       "artist_display": "Foster The People",
-      "p": 0.45091089606285095,
+      "p": 0.4492793381214142,
       "points": 2797
+    },
+    {
+      "debut_year": 2001,
+      "title_display": "I'm Real",
+      "artist_display": "Jennifer Lopez Featuring Ja Rule",
+      "p": 0.47201037406921387,
+      "points": 2704
     },
     {
       "debut_year": 2023,
       "title_display": "Fukumean",
       "artist_display": "Gunna",
-      "p": 0.5400294661521912,
+      "p": 0.5405297875404358,
       "points": 2657
-    },
-    {
-      "debut_year": 2004,
-      "title_display": "Drop It Like It's Hot",
-      "artist_display": "Snoop Dogg Featuring Pharrell",
-      "p": 0.4526115655899048,
-      "points": 2624
-    },
-    {
-      "debut_year": 1985,
-      "title_display": "Running Up That Hill (A Deal With God)",
-      "artist_display": "Kate Bush",
-      "p": 0.49128052592277527,
-      "points": 2624
     }
   ],
   "gate_leakage": [
@@ -498,85 +498,85 @@
       "debut_year": 2013,
       "title_display": "Wake Me Up!",
       "artist_display": "Avicii",
-      "p_stance": 0.9560224413871765,
-      "p_relationship_doc": 0.010944577865302563
+      "p_stance": 0.9557754397392273,
+      "p_relationship_doc": 0.010881333611905575
     },
     {
       "debut_year": 2019,
       "title_display": "Old Town Road",
       "artist_display": "Lil Nas X Featuring Billy Ray Cyrus",
-      "p_stance": 0.9099870324134827,
-      "p_relationship_doc": 0.07369627058506012
+      "p_stance": 0.9098268747329712,
+      "p_relationship_doc": 0.07329727709293365
+    },
+    {
+      "debut_year": 2022,
+      "title_display": "I'm Good (Blue)",
+      "artist_display": "David Guetta & Bebe Rexha",
+      "p_stance": 0.9756466150283813,
+      "p_relationship_doc": 0.282492995262146
     },
     {
       "debut_year": 2013,
       "title_display": "Royals",
       "artist_display": "Lorde",
-      "p_stance": 0.9312127232551575,
-      "p_relationship_doc": 0.021409770473837852
+      "p_stance": 0.9311501383781433,
+      "p_relationship_doc": 0.021368887275457382
     },
     {
       "debut_year": 2019,
       "title_display": "The Bones",
       "artist_display": "Maren Morris",
-      "p_stance": 0.9244834780693054,
-      "p_relationship_doc": 0.04463920742273331
+      "p_stance": 0.9246196746826172,
+      "p_relationship_doc": 0.0443899892270565
     },
     {
       "debut_year": 2001,
       "title_display": "Family Affair",
       "artist_display": "Mary J. Blige",
-      "p_stance": 0.9527503252029419,
-      "p_relationship_doc": 0.003389783203601837
+      "p_stance": 0.9526622891426086,
+      "p_relationship_doc": 0.003409635741263628
     },
     {
       "debut_year": 2009,
       "title_display": "TiK ToK",
       "artist_display": "Ke$ha",
       "p_stance": 0.941600501537323,
-      "p_relationship_doc": 0.0026574311777949333
+      "p_relationship_doc": 0.002662612358108163
     },
     {
       "debut_year": 2016,
       "title_display": "Panda",
       "artist_display": "Desiigner",
-      "p_stance": 0.9372681975364685,
-      "p_relationship_doc": 0.001213671755976975
+      "p_stance": 0.9371533393859863,
+      "p_relationship_doc": 0.0012255674228072166
     },
     {
       "debut_year": 2011,
       "title_display": "Good Feeling",
       "artist_display": "Flo Rida",
-      "p_stance": 0.9623913764953613,
-      "p_relationship_doc": 0.0013858176534995437
+      "p_stance": 0.9624972343444824,
+      "p_relationship_doc": 0.001383117400109768
     },
     {
       "debut_year": 2017,
       "title_display": "Bodak Yellow (Money Moves)",
       "artist_display": "Cardi B",
-      "p_stance": 0.9108631014823914,
-      "p_relationship_doc": 0.05000489205121994
+      "p_stance": 0.9111797213554382,
+      "p_relationship_doc": 0.04954301938414574
     },
     {
       "debut_year": 2019,
       "title_display": "Suge",
       "artist_display": "DaBaby",
-      "p_stance": 0.9299510717391968,
-      "p_relationship_doc": 0.0037507887464016676
+      "p_stance": 0.929632306098938,
+      "p_relationship_doc": 0.0037434976547956467
     },
     {
-      "debut_year": 2008,
-      "title_display": "So What",
-      "artist_display": "P!nk",
-      "p_stance": 0.9987886548042297,
-      "p_relationship_doc": 0.2135411500930786
-    },
-    {
-      "debut_year": 2013,
-      "title_display": "Let It Go",
-      "artist_display": "Idina Menzel",
-      "p_stance": 0.9628831148147583,
-      "p_relationship_doc": 0.06483088433742523
+      "debut_year": 2015,
+      "title_display": "Me, Myself & I",
+      "artist_display": "G-Eazy x Bebe Rexha",
+      "p_stance": 0.9968149065971375,
+      "p_relationship_doc": 0.0016103574307635427
     }
   ]
 }

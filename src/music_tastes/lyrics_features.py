@@ -22,13 +22,16 @@ from __future__ import annotations
 
 import argparse
 import re
+import json
+import hashlib
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
 from .fetch_lyrics import load_lyrics
-from .paths import DERIVED, RAW
+from .paths import DERIVED, RAW, CACHE, atomic_json, atomic_parquet
 from .taxonomy import (
     POST_BREAKUP_RESOLVED,
     POST_BREAKUP_YEARNING,
@@ -42,6 +45,7 @@ from .taxonomy import (
 
 LEX_DIR = RAW / "lexicons"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBED_REVISION = "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
 
 _SECTION = re.compile(r"\[[^\]]{0,80}\]")
 _WORD = re.compile(r"[a-z']+")
@@ -154,7 +158,7 @@ def embedding_features(texts: list[str], batch_size: int = 128) -> pd.DataFrame:
     """
     from sentence_transformers import SentenceTransformer
 
-    model = SentenceTransformer(EMBED_MODEL)
+    model = SentenceTransformer(EMBED_MODEL, revision=EMBED_REVISION)
 
     anchor_texts: list[str] = []
     anchor_groups: list[str] = []
@@ -236,44 +240,81 @@ def embedding_features(texts: list[str], batch_size: int = 128) -> pd.DataFrame:
 
 
 def run(limit: int | None = None, skip_embeddings: bool = False) -> pd.DataFrame:
+    from .cache import fingerprint
+
     index = pd.read_parquet(DERIVED / "lyrics_index.parquet")
     usable = index[
         index["has_lyrics"].fillna(False)
         & ~index["is_instrumental"].fillna(False)
         & index["is_english"].fillna(False)
     ].copy()
-    if limit:
-        usable = usable.head(limit)
-
     print(f"Extracting features for {len(usable):,} songs with usable lyrics")
 
     vad, emo, vader = _load_lexicons()
 
     records, texts, ids = [], [], []
+    base = fingerprint(
+        {"model": EMBED_MODEL, "revision": EMBED_REVISION,
+         "embeddings": not skip_embeddings, "schema": 1},
+        [LEX_DIR / f"{name}.parquet" for name in ("nrc_vad", "nrc_emolex", "vader")]
+        + [Path(__file__), Path(__file__).with_name("taxonomy.py")],
+    )
+    pending = {}
+    cache_dir = CACHE / "features_a"
+    cache_dir.mkdir(parents=True, exist_ok=True)
     for song_id in tqdm(usable["song_id"], desc="lexicon", unit="song"):
         raw = load_lyrics(song_id)
         if not raw:
             continue
         text = clean_lyrics(raw)
+        if not re.fullmatch(r"s[0-9a-f]{16}", str(song_id)):
+            raise ValueError(f"Malformed song ID: {song_id!r}")
+        signature = hashlib.sha256((base + text).encode()).hexdigest()
+        path = cache_dir / f"{song_id}.json"
+        try:
+            cached = json.loads(path.read_text())
+            if (
+                isinstance(cached, dict) and cached.get("signature") == signature
+                and cached.get("song_id") == song_id
+                and isinstance(cached.get("n_tokens"), (int, float))
+                and cached["n_tokens"] > 0
+                and (skip_embeddings or (
+                    cached.get("emb_stance") in STANCE_LABELS
+                    and all(
+                        isinstance(cached.get(key), (int, float)) and np.isfinite(cached[key])
+                        for key in ("emb_relationship_margin", "emb_independence_axis")
+                    )
+                ))
+            ):
+                records.append(cached)
+                continue
+        except (OSError, ValueError):
+            pass
+        if limit and len(pending) >= limit:
+            continue
         tokens = tokenize(text)
-        rec = {"song_id": song_id}
+        rec = {"song_id": song_id, "signature": signature}
         rec.update(lexicon_features(tokens, vad, emo, vader))
         rec.update(keyword_features(text))
-        records.append(rec)
+        pending[song_id] = rec
         texts.append(text)
         ids.append(song_id)
-
-    feats = pd.DataFrame(records)
 
     if not skip_embeddings and texts:
         print(f"\nEmbedding {len(texts):,} songs against "
               f"{len(RELATIONSHIP_ANCHORS) + len(NON_RELATIONSHIP_ANCHORS) + sum(len(v) for v in STANCE_ANCHORS.values())} anchors ...")
         emb = embedding_features(texts)
-        emb["song_id"] = ids
-        feats = feats.merge(emb, on="song_id", how="left")
+        for song_id, row in zip(ids, emb.to_dict("records")):
+            pending[song_id].update(row)
+
+    for song_id, rec in pending.items():
+        atomic_json(cache_dir / f"{song_id}.json", rec)
+        records.append(rec)
+    feats = pd.DataFrame(records) if records else pd.DataFrame(columns=["song_id"])
+    feats = feats.sort_values("song_id").reset_index(drop=True)
 
     out = DERIVED / "lyric_features_method_a.parquet"
-    feats.to_parquet(out, index=False)
+    atomic_parquet(out, feats)
 
     print(f"\nWrote {len(feats):,} rows to {out}")
     if "vad_valence" in feats:

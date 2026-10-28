@@ -455,6 +455,24 @@ def contextual_valence_check(
     either alone.
     """
     from .stance_nli import _build_pipeline, chunk_lyrics
+    from .cache import analysis_signature, cache_matches, mark_cache
+    from .paths import atomic_json
+
+    cache = DERIVED / "contextual_valence.parquet"
+    summary = cache.with_suffix(".summary.json")
+    signature = analysis_signature({"mood_hypotheses": MOOD_HYPOTHESES, "per_year": per_year})
+    if cache_matches(cache, signature) and summary.exists():
+        try:
+            result = json.loads(summary.read_text())
+            cached = pd.read_parquet(cache, columns=["song_id", "nli_valence", "vad_valence"])
+            if (
+                isinstance(result, dict) and len(cached) > 0
+                and len(cached) == result.get("n") and cached["nli_valence"].notna().all()
+            ):
+                print(f"Using cached contextual check for {len(cached):,} songs")
+                return result
+        except (ValueError, KeyError, OSError):
+            pass
 
     df = load_joined()
     d = df[df["vad_valence"].notna()].copy()
@@ -524,7 +542,7 @@ def contextual_valence_check(
         .reset_index()
     )
 
-    return {
+    result = {
         "n": int(len(t)),
         "spearman_year_vs_lexicon_valence": round(r_lex, 4),
         "p_lexicon": p_lex,
@@ -535,6 +553,9 @@ def contextual_valence_check(
         "same_direction": bool(np.sign(r_lex) == np.sign(r_nli)),
         "by_decade": by_decade.round(4).to_dict("records"),
     }
+    atomic_json(summary, result)
+    mark_cache(cache, signature)
+    return result
 
 
 def run(skip_contextual: bool = False, per_year: int = 12) -> dict:

@@ -3,26 +3,58 @@
 from __future__ import annotations
 
 import os
+import json
+import tempfile
 from pathlib import Path
 
 from dotenv import load_dotenv
 
 ROOT = Path(__file__).resolve().parents[2]
+load_dotenv(ROOT / ".env")
 
-DATA = ROOT / "data"
+DATA = Path(os.environ.get("MUSIC_TASTES_DATA_DIR") or ROOT / "data").expanduser().resolve()
 RAW = DATA / "raw"
 INTERIM = DATA / "interim"
 DERIVED = DATA / "derived"
 CACHE = DATA / "cache"
 LYRICS_CACHE = CACHE / "lyrics_cache"
 
-REPORTS = ROOT / "reports"
+REPORTS = Path(os.environ.get("MUSIC_TASTES_REPORTS_DIR") or ROOT / "reports").expanduser().resolve()
 FIGURES = REPORTS / "figures"
 
 for _d in (RAW, INTERIM, DERIVED, CACHE, LYRICS_CACHE, REPORTS, FIGURES):
     _d.mkdir(parents=True, exist_ok=True)
 
-load_dotenv(ROOT / ".env")
+def atomic_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as handle:
+        temporary = Path(handle.name)
+        try:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        except BaseException:
+            temporary.unlink(missing_ok=True)
+            raise
+    try:
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def atomic_json(path: Path, payload: dict) -> None:
+    atomic_text(path, json.dumps(payload, indent=2, default=str))
+
+
+def atomic_parquet(path: Path, frame) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=path.parent, suffix=".parquet", delete=False) as handle:
+        temporary = Path(handle.name)
+    try:
+        frame.to_parquet(temporary, index=False)
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def env(name: str, default: str | None = None, required: bool = False) -> str | None:

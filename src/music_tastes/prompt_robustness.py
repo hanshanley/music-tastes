@@ -1,19 +1,4 @@
-"""Is the independence trend an artefact of how the hypothesis was worded?
-
-The "I don't need you" result is the only headline finding that survived every other
-check, so it carries the weight of the project's conclusion. That makes it worth
-attacking directly. A zero-shot entailment model is sensitive to phrasing, and the
-whole result rests on one sentence:
-
-    "The singer does not need this person and will be fine without them."
-
-If the measured trend is a property of the music, rewording the claim should reproduce
-it. If it is a property of that sentence, it will not.
-
-Four paraphrases are scored on the same year-balanced sample and the decade trend is
-compared across all of them. Agreement is reported as the correlation between per-song
-probabilities and as the Kendall tau of each variant's yearly series.
-"""
+"""Matched wording and input-window sensitivity, not independent accuracy tests."""
 
 from __future__ import annotations
 
@@ -29,6 +14,7 @@ from .coverage import load_joined
 from .fetch_lyrics import load_lyrics
 from .lyrics_features import clean_lyrics
 from .paths import DERIVED, REPORTS
+from .stance_nli import HYPOTHESES
 
 # The original wording plus four deliberately varied paraphrases: different verbs,
 # different framings (need / better off / self-sufficiency / rejection), and one
@@ -40,6 +26,104 @@ VARIANTS = {
     "rejecting": "The singer is rejecting this person and moving on without regret.",
     "no_need_love": "The singer says they do not need this relationship to be happy.",
 }
+
+RELATIONSHIP_VARIANTS = {
+    "original": HYPOTHESES["relationship"],
+    "main_subject": "Romantic or sexual relationships are a main subject of this song.",
+    "describes": "This song describes romance, sexual desire, or a breakup.",
+}
+
+
+def score_relationship_sensitivity(per_decade: int = 20) -> pd.DataFrame:
+    from .stance_nli import DOC_WORDS, _build_pipeline, chunk_lyrics
+
+    df = load_joined()
+    df = df[df["p_relationship_doc"].notna()].copy()
+    df["decade"] = df["debut_year"] // 10 * 10
+    groups = [
+        group.sample(min(per_decade, len(group)), random_state=17)
+        for _, group in df.groupby("decade")
+    ]
+    if not groups:
+        return pd.DataFrame()
+    clf = _build_pipeline(None, fp16=False)
+    hypotheses = list(RELATIONSHIP_VARIANTS.values())
+    rows = []
+    for song in tqdm(pd.concat(groups).itertuples(), desc="topic sensitivity"):
+        raw = load_lyrics(song.song_id)
+        if not raw:
+            continue
+        windows = chunk_lyrics(clean_lyrics(raw), size=DOC_WORDS)
+        if not windows:
+            continue
+        results = clf(windows, hypotheses, multi_label=True, batch_size=32)
+        if isinstance(results, dict):
+            results = [results]
+        scores = [dict(zip(result["labels"], result["scores"])) for result in results]
+        baseline = [float(score[hypotheses[0]]) for score in scores]
+        record = {
+            "song_id": song.song_id, "debut_year": song.debut_year,
+            "decade": song.decade, "n_windows": len(windows),
+            "window_max": max(baseline), "window_mean": float(np.mean(baseline)),
+        }
+        record.update({
+            key: float(scores[0][hypothesis])
+            for key, hypothesis in RELATIONSHIP_VARIANTS.items()
+        })
+        rows.append(record)
+    return pd.DataFrame(rows)
+
+
+def relationship_summary(t: pd.DataFrame, threshold: float = .5) -> dict:
+    comparisons = {}
+    if len(t):
+        baseline = t["original"] > threshold
+        for key in ["main_subject", "describes", "window_max", "window_mean"]:
+            valid = t[key].notna() & t["original"].notna()
+            longer = valid & t["n_windows"].gt(1)
+            changed = (t[key] > threshold) != baseline
+            comparisons[key] = {
+                "n": int(valid.sum()),
+                "label_disagreement": float(changed[valid].mean()),
+                "n_multiple_windows": int(longer.sum()),
+                "label_disagreement_multiple_windows": (
+                    float(changed[longer].mean()) if longer.any() else None
+                ),
+            }
+    return {
+        "n": len(t), "threshold": threshold, "comparisons": comparisons,
+        "by_decade": (
+            t.groupby("decade").size().to_dict() if len(t) else {}
+        ),
+        "note": (
+            "Equal-decade scored-song sample; sensitivity, not accuracy or population prevalence. "
+            "Wording comparisons use the same first 380 words. Broader input uses up to 12 "
+            "deduplicated 380-word windows; max/mean also change aggregation. Tokenizer "
+            "truncation still applies. The production classifier is unchanged."
+        ),
+    }
+
+
+def relationship_sensitivity(threshold: float = .5, per_decade: int = 20) -> dict:
+    from .cache import analysis_signature, cache_matches, mark_cache
+    from .paths import atomic_json, atomic_parquet
+    from .stance_nli import DOC_WORDS, MAX_CHUNKS
+
+    path = DERIVED / "relationship_sensitivity.parquet"
+    signature = analysis_signature({
+        "relationship_variants": RELATIONSHIP_VARIANTS, "per_decade": per_decade,
+        "doc_words": DOC_WORDS, "max_windows": MAX_CHUNKS, "seed": 17,
+    })
+    if cache_matches(path, signature):
+        t = pd.read_parquet(path)
+    else:
+        t = score_relationship_sensitivity(per_decade)
+        atomic_parquet(path, t)
+        mark_cache(path, signature)
+    result = relationship_summary(t, threshold)
+    atomic_json(REPORTS / "relationship_sensitivity.json", result)
+    t.to_csv(REPORTS / "relationship_sensitivity.csv", index=False)
+    return result
 
 
 def score_variants(
@@ -162,12 +246,16 @@ def analyse(t: pd.DataFrame, threshold: float = 0.5) -> dict:
 
 
 def run(per_year: int = 22, threshold: float = 0.5) -> dict:
+    from .cache import analysis_signature, cache_matches, mark_cache
+
     path = DERIVED / "prompt_robustness.parquet"
-    if path.exists():
+    signature = analysis_signature({"variants": VARIANTS, "per_year": per_year})
+    if cache_matches(path, signature):
         t = pd.read_parquet(path)
         print(f"Using cached scores for {len(t):,} songs")
     else:
         t = score_variants(per_year=per_year)
+        mark_cache(path, signature)
 
     res = analyse(t, threshold)
     (REPORTS / "prompt_robustness.json").write_text(json.dumps(res, indent=2, default=str))
@@ -183,6 +271,7 @@ def run(per_year: int = 22, threshold: float = 0.5) -> dict:
           f"all significant: {res['all_significant']}   "
           f"tau range: {res['tau_range']}")
     print(f"\n  wrote {REPORTS / 'prompt_robustness.json'}")
+    res["relationship_sensitivity"] = relationship_sensitivity(threshold)
     return res
 
 

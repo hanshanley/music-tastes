@@ -2,165 +2,165 @@
   "independent_shares": [
     {
       "decade": 1950,
-      "n": 155,
-      "independence": 0.0222,
-      "heartbreak": 0.2749,
-      "devotion": 0.2548,
-      "longing": 0.3167,
-      "casual": 0.0355,
-      "conflict": 0.0647
+      "n": 479,
+      "independence": 0.0187,
+      "heartbreak": 0.2575,
+      "devotion": 0.2268,
+      "longing": 0.3124,
+      "casual": 0.0231,
+      "conflict": 0.086
     },
     {
       "decade": 1960,
-      "n": 1059,
-      "independence": 0.0478,
-      "heartbreak": 0.332,
-      "devotion": 0.224,
-      "longing": 0.3883,
-      "casual": 0.0172,
-      "conflict": 0.1883
+      "n": 3871,
+      "independence": 0.0581,
+      "heartbreak": 0.3422,
+      "devotion": 0.2099,
+      "longing": 0.3788,
+      "casual": 0.0219,
+      "conflict": 0.1921
     },
     {
       "decade": 1970,
-      "n": 862,
-      "independence": 0.0498,
-      "heartbreak": 0.3068,
-      "devotion": 0.1757,
-      "longing": 0.3765,
-      "casual": 0.0577,
-      "conflict": 0.148
+      "n": 2826,
+      "independence": 0.0684,
+      "heartbreak": 0.2907,
+      "devotion": 0.1803,
+      "longing": 0.357,
+      "casual": 0.0603,
+      "conflict": 0.1589
     },
     {
       "decade": 1980,
-      "n": 916,
-      "independence": 0.0749,
-      "heartbreak": 0.351,
-      "devotion": 0.2148,
-      "longing": 0.4837,
-      "casual": 0.075,
-      "conflict": 0.2282
+      "n": 2786,
+      "independence": 0.0728,
+      "heartbreak": 0.3295,
+      "devotion": 0.1921,
+      "longing": 0.4468,
+      "casual": 0.0672,
+      "conflict": 0.1952
     },
     {
       "decade": 1990,
-      "n": 780,
-      "independence": 0.092,
-      "heartbreak": 0.3527,
-      "devotion": 0.2668,
-      "longing": 0.4409,
-      "casual": 0.1318,
-      "conflict": 0.219
+      "n": 2158,
+      "independence": 0.0983,
+      "heartbreak": 0.3547,
+      "devotion": 0.2709,
+      "longing": 0.4463,
+      "casual": 0.1332,
+      "conflict": 0.2352
     },
     {
       "decade": 2000,
-      "n": 760,
-      "independence": 0.1595,
-      "heartbreak": 0.3465,
-      "devotion": 0.1856,
-      "longing": 0.4644,
-      "casual": 0.2352,
-      "conflict": 0.3428
+      "n": 2000,
+      "independence": 0.1637,
+      "heartbreak": 0.3407,
+      "devotion": 0.1781,
+      "longing": 0.4548,
+      "casual": 0.2155,
+      "conflict": 0.3357
     },
     {
       "decade": 2010,
-      "n": 949,
-      "independence": 0.199,
-      "heartbreak": 0.2941,
-      "devotion": 0.1522,
-      "longing": 0.4536,
-      "casual": 0.2433,
-      "conflict": 0.4103
+      "n": 2488,
+      "independence": 0.1898,
+      "heartbreak": 0.2848,
+      "devotion": 0.1435,
+      "longing": 0.4393,
+      "casual": 0.2336,
+      "conflict": 0.3889
     },
     {
       "decade": 2020,
-      "n": 786,
-      "independence": 0.1754,
-      "heartbreak": 0.3691,
-      "devotion": 0.1098,
-      "longing": 0.4867,
-      "casual": 0.2268,
-      "conflict": 0.4894
+      "n": 2181,
+      "independence": 0.1848,
+      "heartbreak": 0.3586,
+      "devotion": 0.1092,
+      "longing": 0.4729,
+      "casual": 0.2139,
+      "conflict": 0.4833
     }
   ],
   "dominant_composition": [
     {
       "decade": 1950,
-      "casual": 0.0353,
-      "conflict": 0.0703,
-      "devotion": 0.3022,
-      "heartbreak": 0.259,
-      "independence": 0.0665,
-      "longing": 0.2668,
-      "n": 155
+      "casual": 0.0354,
+      "conflict": 0.0718,
+      "devotion": 0.2786,
+      "heartbreak": 0.2234,
+      "independence": 0.0955,
+      "longing": 0.2953,
+      "n": 479
     },
     {
       "decade": 1960,
-      "casual": 0.0242,
-      "conflict": 0.1307,
-      "devotion": 0.2428,
-      "heartbreak": 0.2452,
-      "independence": 0.0871,
-      "longing": 0.27,
-      "n": 1059
+      "casual": 0.0236,
+      "conflict": 0.1254,
+      "devotion": 0.2327,
+      "heartbreak": 0.2672,
+      "independence": 0.0936,
+      "longing": 0.2575,
+      "n": 3871
     },
     {
       "decade": 1970,
-      "casual": 0.0774,
-      "conflict": 0.1052,
-      "devotion": 0.205,
-      "heartbreak": 0.2325,
-      "independence": 0.0932,
-      "longing": 0.2867,
-      "n": 862
+      "casual": 0.0665,
+      "conflict": 0.1133,
+      "devotion": 0.2037,
+      "heartbreak": 0.2209,
+      "independence": 0.1118,
+      "longing": 0.2838,
+      "n": 2826
     },
     {
       "decade": 1980,
-      "casual": 0.0544,
-      "conflict": 0.1383,
-      "devotion": 0.2007,
-      "heartbreak": 0.2424,
-      "independence": 0.0715,
-      "longing": 0.2927,
-      "n": 916
+      "casual": 0.0573,
+      "conflict": 0.1247,
+      "devotion": 0.1892,
+      "heartbreak": 0.2319,
+      "independence": 0.0793,
+      "longing": 0.3177,
+      "n": 2786
     },
     {
       "decade": 1990,
-      "casual": 0.117,
-      "conflict": 0.1215,
-      "devotion": 0.2568,
-      "heartbreak": 0.2034,
-      "independence": 0.0776,
-      "longing": 0.2237,
-      "n": 780
+      "casual": 0.1156,
+      "conflict": 0.1366,
+      "devotion": 0.2467,
+      "heartbreak": 0.2087,
+      "independence": 0.072,
+      "longing": 0.2204,
+      "n": 2158
     },
     {
       "decade": 2000,
-      "casual": 0.1677,
-      "conflict": 0.2174,
-      "devotion": 0.141,
-      "heartbreak": 0.1874,
-      "independence": 0.0713,
-      "longing": 0.2152,
-      "n": 760
+      "casual": 0.1575,
+      "conflict": 0.2037,
+      "devotion": 0.1466,
+      "heartbreak": 0.1963,
+      "independence": 0.0799,
+      "longing": 0.216,
+      "n": 2000
     },
     {
       "decade": 2010,
-      "casual": 0.1178,
-      "conflict": 0.2816,
-      "devotion": 0.1244,
-      "heartbreak": 0.1521,
-      "independence": 0.0929,
-      "longing": 0.2312,
-      "n": 949
+      "casual": 0.1348,
+      "conflict": 0.2647,
+      "devotion": 0.1261,
+      "heartbreak": 0.1515,
+      "independence": 0.103,
+      "longing": 0.2199,
+      "n": 2488
     },
     {
       "decade": 2020,
-      "casual": 0.0991,
-      "conflict": 0.329,
-      "devotion": 0.0854,
-      "heartbreak": 0.1646,
-      "independence": 0.0818,
-      "longing": 0.2401,
-      "n": 786
+      "casual": 0.0934,
+      "conflict": 0.3288,
+      "devotion": 0.0903,
+      "heartbreak": 0.1704,
+      "independence": 0.0938,
+      "longing": 0.2233,
+      "n": 2181
     }
   ]
 }
