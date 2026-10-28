@@ -11,16 +11,19 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.ticker import MaxNLocator, PercentFormatter  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from .analysis_trends import METRICS
+from .page_plots import export as export_page_plots
 from .paths import DERIVED, FIGURES, INTERIM, REPORTS, atomic_text
-from .vizstyle import ACCENT, BLUE, GRID, MUTED, house_style, save_fig, source_note
+from .vizstyle import (
+    ACCENT, BLUE, CHARTS, MUTED, chart_filename, chart_heading, house_style, save_fig, source_note,
+)
 
 house_style()
 
-SOURCE_LYRICS = "Billboard/Luminate via public archives; locally cached lyrics; local NLI and NRC lexicons."
-ERA_MARKS = [(1991, "SoundScan"), (2005, "digital sales"), (2013, "streaming/video")]
+SOURCE_LYRICS = "Sources: Billboard/Luminate chart archives; locally scored lyrics."
 
 
 def _generated_stamp() -> str:
@@ -100,36 +103,36 @@ def summary_for(metric: str, trends: dict) -> str:
     return f"{direction} (tau={tau:+.2f}, p={p:.2g})."
 
 
-def _era_marks(ax) -> None:
-    for year, name in ERA_MARKS:
-        ax.axvline(year, color=GRID, ls=":", lw=1, zorder=0)
-        ax.text(year + 0.5, ax.get_ylim()[1], name, fontsize=7.5,
-                color=MUTED, va="top", rotation=90)
+def _chart_subtitle(metric: str) -> str:
+    if metric in {"independence_share", "heartbreak_share", "devotion_share"}:
+        return "Among covered relationship songs, weighted by chart exposure"
+    if metric == "relationship_share":
+        return "Romantic or sexual topics, weighted by chart exposure"
+    return "Covered songs, weighted by chart exposure"
 
 
 def _plot_metric(series: pd.DataFrame, metric: str, description: str, path) -> bool:
-    fig, ax = plt.subplots(figsize=(11, 6))
-    plotted = False
-    for variant, label, color in [
-        ("weighted_all", "All covered songs", ACCENT),
-        ("weighted_complete_case", "Balanced covered-song subset", BLUE),
-    ]:
-        sub = series[(series["metric"] == metric) & (series["variant"] == variant)].sort_values("year")
-        if sub.empty:
-            continue
-        ax.plot(sub["year"], sub["mean"], color=color, lw=2.2, label=label)
-        ax.fill_between(sub["year"], sub["ci_lo"], sub["ci_hi"], color=color, alpha=0.12)
-        plotted = True
-    if not plotted:
-        plt.close(fig)
+    sub = series[
+        (series["metric"] == metric) & (series["variant"] == "weighted_all")
+    ].sort_values("year")
+    if sub.empty:
         return False
-    _era_marks(ax)
+    fig, ax = plt.subplots(figsize=(11, 6))
+    ax.plot(sub["year"], sub["mean"], color=ACCENT, lw=2.4, label="Covered songs")
+    ax.fill_between(sub["year"], sub["ci_lo"], sub["ci_hi"],
+                    color=ACCENT, alpha=0.10, linewidth=0)
+    if _metric_unit(metric).kind == "percent":
+        ax.yaxis.set_major_formatter(PercentFormatter(1, decimals=0 if metric.endswith("_share") else 1))
+        ax.set_ylim(bottom=0)
+    ax.yaxis.set_major_locator(MaxNLocator(5))
+    ax.margins(x=.015)
     ax.grid(True, axis="y")
-    ax.set_title(description)
-    ax.set_xlabel("Year song first charted (latest cohort has incomplete follow-up)")
-    ax.legend(loc="best")
-    source_note(fig, SOURCE_LYRICS)
-    save_fig(fig, path)
+    ax.set_axisbelow(True)
+    chart_heading(ax, CHARTS[metric][1], _chart_subtitle(metric))
+    ax.set_ylabel(CHARTS[metric][2])
+    ax.set_xlabel("Song debut year")
+    source_note(fig, SOURCE_LYRICS + "\nShading: 95% song-bootstrap interval. Latest cohort has incomplete follow-up.")
+    save_fig(fig, path, bottom=.16)
     return True
 
 
@@ -149,12 +152,15 @@ def _plot_decades(decades: pd.DataFrame, metric: str, description: str, path) ->
     ax.bar([f"{int(d)}s" for d in sub["decade"]], sub["mean"] * factor,
            yerr=error, color=ACCENT, capsize=3, width=0.68,
            error_kw={"ecolor": MUTED, "elinewidth": 1})
-    ax.set_ylabel("%" + unit.header if factor == 100 else unit.header.strip())
-    ax.set_title(description + "\nExposure-weighted; latest decade incomplete")
+    ax.set_ylabel(CHARTS[metric][2])
+    if factor == 100:
+        ax.yaxis.set_major_formatter(PercentFormatter(100, decimals=0 if metric.endswith("_share") else 1))
+    chart_heading(ax, CHARTS[metric][1] + " by decade", _chart_subtitle(metric))
+    ax.set_xlabel("Song debut decade")
     ax.grid(True, axis="y")
     ax.set_axisbelow(True)
-    source_note(fig, SOURCE_LYRICS)
-    save_fig(fig, path)
+    source_note(fig, SOURCE_LYRICS + "\nError bars: 95% song-bootstrap intervals. First and latest decades are partial.")
+    save_fig(fig, path, bottom=.16)
     return True
 
 
@@ -167,11 +173,12 @@ def _plot_coverage(path) -> None:
         if column in cov:
             ax.plot(cov["debut_year"], cov[column] * 100, color=color, lw=2.2, label=label)
     ax.set_ylim(0, 100)
-    ax.set_ylabel("% with lyrics")
-    ax.set_xlabel("Year song first charted")
-    ax.set_title("Lyric coverage")
+    ax.yaxis.set_major_formatter(PercentFormatter(100))
+    ax.set_ylabel(CHARTS["coverage_by_year"][2])
+    ax.set_xlabel("Song debut year")
+    chart_heading(ax, CHARTS["coverage_by_year"][1], "Retrieved lyrics, not necessarily eligible for analysis")
     ax.grid(True, axis="y")
-    ax.legend()
+    ax.legend(loc="lower right", frameon=False)
     source_note(fig, SOURCE_LYRICS)
     save_fig(fig, path)
 
@@ -183,6 +190,8 @@ def _vad_section() -> list[str]:
         return []
     series = pd.read_csv(series_path)
     fig, axes = plt.subplots(3, 1, figsize=(11, 10), sharex=True)
+    labels = {"valence": "Pleasantness\n(valence)", "arousal": "Activation\n(arousal)",
+              "dominance": "Sense of control\n(dominance)"}
     for ax, dimension in zip(axes, ("valence", "arousal", "dominance")):
         for variant, label, color in [
             ("v1_tokens", "NRC VAD v1", BLUE), ("v21_tokens", "NRC VAD v2.1", ACCENT),
@@ -194,14 +203,19 @@ def _vad_section() -> list[str]:
                 & (series["dimension"] == dimension) & (series["variant"] == variant)
             ].sort_values("year")
             ax.plot(sub["year"], sub["mean"], lw=2, color=color, label=label)
-            ax.fill_between(sub["year"], sub["ci_lo"], sub["ci_hi"], color=color, alpha=.10)
-        ax.set_ylabel(f"{dimension.capitalize()} (0-1)")
+            ax.fill_between(sub["year"], sub["ci_lo"], sub["ci_hi"],
+                            color=color, alpha=.08, linewidth=0)
+        ax.set_ylabel(labels[dimension], fontsize=11)
+        ax.yaxis.set_major_locator(MaxNLocator(4))
+        ax.margins(x=.015)
         ax.grid(True, axis="y")
-    axes[0].set_title("NRC VAD versions on identical songs")
-    axes[0].legend()
-    axes[-1].set_xlabel("Year song first charted; latest cohort has incomplete follow-up")
-    source_note(fig, "NRC VAD: Saif M. Mohammad, NRC Canada (2018, 2025); chart-weighted lyric norms.")
-    save_fig(fig, FIGURES / "nrc_vad_robustness.png")
+    chart_heading(axes[0], CHARTS["nrc_vad_robustness"][1],
+                  "Same covered songs in both versions, weighted by chart exposure")
+    axes[0].legend(ncol=2, fontsize=10, frameon=False)
+    axes[-1].set_xlabel("Song debut year")
+    source_note(fig, "Source: NRC VAD, Saif M. Mohammad / NRC Canada (2018, 2025). All ratings rescaled to 0-1."
+                "\nShading: 95% song-bootstrap intervals. Latest cohort has incomplete follow-up; ratings are not sadness labels.")
+    save_fig(fig, FIGURES / chart_filename("nrc_vad_robustness"), bottom=.12)
     lines = [
         "", "## NRC VAD version and scoring sensitivity", "",
         f"Compared **{result['n_matched_all_variants']:,} identical songs** across all scoring variants,",
@@ -230,7 +244,7 @@ def _vad_section() -> list[str]:
         "Arousal and dominance remain separate dimensions, not an invented sadness index.",
         "Completed-period, minimum-match, chart-year, fixed-follow-up, and length/coverage",
         "checks are exploratory; agreement does not establish historical invariance or causality.", "",
-        "![NRC VAD version comparison](figures/nrc_vad_robustness.png)", "",
+        f"![Three dimensions of lyrical emotion](figures/{chart_filename('nrc_vad_robustness')})", "",
         "[Complete annual series and intervals](nrc_vad_series.csv) |",
         "[Annual token coverage](nrc_vad_coverage.csv) |",
         "[Methods, provenance, controls and trend results](nrc_vad_robustness.json)", "",
@@ -278,10 +292,10 @@ def run() -> None:
     decades = pd.read_csv(REPORTS / "decade_series.csv")
     figures = []
     for metric, (_, description, _) in METRICS.items():
-        if _plot_metric(series, metric, description, FIGURES / f"{metric}.png"):
+        if _plot_metric(series, metric, description, FIGURES / chart_filename(metric)):
             figures.append(metric)
-        _plot_decades(decades, metric, description, FIGURES / f"{metric}_decade.png")
-    _plot_coverage(FIGURES / "coverage_by_year.png")
+        _plot_decades(decades, metric, description, FIGURES / chart_filename(metric, decade=True))
+    _plot_coverage(FIGURES / chart_filename("coverage_by_year"))
     lines = [
         "# Relationships and mood in US hit songs", "", _generated_stamp(), "",
         f"Chart issues through **{integrity.get('chart_through', 'unverified')}**.",
@@ -306,12 +320,12 @@ def run() -> None:
         "proof that missingness bias has been removed. Metric-specific missingness remains.",
         "See the [gap/change audit](gap_audit.json) and",
         "[coverage changes by decade](coverage_change_by_decade.csv).",
-        "", "![Lyric coverage](figures/coverage_by_year.png)", "",
+        "", f"![Lyric coverage](figures/{chart_filename('coverage_by_year')})", "",
         "## Results", "", "| Measure | Exposure-weighted debut-year trend |",
         "|---|---|",
     ]
     for metric, (_, description, _) in METRICS.items():
-        lines.append(f"| {description} | {summary_for(metric, trends)} |")
+        lines.append(f"| {CHARTS[metric][1]} | {summary_for(metric, trends)} |")
     lines += _vad_section()
     lines += ["", "## Classifier validation", ""]
     gold = _read_json(REPORTS / "gold" / "validation.json")
@@ -349,8 +363,10 @@ def run() -> None:
         "[Gold validation](gold/validation.json)", "",
     ]
     for metric in figures:
-        lines += [f"### {metric}", "", f"![{METRICS[metric][1]}](figures/{metric}.png)", ""]
+        lines += [f"### {CHARTS[metric][1]}", "",
+                  f"![{CHARTS[metric][1]}](figures/{chart_filename(metric)})", ""]
     atomic_text(REPORTS / "findings.md", "\n".join(lines))
+    export_page_plots(FIGURES)
     print(f"Wrote {REPORTS / 'findings.md'} and {len(figures)} metric figures")
 
 

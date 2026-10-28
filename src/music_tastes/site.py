@@ -12,6 +12,7 @@ from pathlib import Path
 from .cache import fingerprint
 from .paths import REPORTS, ROOT, atomic_json, atomic_text
 from .report import summary_for
+from .vizstyle import chart_filename
 
 
 def run(output: Path | None = None) -> Path:
@@ -64,10 +65,21 @@ def run(output: Path | None = None) -> Path:
     ]
     sections = []
     for metric, title, caption in selected:
-        image = REPORTS / "figures" / f"{metric}.png"
+        image = REPORTS / "figures" / chart_filename(metric)
         if not image.exists():
             continue
         copy_asset(image)
+        display_name = image.name
+        chart_downloads = ""
+        page_image = image.parent / "page_background" / image.name
+        if page_image.exists():
+            display_name = f"page_{image.name}"
+            copy_asset(page_image, display_name)
+            chart_downloads = (
+                '<p class="chart-downloads">Download chart: '
+                f'<a href="assets/{display_name}" download>Margin of Error</a> / '
+                f'<a href="assets/{image.name}" download>Substack</a></p>'
+            )
         claim = summary_for(metric, trends) if verified and metric in trends else ""
         if verified and metric == "nrc_vad_robustness":
             statistics_path = REPORTS / "nrc_vad_statistics.json"
@@ -84,11 +96,11 @@ def run(output: Path | None = None) -> Path:
         sections.append(
             f'<section class="evidence" id="{metric}"><div class="section-head">'
             f'<h2>{html.escape(title)}</h2><p>{html.escape(caption)}</p></div>'
-            f'<figure><a href="assets/{image.name}" '
+            f'<figure><a href="assets/{display_name}" '
             f'aria-label="View full-size chart: {html.escape(title)}">'
-            f'<img src="assets/{image.name}" alt="{html.escape(title)} '
+            f'<img src="assets/{display_name}" alt="{html.escape(title)} '
             f'Historical debut-year series; see downloadable data." loading="lazy"></a>'
-            f'{figcaption}</figure></section>'
+            f'{figcaption}</figure>{chart_downloads}</section>'
         )
     downloads = []
     for path in sorted(REPORTS.glob("*.csv")):

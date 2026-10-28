@@ -232,6 +232,40 @@ Implementation references:
 and [circular block resampling](https://arch.readthedocs.io/en/stable/bootstrap/timeseries-bootstraps.html).
 No additional dependency is required.
 
+## Chart exports
+
+Charts follow the shared UK project's Substack style: warm `#F7F5F0` background,
+serif type, muted gridlines, terracotta focus series, and source notes. Original
+PNGs live in `reports/figures/`. A separate Margin of Error set lives in
+`reports/figures/page_background/`, with matching filenames and the article's
+`#F5F5F5` background.
+
+Headline charts show only the exposure-weighted covered-song series, with one
+95% song-bootstrap interval. The balanced covered-song subset remains in the
+complete downloads and trend comparisons; omitting its overlapping line is a
+presentation decision, not a change to the analysis. Share axes use percentages;
+word ratings retain their original score units. Titles and filenames use
+reader-facing names instead of internal metric identifiers. The stance-share
+figure uses separate panels so its six overlapping themes stay readable.
+
+The export changes only exactly matching, fully opaque background pixels.
+Plotted colours, text, dimensions, transparency, and DPI metadata are preserved;
+no series is rescored, rescaled, smoothed, or relabelled. The final report stage
+regenerates every copy, including stance charts, before a full update can publish
+its complete manifest. An unexpected source background fails that stage instead
+of silently publishing incomplete exports.
+
+```bash
+uv run --locked --extra all music-tastes page-plots
+uv run --locked --extra all music-tastes site
+```
+
+The first command re-exports existing public PNGs without private data or model
+inference. The preview displays page-background charts and provides downloads of
+both formats. If source figures or analyses are changed, use the full
+`update --offline` command to republish a verified snapshot; a standalone render
+does not advance the completed-analysis marker.
+
 ## Environment and commands
 
 Use Python 3.12 (minimum supported: 3.11), not the macOS system Python:

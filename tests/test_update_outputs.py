@@ -500,13 +500,18 @@ def test_site_checks_complete_fingerprint_and_cleans_only_generated_assets(monke
     assert unrelated.exists()
 
 
-def test_site_vad_claim_uses_corrected_tests_without_calling_nonsignificance_flat(monkeypatch, tmp_path):
+@pytest.mark.parametrize("with_page", [False, True])
+def test_site_vad_claim_and_chart_formats(monkeypatch, tmp_path, with_page):
     from music_tastes.cache import fingerprint
 
     reports = tmp_path / "reports"
     (reports / "figures").mkdir(parents=True)
     monkeypatch.setattr(site, "REPORTS", reports)
-    (reports / "figures" / "nrc_vad_robustness.png").write_bytes(b"synthetic chart")
+    (reports / "figures" / "lyrical-emotion-dimensions.png").write_bytes(b"synthetic chart")
+    if with_page:
+        page = reports / "figures" / "page_background"
+        page.mkdir()
+        (page / "lyrical-emotion-dimensions.png").write_bytes(b"synthetic page-background chart")
     (reports / "nrc_vad_statistics.json").write_text(json.dumps({"tests": [
         {"is_primary": True, "method": "newey_west", "window_years": 5,
          "dimension": "valence", "slope_per_decade": -.004,
@@ -519,10 +524,21 @@ def test_site_vad_claim_uses_corrected_tests_without_calling_nonsignificance_fla
         "status": "complete", "chart_through": "2026-10-31",
         "output_signature": fingerprint({}, sorted(p for p in reports.rglob("*") if p.is_file())),
     }))
-    text = site.run(tmp_path / "preview").read_text()
+    preview = site.run(tmp_path / "preview")
+    text = preview.read_text()
     assert "valence: decreases (p=0.003)" in text
     assert "dominance: no clear linear trend (p=0.84)" in text
     assert "Holm-adjusted" in text
+    assert (preview.parent / "assets" / "lyrical-emotion-dimensions.png").read_bytes() == b"synthetic chart"
+    if with_page:
+        assert 'src="assets/page_lyrical-emotion-dimensions.png"' in text
+        assert "download>Margin of Error</a>" in text and "download>Substack</a>" in text
+        assert (preview.parent / "assets" / "page_lyrical-emotion-dimensions.png").read_bytes() == (
+            b"synthetic page-background chart"
+        )
+    else:
+        assert 'src="assets/lyrical-emotion-dimensions.png"' in text
+        assert "page_lyrical-emotion-dimensions.png" not in text
 
 
 def test_publish_preserves_previous_report_on_marker_failure(tmp_path):

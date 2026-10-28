@@ -1,7 +1,7 @@
 {
-  "run_id": "20261028T163013Z-9657a50b",
+  "run_id": "20261028T211040Z-787b0729",
   "status": "complete",
-  "started_at": "2026-10-28T16:30:13.290350+00:00",
+  "started_at": "2026-10-28T21:10:40.310894+00:00",
   "limited": false,
   "offline": true,
   "stages": {
@@ -147,18 +147,18 @@
         "bytes": 3086087
       },
       "derived/valence_type_vs_token.parquet": {
-        "bytes": 1115131
+        "bytes": 1114433
       },
       "derived/yearly_series.parquet": {
         "bytes": 73318
       }
     },
     "last_complete": {
-      "run_id": "20261028T153706Z-399c5b5b",
+      "run_id": "20261028T163013Z-9657a50b",
       "status": "complete",
       "chart_through": "2026-10-31",
-      "completed_at": "2026-10-28T15:42:25.474654+00:00",
-      "output_signature": "71bb64b0edaa609cf67074c84c572f8ec2ce3c6d25208b4e0fbbf50db6535383"
+      "completed_at": "2026-10-28T16:36:24.116310+00:00",
+      "output_signature": "31d85295035819b67cc2ac136614ca226dea4549c8acc283f00207d3536e2f53"
     }
   },
   "population": {
@@ -168,6 +168,6 @@
   "audio_status": "unavailable",
   "chart_through": "2026-10-31",
   "source_signature": "fda4247c791014155a4183f3c1fa5a6548e7e724f3fc4a3af62d370d51bae73a",
-  "completed_at": "2026-10-28T16:36:24.116310+00:00",
-  "output_signature": "31d85295035819b67cc2ac136614ca226dea4549c8acc283f00207d3536e2f53"
+  "completed_at": "2026-10-28T21:39:14.915441+00:00",
+  "output_signature": "2c4e48afe9ce2460fdae2361e0d3e0c1c873ee30e219033431f5d78c82fb9858"
 }

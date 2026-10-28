@@ -27,6 +27,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.ticker import PercentFormatter  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
@@ -35,8 +36,11 @@ from .coverage import load_joined  # noqa: E402
 from .paths import FIGURES, REPORTS, require  # noqa: E402
 from .vizstyle import (  # noqa: E402
     MUTED,
+    CHARTS,
     STANCE_COLOURS,
     house_style,
+    chart_filename,
+    chart_heading,
     save_fig,
     source_note,
 )
@@ -44,8 +48,8 @@ from .vizstyle import (  # noqa: E402
 house_style()
 
 SOURCE_NOTE = (
-    "Data: Billboard Hot 100 (Billboard/Luminate); lyrics via Genius. "
-    "Stances from a local zero-shot NLI model (deberta-v3-large-zeroshot-v2.0)."
+    "Sources: Billboard/Luminate chart archives; locally scored lyrics. "
+    "First and latest decades are partial."
 )
 
 STANCES = {
@@ -58,6 +62,10 @@ STANCES = {
 }
 
 PALETTE = STANCE_COLOURS
+SHORT_LABELS = {
+    "independence": "Independence", "heartbreak": "Heartbreak", "devotion": "Devotion",
+    "longing": "Longing", "casual": "Casual relationships", "conflict": "Conflict",
+}
 
 
 def _relationship_songs(df: pd.DataFrame) -> pd.DataFrame:
@@ -119,15 +127,16 @@ def _plot_composition(comp: pd.DataFrame, path) -> bool:
     bottom = np.zeros(len(comp))
     for stance in stances:
         vals = comp[stance].to_numpy(dtype=float) * 100
-        ax.bar(x, vals, bottom=bottom, label=STANCES[stance],
+        ax.bar(x, vals, bottom=bottom, label=SHORT_LABELS[stance],
                color=PALETTE.get(stance), width=0.68, zorder=3)
         bottom += vals
     ax.grid(True, axis="y")
     ax.set_axisbelow(True)
-    ax.set_ylabel("% of relationship songs")
-    ax.set_title("What relationship songs are about, by decade\n"
-                 "Dominant stance, exposure-weighted")
-    ax.legend(loc="upper left", bbox_to_anchor=(0, -0.10), ncol=3)
+    ax.set_ylabel("Share of relationship songs")
+    ax.yaxis.set_major_formatter(PercentFormatter(100))
+    chart_heading(ax, CHARTS["stance_composition"][1],
+                  "Highest-scoring stance per song, weighted by chart exposure")
+    ax.legend(loc="upper left", bbox_to_anchor=(0, -0.10), ncol=3, fontsize=10)
     ax.set_ylim(0, 100)
     source_note(fig, SOURCE_NOTE)
     save_fig(fig, path, bottom=0.24)
@@ -138,20 +147,30 @@ def _plot_independent(shares: pd.DataFrame, path) -> bool:
     stances = [s for s in STANCES if s in shares.columns]
     if not stances or shares.empty:
         return False
-    fig, ax = plt.subplots(figsize=(11, 6))
+    fig, axes = plt.subplots(3, 2, figsize=(11, 8), sharex=True, sharey=True)
     x = [int(d) for d in shares["decade"]]
-    for stance in stances:
+    for ax, stance in zip(axes.flat, stances):
         ax.plot(x, shares[stance] * 100, marker="o", ms=5, lw=2.2,
-                color=PALETTE.get(stance), label=STANCES[stance], zorder=3)
-    ax.grid(True, axis="y")
-    ax.set_axisbelow(True)
-    ax.set_ylabel("% of relationship songs above threshold")
-    ax.set_xlabel("Decade")
-    ax.set_title("Stances within relationship songs\n"
-                 "Scored independently, so a song can hold more than one")
-    ax.legend(loc="upper left", ncol=2)
+                color=PALETTE.get(stance), zorder=3)
+        ax.set_title(SHORT_LABELS[stance], loc="left", fontsize=12, color=PALETTE.get(stance))
+        ax.grid(True, axis="y")
+        ax.set_axisbelow(True)
+        ax.set_xticks(x[::2], [f"{year}s" for year in x[::2]])
+        ax.yaxis.set_major_formatter(PercentFormatter(100, decimals=0))
+        ax.margins(x=.04)
+    for ax in list(axes.flat)[len(stances):]:
+        ax.set_visible(False)
+    axes[0, 0].set_ylim(bottom=0)
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Relationship songs", fontsize=10)
+    for ax in axes[-1]:
+        ax.set_xlabel("Song debut decade")
+    fig.suptitle(CHARTS["stance_shares"][1], x=.08, y=.98, ha="left",
+                 fontsize=18, fontweight="bold")
+    fig.text(.08, .93, "Themes can overlap. Covered relationship songs, weighted by chart exposure.",
+             color=MUTED, fontsize=10)
     source_note(fig, SOURCE_NOTE)
-    save_fig(fig, path)
+    save_fig(fig, path, top=.85, bottom=.12)
     return True
 
 
@@ -164,8 +183,8 @@ def run() -> dict:
     if not comp.empty:
         comp.to_csv(REPORTS / "stance_composition_by_decade.csv", index=False)
 
-    _plot_independent(shares, FIGURES / "stance_shares.png")
-    _plot_composition(comp, FIGURES / "stance_composition.png")
+    _plot_independent(shares, FIGURES / chart_filename("stance_shares"))
+    _plot_composition(comp, FIGURES / chart_filename("stance_composition"))
 
     print("Stances within relationship songs (exposure-weighted, independent)\n")
     stances = [s for s in STANCES if s in shares.columns]

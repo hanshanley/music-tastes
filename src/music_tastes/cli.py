@@ -41,7 +41,9 @@ def main(argv: list[str] | None = None) -> int:
         epilog="Stages:\n" + "\n".join(f"  {n:15} {d}" for n, d in STAGES),
     )
     parser.add_argument(
-        "stage", choices=[n for n, _ in STAGES] + ["all", "update", "status", "review-packet", "site"]
+        "stage", choices=[n for n, _ in STAGES] + [
+            "all", "update", "status", "review-packet", "site", "page-plots",
+        ]
     )
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--workers", type=int, default=4)
@@ -84,6 +86,11 @@ def main(argv: list[str] | None = None) -> int:
         from .site import run
 
         run()
+        return 0
+    if args.stage == "page-plots":
+        from .page_plots import export
+
+        export()
         return 0
 
     stages = [n for n, _ in STAGES] if args.stage == "all" else [args.stage]

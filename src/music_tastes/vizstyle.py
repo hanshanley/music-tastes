@@ -6,8 +6,7 @@ background, serif type, muted grid, no top/right spines, terracotta as the focus
 colour, and an italic source note at the figure margin.
 
 It is vendored here rather than imported so this repository stays self-contained,
-but the palette and rcParams are kept byte-identical to the shared module so charts
-from all three projects sit together without looking mismatched.
+and shares its palette and typography so charts from these projects sit together.
 
 Usage::
 
@@ -36,6 +35,7 @@ __all__ = [
     "PALETTE", "BG", "CARD", "TEXT", "MUTED", "GRID", "ACCENT", "BLUE", "GOLD",
     "GREEN", "RC_PARAMS", "house_style", "source_note", "end_label", "save_fig",
     "white_stroke", "SERIES_COLOURS", "STANCE_COLOURS",
+    "CHARTS", "chart_filename", "chart_heading",
 ]
 
 # ── Palette ──────────────────────────────────────────────────────────────────
@@ -70,8 +70,7 @@ RC_PARAMS: dict[str, Any] = {
     "text.parse_math": False,
 }
 
-# The two headline variants shown on every trend chart. Terracotta is the focus
-# series (all covered songs); blue is the coverage-controlled comparison.
+# Colours for trend comparisons; headline charts show only covered songs.
 SERIES_COLOURS = {
     "weighted_all": ACCENT,
     "weighted_complete_case": BLUE,
@@ -89,6 +88,43 @@ STANCE_COLOURS = {
     "casual": "#8C6D8C",
     "conflict": "#7A5C3D",
 }
+
+CHARTS = {
+    "relationship_share": ("relationship-songs", "Relationship songs", "Share of covered songs"),
+    "independence_share": (
+        "relationship-independence", "Independence in relationship songs", "Share of relationship songs",
+    ),
+    "heartbreak_share": (
+        "relationship-heartbreak", "Heartbreak in relationship songs", "Share of relationship songs",
+    ),
+    "devotion_share": (
+        "relationship-devotion", "Devotion in relationship songs", "Share of relationship songs",
+    ),
+    "lyric_valence": ("lyric-positivity-nrc", "Positivity in hit-song lyrics", "NRC word rating (0-1)"),
+    "vader_valence": ("lyric-positivity-vader", "A second view of lyrical positivity", "VADER dictionary mean"),
+    "lyric_sadness": ("sadness-associated-words", "Sadness-associated words", "Share of lyric words"),
+    "lyric_joy": ("joy-associated-words", "Joy-associated words", "Share of lyric words"),
+    "lyric_length": ("words-per-song", "How long are hit-song lyrics?", "Words per song"),
+    "bpm": ("song-tempo", "The tempo of hit songs", "Beats per minute"),
+    "minor_key_share": ("minor-key-songs", "Hit songs in a minor key", "Share of covered songs"),
+    "acoustic_mood_happy": ("audio-happiness-score", "Audio happiness scores", "Model score"),
+    "acoustic_mood_sad": ("audio-sadness-score", "Audio sadness scores", "Model score"),
+    "coverage_by_year": ("lyric-coverage", "How much of the chart has lyrics?", "Share with retrieved lyrics"),
+    "nrc_vad_robustness": ("lyrical-emotion-dimensions", "Three dimensions of lyrical emotion", "Word rating (0-1)"),
+    "stance_shares": ("relationship-theme-shares", "Themes in relationship songs", "Share of relationship songs"),
+    "stance_composition": ("relationship-theme-mix", "The main theme in relationship songs", "Share of relationship songs"),
+}
+
+
+def chart_filename(metric: str, *, decade: bool = False) -> str:
+    return CHARTS[metric][0] + ("-by-decade" if decade else "") + ".png"
+
+
+def chart_heading(ax, title: str, subtitle: str) -> None:
+    ax.set_title(title, loc="left", pad=34, fontsize=18)
+    ax.text(0, 1.025, subtitle, transform=ax.transAxes,
+            ha="left", va="bottom", color=MUTED, fontsize=10)
+
 
 _WHITE_STROKE = [pe.withStroke(linewidth=3.0, foreground="white")]
 
@@ -117,11 +153,13 @@ def end_label(ax, x, y, text: str, color: str, *, fontsize: float = 10.5,
 
 
 def save_fig(fig, out_path, *, dpi: int = 200, bottom: float | None = 0.12,
-             pad: float = 0.6) -> pathlib.Path:
+             pad: float = 0.6, top: float | None = None) -> pathlib.Path:
     """tight_layout + optional bottom margin, save at house DPI, close the figure."""
     fig.tight_layout(pad=pad)
     if bottom is not None:
         fig.subplots_adjust(bottom=bottom)
+    if top is not None:
+        fig.subplots_adjust(top=top)
     out_path = pathlib.Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=dpi, bbox_inches="tight")

@@ -1,6 +1,6 @@
 # Relationships and mood in US hit songs
 
-_Generated 2026-10-28 16:36 UTC._
+_Generated 2026-10-28 21:39 UTC._
 
 Chart issues through **2026-10-31**.
 This is a retrospective snapshot, not an automatically updated series.
@@ -30,25 +30,25 @@ proof that missingness bias has been removed. Metric-specific missingness remain
 See the [gap/change audit](gap_audit.json) and
 [coverage changes by decade](coverage_change_by_decade.csv).
 
-![Lyric coverage](figures/coverage_by_year.png)
+![Lyric coverage](figures/lyric-coverage.png)
 
 ## Results
 
 | Measure | Exposure-weighted debut-year trend |
 |---|---|
-| Lyric valence (NRC VAD, 0=negative 1=positive) | Decreasing (tau=-0.64, p=6.7e-15). |
-| Share of words with a sadness association (NRC EmoLex) | No statistically clear monotonic trend (tau=-0.13, p=0.11). |
-| Share of words with a joy association (NRC EmoLex) | Decreasing (tau=-0.72, p=1.7e-18). |
-| Lyric valence (VADER) | Decreasing (tau=-0.76, p=4.4e-20). |
-| Share of hits that are about a relationship | No statistically clear monotonic trend (tau=-0.10, p=0.24). |
-| Share of relationship songs taking an 'I don't need you' stance | Increasing (tau=+0.67, p=2.5e-16). |
-| Share of relationship songs about heartbreak/wanting an ex back | No statistically clear monotonic trend (tau=+0.03, p=0.75). |
-| Share of relationship songs about devotion/commitment | Decreasing (tau=-0.32, p=9.8e-05). |
-| Tempo in beats per minute (Essentia via AcousticBrainz) | Insufficient evidence to estimate a trend. |
-| Share of songs in a minor key (Essentia) | Insufficient evidence to estimate a trend. |
-| Essentia 'happy' mood probability | Insufficient evidence to estimate a trend. |
-| Essentia 'sad' mood probability | Insufficient evidence to estimate a trend. |
-| Words per song | Increasing (tau=+0.68, p=1.2e-16). |
+| Positivity in hit-song lyrics | Decreasing (tau=-0.64, p=6.7e-15). |
+| Sadness-associated words | No statistically clear monotonic trend (tau=-0.13, p=0.11). |
+| Joy-associated words | Decreasing (tau=-0.72, p=1.7e-18). |
+| A second view of lyrical positivity | Decreasing (tau=-0.76, p=4.4e-20). |
+| Relationship songs | No statistically clear monotonic trend (tau=-0.10, p=0.24). |
+| Independence in relationship songs | Increasing (tau=+0.67, p=2.5e-16). |
+| Heartbreak in relationship songs | No statistically clear monotonic trend (tau=+0.03, p=0.75). |
+| Devotion in relationship songs | Decreasing (tau=-0.32, p=9.8e-05). |
+| The tempo of hit songs | Insufficient evidence to estimate a trend. |
+| Hit songs in a minor key | Insufficient evidence to estimate a trend. |
+| Audio happiness scores | Insufficient evidence to estimate a trend. |
+| Audio sadness scores | Insufficient evidence to estimate a trend. |
+| How long are hit-song lyrics? | Increasing (tau=+0.68, p=1.2e-16). |
 
 ## NRC VAD version and scoring sensitivity
 
@@ -79,7 +79,7 @@ Arousal and dominance remain separate dimensions, not an invented sadness index.
 Completed-period, minimum-match, chart-year, fixed-follow-up, and length/coverage
 checks are exploratory; agreement does not establish historical invariance or causality.
 
-![NRC VAD version comparison](figures/nrc_vad_robustness.png)
+![Three dimensions of lyrical emotion](figures/lyrical-emotion-dimensions.png)
 
 [Complete annual series and intervals](nrc_vad_series.csv) |
 [Annual token coverage](nrc_vad_coverage.csv) |
@@ -136,38 +136,38 @@ not direct measurements of human emotion.
 [Threshold sensitivity](relationship_threshold_sensitivity.json) |
 [Gold validation](gold/validation.json)
 
-### lyric_valence
+### Positivity in hit-song lyrics
 
-![Lyric valence (NRC VAD, 0=negative 1=positive)](figures/lyric_valence.png)
+![Positivity in hit-song lyrics](figures/lyric-positivity-nrc.png)
 
-### lyric_sadness
+### Sadness-associated words
 
-![Share of words with a sadness association (NRC EmoLex)](figures/lyric_sadness.png)
+![Sadness-associated words](figures/sadness-associated-words.png)
 
-### lyric_joy
+### Joy-associated words
 
-![Share of words with a joy association (NRC EmoLex)](figures/lyric_joy.png)
+![Joy-associated words](figures/joy-associated-words.png)
 
-### vader_valence
+### A second view of lyrical positivity
 
-![Lyric valence (VADER)](figures/vader_valence.png)
+![A second view of lyrical positivity](figures/lyric-positivity-vader.png)
 
-### relationship_share
+### Relationship songs
 
-![Share of hits that are about a relationship](figures/relationship_share.png)
+![Relationship songs](figures/relationship-songs.png)
 
-### independence_share
+### Independence in relationship songs
 
-![Share of relationship songs taking an 'I don't need you' stance](figures/independence_share.png)
+![Independence in relationship songs](figures/relationship-independence.png)
 
-### heartbreak_share
+### Heartbreak in relationship songs
 
-![Share of relationship songs about heartbreak/wanting an ex back](figures/heartbreak_share.png)
+![Heartbreak in relationship songs](figures/relationship-heartbreak.png)
 
-### devotion_share
+### Devotion in relationship songs
 
-![Share of relationship songs about devotion/commitment](figures/devotion_share.png)
+![Devotion in relationship songs](figures/relationship-devotion.png)
 
-### lyric_length
+### How long are hit-song lyrics?
 
-![Words per song](figures/lyric_length.png)
+![How long are hit-song lyrics?](figures/words-per-song.png)
