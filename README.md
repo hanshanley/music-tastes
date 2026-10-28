@@ -3,9 +3,7 @@
 How have relationships and mood in US hit songs changed?
 
 A reproducible Billboard Hot 100 retrospective: **32,732 songs**, from August 4,
-1958 through the **October 31, 2026 chart issue**. Sources were retrieved on
-October 27; analysis completed October 28, 2026. Chart issue dates can be later
-than publication dates.
+1958 through the **October 31, 2026 chart issue**. 
 
 Lyrics cover **89.4% of songs** and **94.3% of chart exposure**. All **28,885
 eligible songs** have both sets of features; missing lyrics remain missing.
