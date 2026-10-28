@@ -18,12 +18,14 @@ from .analysis_trends import METRICS
 from .page_plots import export as export_page_plots
 from .paths import DERIVED, FIGURES, INTERIM, REPORTS, atomic_text
 from .vizstyle import (
-    ACCENT, BLUE, CHARTS, MUTED, chart_filename, chart_heading, house_style, save_fig, source_note,
+    ACCENT, BLUE, CHARTS, MUTED, chart_filename, chart_heading, house_style,
+    mark_partial_years, period_labels, save_fig, source_note,
 )
 
 house_style()
 
-SOURCE_LYRICS = "Sources: Billboard/Luminate chart archives; locally scored lyrics."
+SOURCE_LYRICS = "Source: US Billboard Hot 100; locally scored lyrics."
+MODEL_NOTE = "Relationship labels are model classifications; independent human validation is pending."
 
 
 def _generated_stamp() -> str:
@@ -107,7 +109,7 @@ def _chart_subtitle(metric: str) -> str:
     if metric in {"independence_share", "heartbreak_share", "devotion_share"}:
         return "Among covered relationship songs, weighted by chart exposure"
     if metric == "relationship_share":
-        return "Romantic or sexual topics, weighted by chart exposure"
+        return "Model-classified romantic or sexual topics, weighted by chart exposure"
     return "Covered songs, weighted by chart exposure"
 
 
@@ -128,11 +130,16 @@ def _plot_metric(series: pd.DataFrame, metric: str, description: str, path) -> b
     ax.margins(x=.015)
     ax.grid(True, axis="y")
     ax.set_axisbelow(True)
+    mark_partial_years(ax, sub["year"])
     chart_heading(ax, CHARTS[metric][1], _chart_subtitle(metric))
     ax.set_ylabel(CHARTS[metric][2])
     ax.set_xlabel("Song debut year")
-    source_note(fig, SOURCE_LYRICS + "\nShading: 95% song-bootstrap interval. Latest cohort has incomplete follow-up.")
-    save_fig(fig, path, bottom=.16)
+    note = (SOURCE_LYRICS + "\nShading: 95% song-bootstrap intervals. "
+            "*Partial years; recent cohorts have shorter follow-up.")
+    if metric in {"relationship_share", "independence_share", "heartbreak_share", "devotion_share"}:
+        note += "\n" + MODEL_NOTE
+    source_note(fig, note)
+    save_fig(fig, path, bottom=.20)
     return True
 
 
@@ -149,7 +156,7 @@ def _plot_decades(decades: pd.DataFrame, metric: str, description: str, path) ->
         (sub["ci_hi"] - sub["mean"]).clip(lower=0).to_numpy() * factor,
     ]
     fig, ax = plt.subplots(figsize=(11, 6))
-    ax.bar([f"{int(d)}s" for d in sub["decade"]], sub["mean"] * factor,
+    ax.bar(period_labels(sub["decade"], decade=True), sub["mean"] * factor,
            yerr=error, color=ACCENT, capsize=3, width=0.68,
            error_kw={"ecolor": MUTED, "elinewidth": 1})
     ax.set_ylabel(CHARTS[metric][2])
@@ -159,28 +166,35 @@ def _plot_decades(decades: pd.DataFrame, metric: str, description: str, path) ->
     ax.set_xlabel("Song debut decade")
     ax.grid(True, axis="y")
     ax.set_axisbelow(True)
-    source_note(fig, SOURCE_LYRICS + "\nError bars: 95% song-bootstrap intervals. First and latest decades are partial.")
-    save_fig(fig, path, bottom=.16)
+    note = (SOURCE_LYRICS + "\nError bars: 95% song-bootstrap intervals. "
+            "*Partial decades; recent cohorts have shorter follow-up.")
+    if metric in {"relationship_share", "independence_share", "heartbreak_share", "devotion_share"}:
+        note += "\n" + MODEL_NOTE
+    source_note(fig, note)
+    save_fig(fig, path, bottom=.20)
     return True
 
 
 def _plot_coverage(path) -> None:
     cov = pd.read_csv(REPORTS / "coverage_by_year.csv")
     fig, ax = plt.subplots(figsize=(11, 6))
-    for column, label, color in [
-        ("coverage_lyrics", "Songs", ACCENT), ("coverage_exposure", "Exposure", BLUE),
+    for column, label, color, linestyle in [
+        ("coverage_lyrics", "Songs", ACCENT, "-"),
+        ("coverage_exposure", "Chart exposure", BLUE, "--"),
     ]:
         if column in cov:
-            ax.plot(cov["debut_year"], cov[column] * 100, color=color, lw=2.2, label=label)
+            ax.plot(cov["debut_year"], cov[column] * 100, color=color,
+                    lw=2.2, linestyle=linestyle, label=label)
     ax.set_ylim(0, 100)
     ax.yaxis.set_major_formatter(PercentFormatter(100))
     ax.set_ylabel(CHARTS["coverage_by_year"][2])
     ax.set_xlabel("Song debut year")
+    mark_partial_years(ax, cov["debut_year"])
     chart_heading(ax, CHARTS["coverage_by_year"][1], "Retrieved lyrics, not necessarily eligible for analysis")
     ax.grid(True, axis="y")
     ax.legend(loc="lower right", frameon=False)
-    source_note(fig, SOURCE_LYRICS)
-    save_fig(fig, path)
+    source_note(fig, SOURCE_LYRICS + "\n*Partial calendar years. Retrieval does not imply analysis eligibility.")
+    save_fig(fig, path, bottom=.17)
 
 
 def _vad_section() -> list[str]:
@@ -190,11 +204,12 @@ def _vad_section() -> list[str]:
         return []
     series = pd.read_csv(series_path)
     fig, axes = plt.subplots(3, 1, figsize=(11, 10), sharex=True)
-    labels = {"valence": "Pleasantness\n(valence)", "arousal": "Activation\n(arousal)",
-              "dominance": "Sense of control\n(dominance)"}
+    labels = {"valence": "Pleasantness\n(valence, 0-1)", "arousal": "Activation\n(arousal, 0-1)",
+              "dominance": "Sense of control\n(dominance, 0-1)"}
     for ax, dimension in zip(axes, ("valence", "arousal", "dominance")):
-        for variant, label, color in [
-            ("v1_tokens", "NRC VAD v1", BLUE), ("v21_tokens", "NRC VAD v2.1", ACCENT),
+        for variant, label, color, linestyle in [
+            ("v1_tokens", "NRC VAD v1", BLUE, "--"),
+            ("v21_tokens", "NRC VAD v2.1", ACCENT, "-"),
         ]:
             sub = series[
                 (series["sample"] == "matched_all_variants")
@@ -202,20 +217,22 @@ def _vad_section() -> list[str]:
                 & (series["weighting"] == "exposure")
                 & (series["dimension"] == dimension) & (series["variant"] == variant)
             ].sort_values("year")
-            ax.plot(sub["year"], sub["mean"], lw=2, color=color, label=label)
+            ax.plot(sub["year"], sub["mean"], lw=2, color=color, label=label, linestyle=linestyle)
             ax.fill_between(sub["year"], sub["ci_lo"], sub["ci_hi"],
                             color=color, alpha=.08, linewidth=0)
         ax.set_ylabel(labels[dimension], fontsize=11)
         ax.yaxis.set_major_locator(MaxNLocator(4))
         ax.margins(x=.015)
         ax.grid(True, axis="y")
+    mark_partial_years(axes[-1], series["year"])
     chart_heading(axes[0], CHARTS["nrc_vad_robustness"][1],
                   "Same covered songs in both versions, weighted by chart exposure")
     axes[0].legend(ncol=2, fontsize=10, frameon=False)
     axes[-1].set_xlabel("Song debut year")
-    source_note(fig, "Source: NRC VAD, Saif M. Mohammad / NRC Canada (2018, 2025). All ratings rescaled to 0-1."
-                "\nShading: 95% song-bootstrap intervals. Latest cohort has incomplete follow-up; ratings are not sadness labels.")
-    save_fig(fig, FIGURES / chart_filename("nrc_vad_robustness"), bottom=.12)
+    source_note(fig, "Sources: US Billboard Hot 100; NRC VAD, Mohammad / NRC Canada (2018, 2025)."
+                "\nShading: 95% song-bootstrap intervals. *Partial years; recent cohorts have shorter follow-up."
+                "\nWord ratings are on 0-1 scales, with separate panel ranges; these are not song-sadness scores.")
+    save_fig(fig, FIGURES / chart_filename("nrc_vad_robustness"), bottom=.15)
     lines = [
         "", "## NRC VAD version and scoring sensitivity", "",
         f"Compared **{result['n_matched_all_variants']:,} identical songs** across all scoring variants,",

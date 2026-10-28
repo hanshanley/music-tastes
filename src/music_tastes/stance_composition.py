@@ -41,6 +41,7 @@ from .vizstyle import (  # noqa: E402
     house_style,
     chart_filename,
     chart_heading,
+    period_labels,
     save_fig,
     source_note,
 )
@@ -48,8 +49,9 @@ from .vizstyle import (  # noqa: E402
 house_style()
 
 SOURCE_NOTE = (
-    "Sources: Billboard/Luminate chart archives; locally scored lyrics. "
-    "First and latest decades are partial."
+    "Source: US Billboard Hot 100; locally scored lyrics."
+    "\nStances are model classifications; independent human validation is pending."
+    "\n*Partial decades; recent cohorts have shorter follow-up."
 )
 
 STANCES = {
@@ -123,7 +125,7 @@ def _plot_composition(comp: pd.DataFrame, path) -> bool:
     if not stances or comp.empty:
         return False
     fig, ax = plt.subplots(figsize=(11, 6))
-    x = [f"{int(d)}s" for d in comp["decade"]]
+    x = period_labels(comp["decade"], decade=True)
     bottom = np.zeros(len(comp))
     for stance in stances:
         vals = comp[stance].to_numpy(dtype=float) * 100
@@ -135,11 +137,11 @@ def _plot_composition(comp: pd.DataFrame, path) -> bool:
     ax.set_ylabel("Share of relationship songs")
     ax.yaxis.set_major_formatter(PercentFormatter(100))
     chart_heading(ax, CHARTS["stance_composition"][1],
-                  "Highest-scoring stance per song, weighted by chart exposure")
+                  "Highest model score per song, weighted by chart exposure")
     ax.legend(loc="upper left", bbox_to_anchor=(0, -0.10), ncol=3, fontsize=10)
     ax.set_ylim(0, 100)
     source_note(fig, SOURCE_NOTE)
-    save_fig(fig, path, bottom=0.24)
+    save_fig(fig, path, bottom=0.29)
     return True
 
 
@@ -149,13 +151,23 @@ def _plot_independent(shares: pd.DataFrame, path) -> bool:
         return False
     fig, axes = plt.subplots(3, 2, figsize=(11, 8), sharex=True, sharey=True)
     x = [int(d) for d in shares["decade"]]
+    ticks = x[::2]
+    if ticks[-1] != x[-1]:
+        if len(ticks) > 1:
+            ticks.pop()
+        ticks.append(x[-1])
     for ax, stance in zip(axes.flat, stances):
         ax.plot(x, shares[stance] * 100, marker="o", ms=5, lw=2.2,
                 color=PALETTE.get(stance), zorder=3)
         ax.set_title(SHORT_LABELS[stance], loc="left", fontsize=12, color=PALETTE.get(stance))
         ax.grid(True, axis="y")
         ax.set_axisbelow(True)
-        ax.set_xticks(x[::2], [f"{year}s" for year in x[::2]])
+        ax.set_xticks(ticks, period_labels(ticks, decade=True))
+        labels = ax.get_xticklabels()
+        if labels:
+            labels[0].set_ha("left")
+            labels[-1].set_ha("right")
+        ax.tick_params(axis="x", pad=6)
         ax.yaxis.set_major_formatter(PercentFormatter(100, decimals=0))
         ax.margins(x=.04)
     for ax in list(axes.flat)[len(stances):]:
@@ -170,7 +182,7 @@ def _plot_independent(shares: pd.DataFrame, path) -> bool:
     fig.text(.08, .93, "Themes can overlap. Covered relationship songs, weighted by chart exposure.",
              color=MUTED, fontsize=10)
     source_note(fig, SOURCE_NOTE)
-    save_fig(fig, path, top=.85, bottom=.12)
+    save_fig(fig, path, top=.85, bottom=.17)
     return True
 
 

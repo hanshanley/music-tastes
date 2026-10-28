@@ -248,6 +248,13 @@ word ratings retain their original score units. Titles and filenames use
 reader-facing names instead of internal metric identifiers. The stance-share
 figure uses separate panels so its six overlapping themes stay readable.
 
+Standalone figures identify the US Hot 100 and verified chart-issue cutoff.
+Asterisks mark partial debut years or decades using the archive's actual calendar
+boundaries. Relationship charts disclose pending independent human validation.
+Source notes remain readable at article width; comparison lines use distinct
+dash patterns as well as colours. NRC VAD panels state their 0-1 units and use
+separate vertical ranges, not a common scale implying comparable magnitudes.
+
 The export changes only exactly matching, fully opaque background pixels.
 Plotted colours, text, dimensions, transparency, and DPI metadata are preserved;
 no series is rescored, rescaled, smoothed, or relabelled. The final report stage

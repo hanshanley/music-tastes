@@ -125,6 +125,14 @@ class TestDerivedClaims:
     def test_vad_appendix_renders_current_estimate_and_comparison_chart(self, monkeypatch, tmp_path):
         import pandas as pd
 
+        captured = []
+        save_fig = report.save_fig
+
+        def capture(fig, *args, **kwargs):
+            captured.append(fig)
+            return save_fig(fig, *args, **kwargs)
+
+        monkeypatch.setattr(report, "save_fig", capture)
         monkeypatch.setattr(report, "REPORTS", tmp_path)
         monkeypatch.setattr(report, "FIGURES", tmp_path)
         result = {
@@ -159,9 +167,73 @@ class TestDerivedClaims:
         assert "not establish a flat trend" in text
         assert "nrc_vad_statistics.csv" in text
         assert (tmp_path / "lyrical-emotion-dimensions.png").is_file()
+        for ax in captured[0].axes:
+            assert [line.get_linestyle() for line in ax.lines] == ["--", "-"]
+            assert "0-1" in ax.get_ylabel()
 
 
 class TestReportArtifacts:
+    @pytest.mark.parametrize(
+        "first,last,years,year_labels,decades,decade_labels",
+        [
+            ("1958-08-04", "2026-10-31", [1958, 1959, 2025, 2026],
+             ["1958*", "1959", "2025", "2026*"], [1950, 1960, 2020],
+             ["1950s*", "1960s", "2020s*"]),
+            ("1960-01-02", "1979-12-29", [1960, 1979],
+             ["1960", "1979"], [1960, 1970], ["1960s", "1970s"]),
+            ("1961-01-07", "2025-12-27", [1961, 2025],
+             ["1961", "2025"], [1960, 2020], ["1960s*", "2020s*"]),
+        ],
+    )
+    def test_partial_labels_use_actual_calendar_boundaries(
+        self, monkeypatch, tmp_path, first, last, years, year_labels, decades, decade_labels,
+    ):
+        from music_tastes import vizstyle
+
+        monkeypatch.setattr(vizstyle, "INTERIM", tmp_path)
+        (tmp_path / "chart_integrity.json").write_text(json.dumps({
+            "chart_from": first, "chart_through": last,
+        }))
+        assert vizstyle.period_labels(years) == year_labels
+        assert vizstyle.period_labels(decades, decade=True) == decade_labels
+
+    def test_standalone_chart_identifies_partial_years_and_model_limitations(self, monkeypatch, tmp_path):
+        import matplotlib.pyplot as plt
+        from matplotlib.backends.backend_agg import FigureCanvasAgg
+        import pandas as pd
+        from music_tastes import vizstyle
+
+        monkeypatch.setattr(vizstyle, "INTERIM", tmp_path)
+        (tmp_path / "chart_integrity.json").write_text(json.dumps({
+            "chart_from": "1958-08-04", "chart_through": "2026-10-31",
+        }))
+        captured = []
+        save_fig = report.save_fig
+
+        def capture(fig, *args, **kwargs):
+            captured.append(fig)
+            return save_fig(fig, *args, **kwargs)
+
+        monkeypatch.setattr(report, "save_fig", capture)
+        frame = pd.DataFrame({
+            "metric": ["relationship_share"] * 3, "variant": ["weighted_all"] * 3,
+            "year": [1958, 2025, 2026], "mean": [.5, .6, .7],
+            "ci_lo": [.4, .5, .6], "ci_hi": [.6, .7, .8],
+        })
+        report._plot_metric(frame, "relationship_share", "", tmp_path / "chart.png")
+        fig, ax = captured[0], captured[0].axes[0]
+        labels = [text.get_text() for text in ax.get_xticklabels()]
+        assert "1958*" in labels and "2026*" in labels
+        note = fig.texts[0]
+        assert "2026-10-31" in note.get_text()
+        assert "independent human validation is pending" in note.get_text()
+        assert note.get_fontsize() >= 10
+        canvas = FigureCanvasAgg(fig)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        assert note.get_window_extent(renderer).y1 < ax.xaxis.label.get_window_extent(renderer).y0
+        plt.close(fig)
+
     def test_headline_chart_keeps_primary_values_and_omits_balanced_overlay(self, monkeypatch, tmp_path):
         import matplotlib.pyplot as plt
         import numpy as np

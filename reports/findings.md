@@ -1,6 +1,6 @@
 # Relationships and mood in US hit songs
 
-_Generated 2026-10-28 21:39 UTC._
+_Generated 2026-10-28 23:00 UTC._
 
 Chart issues through **2026-10-31**.
 This is a retrospective snapshot, not an automatically updated series.
@@ -39,7 +39,7 @@ See the [gap/change audit](gap_audit.json) and
 | Positivity in hit-song lyrics | Decreasing (tau=-0.64, p=6.7e-15). |
 | Sadness-associated words | No statistically clear monotonic trend (tau=-0.13, p=0.11). |
 | Joy-associated words | Decreasing (tau=-0.72, p=1.7e-18). |
-| A second view of lyrical positivity | Decreasing (tau=-0.76, p=4.4e-20). |
+| Lyrical positivity (VADER) | Decreasing (tau=-0.76, p=4.4e-20). |
 | Relationship songs | No statistically clear monotonic trend (tau=-0.10, p=0.24). |
 | Independence in relationship songs | Increasing (tau=+0.67, p=2.5e-16). |
 | Heartbreak in relationship songs | No statistically clear monotonic trend (tau=+0.03, p=0.75). |
@@ -48,7 +48,7 @@ See the [gap/change audit](gap_audit.json) and
 | Hit songs in a minor key | Insufficient evidence to estimate a trend. |
 | Audio happiness scores | Insufficient evidence to estimate a trend. |
 | Audio sadness scores | Insufficient evidence to estimate a trend. |
-| How long are hit-song lyrics? | Increasing (tau=+0.68, p=1.2e-16). |
+| Words per hit song | Increasing (tau=+0.68, p=1.2e-16). |
 
 ## NRC VAD version and scoring sensitivity
 
@@ -148,9 +148,9 @@ not direct measurements of human emotion.
 
 ![Joy-associated words](figures/joy-associated-words.png)
 
-### A second view of lyrical positivity
+### Lyrical positivity (VADER)
 
-![A second view of lyrical positivity](figures/lyric-positivity-vader.png)
+![Lyrical positivity (VADER)](figures/lyric-positivity-vader.png)
 
 ### Relationship songs
 
@@ -168,6 +168,6 @@ not direct measurements of human emotion.
 
 ![Devotion in relationship songs](figures/relationship-devotion.png)
 
-### How long are hit-song lyrics?
+### Words per hit song
 
-![How long are hit-song lyrics?](figures/words-per-song.png)
+![Words per hit song](figures/words-per-song.png)

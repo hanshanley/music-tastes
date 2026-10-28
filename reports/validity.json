@@ -95,7 +95,7 @@
     "p_types": 0.0,
     "repetition_explains_trend": false
   },
-  "uncovered_vocabulary_written": "/Users/hanshanley/Documents/personal_projects/music-tastes/data/runs/20261028T211040Z-787b0729/reports/validity_uncovered_vocabulary.csv",
+  "uncovered_vocabulary_written": "/Users/hanshanley/Documents/personal_projects/music-tastes/data/runs/20261028T224858Z-3dffb822/reports/validity_uncovered_vocabulary.csv",
   "language_robustness": {
     "all_songs": {
       "n": 28884,

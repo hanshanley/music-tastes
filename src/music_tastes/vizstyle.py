@@ -21,7 +21,9 @@ Usage::
 
 from __future__ import annotations
 
+import json
 import pathlib
+from datetime import date, timedelta
 from typing import Any
 
 import matplotlib
@@ -31,11 +33,13 @@ matplotlib.use("Agg")  # headless: analyses render to PNG, never to a display
 import matplotlib.patheffects as pe  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 
+from .paths import INTERIM
+
 __all__ = [
     "PALETTE", "BG", "CARD", "TEXT", "MUTED", "GRID", "ACCENT", "BLUE", "GOLD",
     "GREEN", "RC_PARAMS", "house_style", "source_note", "end_label", "save_fig",
     "white_stroke", "SERIES_COLOURS", "STANCE_COLOURS",
-    "CHARTS", "chart_filename", "chart_heading",
+    "CHARTS", "chart_filename", "chart_heading", "period_labels", "mark_partial_years",
 ]
 
 # ── Palette ──────────────────────────────────────────────────────────────────
@@ -101,10 +105,10 @@ CHARTS = {
         "relationship-devotion", "Devotion in relationship songs", "Share of relationship songs",
     ),
     "lyric_valence": ("lyric-positivity-nrc", "Positivity in hit-song lyrics", "NRC word rating (0-1)"),
-    "vader_valence": ("lyric-positivity-vader", "A second view of lyrical positivity", "VADER dictionary mean"),
+    "vader_valence": ("lyric-positivity-vader", "Lyrical positivity (VADER)", "VADER dictionary mean"),
     "lyric_sadness": ("sadness-associated-words", "Sadness-associated words", "Share of lyric words"),
     "lyric_joy": ("joy-associated-words", "Joy-associated words", "Share of lyric words"),
-    "lyric_length": ("words-per-song", "How long are hit-song lyrics?", "Words per song"),
+    "lyric_length": ("words-per-song", "Words per hit song", "Words per song"),
     "bpm": ("song-tempo", "The tempo of hit songs", "Beats per minute"),
     "minor_key_share": ("minor-key-songs", "Hit songs in a minor key", "Share of covered songs"),
     "acoustic_mood_happy": ("audio-happiness-score", "Audio happiness scores", "Model score"),
@@ -112,7 +116,7 @@ CHARTS = {
     "coverage_by_year": ("lyric-coverage", "How much of the chart has lyrics?", "Share with retrieved lyrics"),
     "nrc_vad_robustness": ("lyrical-emotion-dimensions", "Three dimensions of lyrical emotion", "Word rating (0-1)"),
     "stance_shares": ("relationship-theme-shares", "Themes in relationship songs", "Share of relationship songs"),
-    "stance_composition": ("relationship-theme-mix", "The main theme in relationship songs", "Share of relationship songs"),
+    "stance_composition": ("relationship-theme-mix", "Relationship themes, one per song", "Share of relationship songs"),
 }
 
 
@@ -124,6 +128,46 @@ def chart_heading(ax, title: str, subtitle: str) -> None:
     ax.set_title(title, loc="left", pad=34, fontsize=18)
     ax.text(0, 1.025, subtitle, transform=ax.transAxes,
             ha="left", va="bottom", color=MUTED, fontsize=10)
+
+
+def _chart_dates() -> tuple[date | None, date | None]:
+    path = INTERIM / "chart_integrity.json"
+    info = json.loads(path.read_text()) if path.exists() else {}
+    return tuple(date.fromisoformat(info[key]) if info.get(key) else None
+                 for key in ("chart_from", "chart_through"))
+
+
+def _partial_periods(*, decade: bool = False) -> set[int]:
+    first, last = _chart_dates()
+    partial = set()
+    if first and (first.timetuple().tm_yday > 7 or (decade and first.year % 10 != 0)):
+        partial.add(first.year // 10 * 10 if decade else first.year)
+    if last and ((last + timedelta(days=7)).year == last.year
+                 or (decade and last.year % 10 != 9)):
+        partial.add(last.year // 10 * 10 if decade else last.year)
+    return partial
+
+
+def period_labels(periods, *, decade: bool = False) -> list[str]:
+    partial = _partial_periods(decade=decade)
+    return [f"{int(period)}{'s' if decade else ''}{'*' if int(period) in partial else ''}"
+            for period in periods]
+
+
+def mark_partial_years(ax, years) -> None:
+    partial = _partial_periods() & {int(year) for year in years}
+    if not partial:
+        return
+    low, high = min(years), max(years)
+    ticks = [int(tick) for tick in ax.get_xticks()
+             if low <= tick <= high and float(tick).is_integer()
+             and all(abs(tick - year) >= 4 for year in partial)]
+    ticks = sorted(set(ticks) | partial)
+    ax.set_xticks(ticks, period_labels(ticks))
+    labels = ax.get_xticklabels()
+    labels[0].set_ha("left")
+    labels[-1].set_ha("right")
+    ax.tick_params(axis="x", pad=6)
 
 
 _WHITE_STROKE = [pe.withStroke(linewidth=3.0, foreground="white")]
@@ -141,8 +185,12 @@ def house_style() -> None:
 
 def source_note(fig, text: str, *, x: float = 0.01, y: float = 0.01,
                 ha: str = "left") -> None:
-    """Add the standard italic, muted source note at the figure margin."""
-    fig.text(x, y, text, ha=ha, fontsize=8, color=MUTED, style="italic")
+    """Add a readable source note and verified cutoff to standalone figures."""
+    _, through = _chart_dates()
+    lines = text.split("\n")
+    if through:
+        lines[0] += f" Chart issues through {through.isoformat()}."
+    fig.text(x, y, "\n".join(lines), ha=ha, fontsize=10, color=MUTED)
 
 
 def end_label(ax, x, y, text: str, color: str, *, fontsize: float = 10.5,
