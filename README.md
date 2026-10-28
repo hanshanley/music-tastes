@@ -13,8 +13,7 @@
 ## US hit songs since 1958
 
 A Billboard Hot 100 retrospective covering **32,732 songs**, from August 4, 1958
-through the **October 31, 2026 chart issue**. Sources were retrieved October 27;
-analysis completed October 28. Chart issue dates can follow publication dates.
+through the **October 31, 2026 chart issue**.
 Lyrics cover **89.4% of songs** and **94.3% of chart exposure**.
 
 <p align="center">
