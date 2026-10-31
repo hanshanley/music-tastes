@@ -23,6 +23,15 @@ def test_chart_integrity_distinguishes_date_transition_from_missing_week():
         ingest_charts.validate_charts(duplicate)
 
 
+def test_single_chart_week_has_valid_integrity():
+    result = ingest_charts.validate_charts(chart(["2026-11-07"]))
+    assert result["chart_from"] == result["chart_through"] == "2026-11-07"
+    assert result["weeks"] == 1
+    assert result["positions"] == 100
+    assert result["gaps_before"] == []
+    assert result["non_100_position_weeks"] == {}
+
+
 def test_crosscheck_includes_artist_and_missing_position():
     primary = chart(["2026-10-24"])
     secondary = primary.iloc[:-1].copy()

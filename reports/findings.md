@@ -1,6 +1,6 @@
 # Relationships and mood in US hit songs
 
-_Generated 2026-10-28 23:00 UTC._
+_Generated 2026-10-31 18:34 UTC._
 
 Chart issues through **2026-10-31**.
 This is a retrospective snapshot, not an automatically updated series.

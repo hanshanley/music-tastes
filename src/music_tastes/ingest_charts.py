@@ -63,7 +63,7 @@ def validate_charts(df: pd.DataFrame) -> dict:
     if not df["rank"].between(1, 100).all():
         raise ValueError("Chart ranks must be between 1 and 100")
     dates = pd.Series(sorted(df["chart_week"].unique()))
-    gaps = dates.diff().dt.days
+    gaps = pd.to_datetime(dates).diff().dt.days
     # Both archives switch from Monday issue dates to Saturday at this boundary.
     missing = [
         str(dates.iloc[i]) for i in gaps[gaps > 10].index

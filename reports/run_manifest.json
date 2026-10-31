@@ -1,13 +1,15 @@
 {
-  "run_id": "20261028T224858Z-3dffb822",
+  "run_id": "20261031T182927Z-2670d73e",
   "status": "complete",
-  "started_at": "2026-10-28T22:48:58.351921+00:00",
+  "started_at": "2026-10-31T18:29:27.264314+00:00",
   "limited": false,
-  "offline": true,
+  "offline": false,
   "stages": {
     "ingest-charts": "complete",
     "resolve-songs": "complete",
     "exposure": "complete",
+    "lexicons": "complete",
+    "fetch-lyrics": "complete",
     "features-a": "complete",
     "stance-b": "complete",
     "language": "complete",
@@ -57,7 +59,7 @@
     "supported_python": true,
     "artifacts": {
       "raw/billboard_hot100_all.json": {
-        "bytes": 43997225
+        "bytes": 44009220
       },
       "raw/billboard_hot100_all.provenance.json": {
         "bytes": 314
@@ -72,7 +74,7 @@
         "bytes": 6955
       },
       "interim/chart_entries.parquet": {
-        "bytes": 2682770
+        "bytes": 2683030
       },
       "interim/chart_entries_resolved.parquet": {
         "bytes": 7700667
@@ -147,18 +149,18 @@
         "bytes": 3086087
       },
       "derived/valence_type_vs_token.parquet": {
-        "bytes": 1114336
+        "bytes": 1114824
       },
       "derived/yearly_series.parquet": {
         "bytes": 73318
       }
     },
     "last_complete": {
-      "run_id": "20261028T211040Z-787b0729",
+      "run_id": "20261028T224858Z-3dffb822",
       "status": "complete",
       "chart_through": "2026-10-31",
-      "completed_at": "2026-10-28T21:39:14.915441+00:00",
-      "output_signature": "2c4e48afe9ce2460fdae2361e0d3e0c1c873ee30e219033431f5d78c82fb9858"
+      "completed_at": "2026-10-28T23:00:43.915829+00:00",
+      "output_signature": "671ec5ed55105bde07eb72bc65ebced633e640158259ea0d8f718f060012d255"
     }
   },
   "population": {
@@ -167,7 +169,7 @@
   },
   "audio_status": "unavailable",
   "chart_through": "2026-10-31",
-  "source_signature": "fda4247c791014155a4183f3c1fa5a6548e7e724f3fc4a3af62d370d51bae73a",
-  "completed_at": "2026-10-28T23:00:43.915829+00:00",
-  "output_signature": "671ec5ed55105bde07eb72bc65ebced633e640158259ea0d8f718f060012d255"
+  "source_signature": "afc7b25fdf059d466832138bfe0990eb637f4ab703b3def8f17e550b6eb60463",
+  "completed_at": "2026-10-31T18:34:54.598762+00:00",
+  "output_signature": "673934cb0b60315879f83b0b68f9ed4f57a0ebf216239295e549e55ef36de71b"
 }
