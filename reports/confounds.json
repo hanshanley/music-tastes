@@ -7,15 +7,15 @@
       "kendall_tau": -0.6571428571428573,
       "p_value": 1.70990715584697e-08,
       "significant_at_05": true,
-      "theil_sen_slope_per_year": -0.0011917863065257,
+      "theil_sen_slope_per_year": -0.0011838889019031213,
       "theil_sen_slope_ci": [
-        -0.0014427014690980603,
-        -0.0008987328515015926
+        -0.0014505643771896743,
+        -0.0009228911020984543
       ],
-      "change_per_decade": -0.011917863065257,
-      "mean_first_5_years": 0.6279521045399182,
-      "mean_last_5_years": 0.5918657460977672,
-      "absolute_change": -0.03608635844215102
+      "change_per_decade": -0.011838889019031212,
+      "mean_first_5_years": 0.6280851302615393,
+      "mean_last_5_years": 0.591842218417724,
+      "absolute_change": -0.03624291184381534
     },
     "post_2005_digital": {
       "n_years": 22,
@@ -24,25 +24,25 @@
       "kendall_tau": -0.4112554112554112,
       "p_value": 0.006938579333071466,
       "significant_at_05": true,
-      "theil_sen_slope_per_year": -0.0007751141918301514,
+      "theil_sen_slope_per_year": -0.0007684270539305427,
       "theil_sen_slope_ci": [
-        -0.0013930170319417358,
-        -0.00019550245116341082
+        -0.001376518612801858,
+        -0.00020531743308769033
       ],
-      "change_per_decade": -0.007751141918301514,
-      "mean_first_5_years": 0.6046475376999497,
-      "mean_last_5_years": 0.5918657460977672,
-      "absolute_change": -0.012781791602182513
+      "change_per_decade": -0.007684270539305427,
+      "mean_first_5_years": 0.6047135321934201,
+      "mean_last_5_years": 0.591842218417724,
+      "absolute_change": -0.012871313775696058
     },
     "length_control": {
-      "n": 28884,
-      "raw_spearman_year_vs_metric": -0.27984300312973326,
+      "n": 28994,
+      "raw_spearman_year_vs_metric": -0.27968120340596797,
       "raw_p": 0.0,
-      "partial_spearman_controlling_length": -0.18495945205304598,
-      "partial_p": 1.2452676988368322e-220,
-      "spearman_year_vs_log_words": 0.5910078425263219,
+      "partial_spearman_controlling_length": -0.18458514408428753,
+      "partial_p": 1.4637508040457758e-220,
+      "spearman_year_vs_log_words": 0.5904038811571893,
       "length_p": 0.0,
-      "attenuation": -0.09488355107668728
+      "attenuation": -0.09509605932168044
     },
     "genre_adjusted": {
       "note": "no genre labels available"
@@ -53,45 +53,45 @@
       "n_years": 36,
       "year_min": 1991,
       "year_max": 2026,
-      "kendall_tau": -0.5555555555555556,
-      "p_value": 1.8669919554780976e-06,
+      "kendall_tau": -0.5619047619047619,
+      "p_value": 1.42271033285883e-06,
       "significant_at_05": true,
-      "theil_sen_slope_per_year": -0.0004265753419848796,
+      "theil_sen_slope_per_year": -0.00042350634567735765,
       "theil_sen_slope_ci": [
-        -0.0005467434321777704,
-        -0.0002892152427905005
+        -0.0005547081666586356,
+        -0.00028872638016507054
       ],
-      "change_per_decade": -0.004265753419848796,
-      "mean_first_5_years": 0.04293822120117655,
-      "mean_last_5_years": 0.02715420459173649,
-      "absolute_change": -0.015784016609440062
+      "change_per_decade": -0.004235063456773576,
+      "mean_first_5_years": 0.04297406135797639,
+      "mean_last_5_years": 0.027141542109310923,
+      "absolute_change": -0.01583251924866547
     },
     "post_2005_digital": {
       "n_years": 22,
       "year_min": 2005,
       "year_max": 2026,
-      "kendall_tau": -0.20346320346320346,
-      "p_value": 0.19701520944492798,
+      "kendall_tau": -0.2207792207792208,
+      "p_value": 0.16029274039086885,
       "significant_at_05": false,
-      "theil_sen_slope_per_year": -0.00012895693947750353,
+      "theil_sen_slope_per_year": -0.000107685227235384,
       "theil_sen_slope_ci": [
-        -0.0003590166747157175,
-        0.00010786519682903321
+        -0.00035967113023792146,
+        0.00010736301802723262
       ],
-      "change_per_decade": -0.0012895693947750353,
-      "mean_first_5_years": 0.02782984881673865,
-      "mean_last_5_years": 0.02715420459173649,
-      "absolute_change": -0.0006756442250021588
+      "change_per_decade": -0.00107685227235384,
+      "mean_first_5_years": 0.027892494281911852,
+      "mean_last_5_years": 0.027141542109310923,
+      "absolute_change": -0.0007509521726009293
     },
     "length_control": {
-      "n": 28877,
-      "raw_spearman_year_vs_metric": -0.25717837800931115,
+      "n": 28987,
+      "raw_spearman_year_vs_metric": -0.25721772885578464,
       "raw_p": 0.0,
-      "partial_spearman_controlling_length": -0.1650456132087511,
-      "partial_p": 1.929911257299564e-175,
-      "spearman_year_vs_log_words": 0.5909782896377055,
+      "partial_spearman_controlling_length": -0.16496817839690867,
+      "partial_p": 6.174075431874195e-176,
+      "spearman_year_vs_log_words": 0.5903739046734784,
       "length_p": 0.0,
-      "attenuation": -0.09213276480056004
+      "attenuation": -0.09224955045887598
     },
     "genre_adjusted": {
       "note": "no genre labels available"
@@ -102,35 +102,35 @@
       "n_years": 36,
       "year_min": 1991,
       "year_max": 2026,
-      "kendall_tau": 0.4476190476190477,
-      "p_value": 0.00012248812047669784,
+      "kendall_tau": 0.4571428571428572,
+      "p_value": 8.751944221460803e-05,
       "significant_at_05": true,
-      "theil_sen_slope_per_year": 0.003466381539319331,
+      "theil_sen_slope_per_year": 0.0034691452826814363,
       "theil_sen_slope_ci": [
-        0.0019064015229766317,
-        0.004981680818265319
+        0.0019088180802891658,
+        0.004984089470063892
       ],
-      "change_per_decade": 0.03466381539319331,
-      "mean_first_5_years": 0.08692582167700502,
-      "mean_last_5_years": 0.17229191070897243,
-      "absolute_change": 0.08536608903196741
+      "change_per_decade": 0.034691452826814365,
+      "mean_first_5_years": 0.08654708294441857,
+      "mean_last_5_years": 0.17284791222213625,
+      "absolute_change": 0.08630082927771768
     },
     "post_2005_digital": {
       "n_years": 22,
       "year_min": 2005,
       "year_max": 2026,
-      "kendall_tau": 0.06493506493506493,
-      "p_value": 0.6964081768655271,
+      "kendall_tau": 0.07359307359307359,
+      "p_value": 0.6555978590524786,
       "significant_at_05": false,
       "theil_sen_slope_per_year": 0.0014140361025283877,
       "theil_sen_slope_ci": [
-        -0.002545894518237406,
-        0.004385850688512736
+        -0.002438367563358263,
+        0.004385642733952301
       ],
       "change_per_decade": 0.014140361025283876,
-      "mean_first_5_years": 0.16511915022706938,
-      "mean_last_5_years": 0.17229191070897243,
-      "absolute_change": 0.0071727604819030455
+      "mean_first_5_years": 0.16476147365576982,
+      "mean_last_5_years": 0.17284791222213625,
+      "absolute_change": 0.008086438566366427
     },
     "genre_adjusted": {
       "note": "no genre labels available"
@@ -141,18 +141,18 @@
       "n_years": 36,
       "year_min": 1991,
       "year_max": 2026,
-      "kendall_tau": -0.050793650793650794,
-      "p_value": 0.6629320593594055,
+      "kendall_tau": -0.060317460317460325,
+      "p_value": 0.6047415849512238,
       "significant_at_05": false,
-      "theil_sen_slope_per_year": -0.00036144952631594126,
+      "theil_sen_slope_per_year": -0.00041299422836566446,
       "theil_sen_slope_ci": [
-        -0.0020324601618856345,
-        0.0014872761835572725
+        -0.002048685445289387,
+        0.0013480436086426018
       ],
-      "change_per_decade": -0.0036144952631594124,
-      "mean_first_5_years": 0.7122130890021875,
-      "mean_last_5_years": 0.7199026422159487,
-      "absolute_change": 0.007689553213761191
+      "change_per_decade": -0.004129942283656644,
+      "mean_first_5_years": 0.7130258150545299,
+      "mean_last_5_years": 0.7191328423260092,
+      "absolute_change": 0.006107027271479271
     },
     "post_2005_digital": {
       "n_years": 22,
@@ -161,15 +161,15 @@
       "kendall_tau": 0.24675324675324675,
       "p_value": 0.11503559714073973,
       "significant_at_05": false,
-      "theil_sen_slope_per_year": 0.0030489947355482484,
+      "theil_sen_slope_per_year": 0.002930382635103035,
       "theil_sen_slope_ci": [
-        -0.0005339392699925757,
-        0.005828388242717961
+        -0.000631816977388655,
+        0.005815666149680591
       ],
-      "change_per_decade": 0.030489947355482484,
-      "mean_first_5_years": 0.6684756971748684,
-      "mean_last_5_years": 0.7199026422159487,
-      "absolute_change": 0.05142694504108025
+      "change_per_decade": 0.02930382635103035,
+      "mean_first_5_years": 0.6684949679078125,
+      "mean_last_5_years": 0.7191328423260092,
+      "absolute_change": 0.05063787441819667
     },
     "genre_adjusted": {
       "note": "no genre labels available"

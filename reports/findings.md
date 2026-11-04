@@ -1,8 +1,8 @@
 # Relationships and mood in US hit songs
 
-_Generated 2026-10-31 18:34 UTC._
+_Generated 2026-11-04 01:47 UTC._
 
-Chart issues through **2026-10-31**.
+Chart issues through **2026-11-07**.
 This is a retrospective snapshot, not an automatically updated series.
 Issue dates can be later than publication dates. The latest year/decade is incomplete.
 
@@ -24,7 +24,7 @@ observed debut-year cohorts using only their first 52 calendar weeks of chart po
 
 ## Coverage
 
-Lyrics: **89.4%** of songs; **94.3%** of exposure.
+Lyrics: **89.7%** of songs; **94.5%** of exposure.
 A balanced high-exposure covered-song subset is a sensitivity check, not
 proof that missingness bias has been removed. Metric-specific missingness remains.
 See the [gap/change audit](gap_audit.json) and
@@ -36,14 +36,14 @@ See the [gap/change audit](gap_audit.json) and
 
 | Measure | Exposure-weighted debut-year trend |
 |---|---|
-| Positivity in hit-song lyrics | Decreasing (tau=-0.64, p=6.7e-15). |
-| Sadness-associated words | No statistically clear monotonic trend (tau=-0.13, p=0.11). |
+| Positivity in hit-song lyrics | Decreasing (tau=-0.63, p=1.3e-14). |
+| Sadness-associated words | No statistically clear monotonic trend (tau=-0.13, p=0.12). |
 | Joy-associated words | Decreasing (tau=-0.72, p=1.7e-18). |
-| Lyrical positivity (VADER) | Decreasing (tau=-0.76, p=4.4e-20). |
-| Relationship songs | No statistically clear monotonic trend (tau=-0.10, p=0.24). |
-| Independence in relationship songs | Increasing (tau=+0.67, p=2.5e-16). |
-| Heartbreak in relationship songs | No statistically clear monotonic trend (tau=+0.03, p=0.75). |
-| Devotion in relationship songs | Decreasing (tau=-0.32, p=9.8e-05). |
+| Lyrical positivity (VADER) | Decreasing (tau=-0.75, p=5.9e-20). |
+| Relationship songs | No statistically clear monotonic trend (tau=-0.10, p=0.21). |
+| Independence in relationship songs | Increasing (tau=+0.68, p=1.6e-16). |
+| Heartbreak in relationship songs | No statistically clear monotonic trend (tau=+0.02, p=0.79). |
+| Devotion in relationship songs | Decreasing (tau=-0.32, p=0.00013). |
 | The tempo of hit songs | Insufficient evidence to estimate a trend. |
 | Hit songs in a minor key | Insufficient evidence to estimate a trend. |
 | Audio happiness scores | Insufficient evidence to estimate a trend. |
@@ -52,22 +52,22 @@ See the [gap/change audit](gap_audit.json) and
 
 ## NRC VAD version and scoring sensitivity
 
-Compared **28,874 identical songs** across all scoring variants,
-from **28,885 eligible lyrics**.
+Compared **28,984 identical songs** across all scoring variants,
+from **28,995 eligible lyrics**.
 NRC VAD v2.1 is rescaled from its native -1 to +1 to 0-1 before comparison
 with the unchanged v1 baseline. These are word/phrase ratings, not percentages
 of happiness, a validated sadness classifier, or listener-emotion measurements.
 
 | Matched-song valence measure | Change per decade (0-1 units) | Kendall tau |
 |---|---:|---:|
-| v1_tokens | -0.0074 | -0.64 |
-| v1_shared_tokens | -0.0069 | -0.63 |
+| v1_tokens | -0.0074 | -0.63 |
+| v1_shared_tokens | -0.0068 | -0.62 |
 | v21_shared_tokens | -0.0068 | -0.63 |
 | v21_tokens | -0.0038 | -0.68 |
 | v21_types | -0.0035 | -0.72 |
 | v21_phrases | -0.0042 | -0.69 |
 | v21_polar_0167 | -0.0066 | -0.67 |
-| v21_polar_0333 | -0.0085 | -0.71 |
+| v21_polar_0333 | -0.0085 | -0.70 |
 
 The shared-vocabulary variants hold matched words constant while changing
 their version-specific ratings; expanded-vocabulary variants also change coverage.
@@ -94,9 +94,9 @@ three primary v2.1 dimensions. Intervals are pointwise 95%, not simultaneous.
 
 | Dimension | OLS change/decade | 95% HAC interval | Holm-adjusted p |
 |---|---:|---|---:|
-| Arousal | +0.00210 | [+0.00136, +0.00284] | 7.59e-07 |
-| Dominance | +0.00010 | [-0.00085, +0.00105] | 0.838 |
-| Valence | -0.00380 | [-0.00463, -0.00297] | 8.69e-13 |
+| Arousal | +0.00210 | [+0.00136, +0.00284] | 7.56e-07 |
+| Dominance | +0.00010 | [-0.00086, +0.00106] | 0.837 |
+| Valence | -0.00380 | [-0.00464, -0.00296] | 1.11e-12 |
 
 All three-, five- and ten-year HAC windows and circular residual-block
 bootstrap checks are available below, including multiplicity correction
@@ -118,7 +118,7 @@ Conditional stance review: **pending**.
 - Legacy purposive_sample, method_b_independence: n=13, accuracy=1.00. Selection/annotation provenance is not independently audited; purposive results are not population accuracy.
 - Legacy purposive_sample, method_a_independence: n=13, accuracy=0.54. Selection/annotation provenance is not independently audited; purposive results are not population accuracy.
 
-Chunk-count-adjusted independence estimate: +0.0127/decade (p=3.5e-24).
+Chunk-count-adjusted independence estimate: +0.0127/decade (p=3e-24).
 
 ## Robustness and limitations
 

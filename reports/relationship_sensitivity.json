@@ -4,27 +4,27 @@
   "comparisons": {
     "main_subject": {
       "n": 160,
-      "label_disagreement": 0.04375,
-      "n_multiple_windows": 51,
-      "label_disagreement_multiple_windows": 0.0392156862745098
+      "label_disagreement": 0.05625,
+      "n_multiple_windows": 38,
+      "label_disagreement_multiple_windows": 0.07894736842105263
     },
     "describes": {
       "n": 160,
-      "label_disagreement": 0.075,
-      "n_multiple_windows": 51,
-      "label_disagreement_multiple_windows": 0.09803921568627451
+      "label_disagreement": 0.06875,
+      "n_multiple_windows": 38,
+      "label_disagreement_multiple_windows": 0.07894736842105263
     },
     "window_max": {
       "n": 160,
       "label_disagreement": 0.00625,
-      "n_multiple_windows": 51,
-      "label_disagreement_multiple_windows": 0.0196078431372549
+      "n_multiple_windows": 38,
+      "label_disagreement_multiple_windows": 0.02631578947368421
     },
     "window_mean": {
       "n": 160,
-      "label_disagreement": 0.03125,
-      "n_multiple_windows": 51,
-      "label_disagreement_multiple_windows": 0.09803921568627451
+      "label_disagreement": 0.025,
+      "n_multiple_windows": 38,
+      "label_disagreement_multiple_windows": 0.10526315789473684
     }
   },
   "by_decade": {

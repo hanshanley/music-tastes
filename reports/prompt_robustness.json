@@ -4,8 +4,8 @@
   "per_variant": {
     "original": {
       "n": 1518,
-      "kendall_tau": 0.4617,
-      "p_value": 1.5610772675112396e-07,
+      "kendall_tau": 0.467,
+      "p_value": 1.1558929518982754e-07,
       "significant": true,
       "positive": true
     },
@@ -33,7 +33,7 @@
     "no_need_love": {
       "n": 1518,
       "kendall_tau": 0.3274,
-      "p_value": 0.0003838239559945324,
+      "p_value": 0.00039059257530650143,
       "significant": true,
       "positive": true
     }
@@ -42,7 +42,7 @@
     "original": {
       "1950": 0.0227,
       "1960": 0.0455,
-      "1970": 0.0591,
+      "1970": 0.0545,
       "1980": 0.0636,
       "1990": 0.0864,
       "2000": 0.1727,
@@ -85,7 +85,7 @@
       "1970": 0.0182,
       "1980": 0.0273,
       "1990": 0.0364,
-      "2000": 0.1091,
+      "2000": 0.1045,
       "2010": 0.0591,
       "2020": 0.0844
     }
@@ -96,7 +96,7 @@
       "better_alone": 0.437,
       "self_sufficient": 0.764,
       "rejecting": 0.666,
-      "no_need_love": 0.748
+      "no_need_love": 0.747
     },
     "better_alone": {
       "original": 0.437,
@@ -109,18 +109,18 @@
       "original": 0.764,
       "better_alone": 0.284,
       "self_sufficient": 1.0,
-      "rejecting": 0.457,
+      "rejecting": 0.458,
       "no_need_love": 0.645
     },
     "rejecting": {
       "original": 0.666,
       "better_alone": 0.721,
-      "self_sufficient": 0.457,
+      "self_sufficient": 0.458,
       "rejecting": 1.0,
       "no_need_love": 0.718
     },
     "no_need_love": {
-      "original": 0.748,
+      "original": 0.747,
       "better_alone": 0.581,
       "self_sufficient": 0.645,
       "rejecting": 0.718,
@@ -131,6 +131,6 @@
   "all_significant": false,
   "tau_range": [
     0.1028,
-    0.4617
+    0.467
   ]
 }

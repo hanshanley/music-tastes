@@ -7,49 +7,49 @@
     },
     {
       "decade": 1960,
-      "n": 5401,
+      "n": 5402,
       "pct_non_english": 0.0098
     },
     {
       "decade": 1970,
-      "n": 4556,
+      "n": 4572,
       "pct_non_english": 0.0112
     },
     {
       "decade": 1980,
-      "n": 3817,
+      "n": 3844,
       "pct_non_english": 0.0034
     },
     {
       "decade": 1990,
-      "n": 3191,
+      "n": 3208,
       "pct_non_english": 0.005
     },
     {
       "decade": 2000,
-      "n": 3269,
+      "n": 3281,
       "pct_non_english": 0.0119
     },
     {
       "decade": 2010,
-      "n": 4270,
-      "pct_non_english": 0.0176
+      "n": 4289,
+      "pct_non_english": 0.018
     },
     {
       "decade": 2020,
-      "n": 4073,
-      "pct_non_english": 0.0604
+      "n": 4094,
+      "pct_non_english": 0.0608
     }
   ],
   "heuristic_evaluation": {
-    "n": 29229,
-    "true_positive": 28656,
-    "false_positive": 229,
-    "false_negative": 70,
-    "true_negative": 274,
-    "heuristic_precision": 0.9920720096936126,
-    "heuristic_recall": 0.9975631831790016,
-    "non_english_leaking_through": 229
+    "n": 29342,
+    "true_positive": 28763,
+    "false_positive": 232,
+    "false_negative": 71,
+    "true_negative": 276,
+    "heuristic_precision": 0.991998620451802,
+    "heuristic_recall": 0.9975376291877645,
+    "non_english_leaking_through": 232
   },
   "code_switching_by_decade": [
     {
@@ -60,50 +60,50 @@
     },
     {
       "decade": 1960,
-      "n": 5348,
+      "n": 5349,
       "english_token_share": 0.9975,
-      "min_share": 0.9888
+      "min_share": 0.9889
     },
     {
       "decade": 1970,
-      "n": 4505,
+      "n": 4521,
       "english_token_share": 0.9981,
       "min_share": 0.9919
     },
     {
       "decade": 1980,
-      "n": 3804,
-      "english_token_share": 0.9987,
-      "min_share": 0.9935
+      "n": 3831,
+      "english_token_share": 0.9986,
+      "min_share": 0.9934
     },
     {
       "decade": 1990,
-      "n": 3175,
+      "n": 3192,
       "english_token_share": 0.9973,
       "min_share": 0.9874
     },
     {
       "decade": 2000,
-      "n": 3230,
+      "n": 3242,
       "english_token_share": 0.9974,
       "min_share": 0.9886
     },
     {
       "decade": 2010,
-      "n": 4195,
+      "n": 4212,
       "english_token_share": 0.997,
       "min_share": 0.9876
     },
     {
       "decade": 2020,
-      "n": 3827,
+      "n": 3845,
       "english_token_share": 0.9952,
       "min_share": 0.9825
     }
   ],
   "language_counts": {
-    "en": 28726,
-    "es": 343,
+    "en": 28834,
+    "es": 347,
     "so": 23,
     "pt": 20,
     "tl": 17,
@@ -113,6 +113,6 @@
     "it": 12,
     "ca": 11,
     "de": 7,
-    "ko": 6
+    "ko": 7
   }
 }
